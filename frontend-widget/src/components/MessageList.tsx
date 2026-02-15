@@ -15,7 +15,6 @@ export const MessageList: React.FC<MessageListProps> = ({
     messages,
     botName,
     logoUrl,
-    primaryColor = '#6366f1',
     onOptionSelect,
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);

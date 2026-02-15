@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
-import type { WidgetConfig } from '../types';
 
 interface ChatBubbleProps {
     isOpen: boolean;
     unreadCount: number;
     onClick: () => void;
-    position?: WidgetConfig['position'];
-    primaryColor?: string;
-    logoUrl?: string;
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({
     isOpen,
     unreadCount,
     onClick,
-    primaryColor = '#6366f1',
-    logoUrl,
 }) => {
     const [showTooltip, setShowTooltip] = useState(false);
 

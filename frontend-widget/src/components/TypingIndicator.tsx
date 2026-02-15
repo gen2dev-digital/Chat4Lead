@@ -1,10 +1,6 @@
 import React from 'react';
 
-interface TypingIndicatorProps {
-    botName: string;
-}
-
-export const TypingIndicator: React.FC<TypingIndicatorProps> = ({ botName }) => {
+export const TypingIndicator: React.FC = () => {
     return (
         <div className="flex items-center gap-2 animate-fade-in pl-1">
             <div className="w-8 h-8 rounded-full border border-gray-200/20 flex items-center justify-center overflow-hidden shrink-0 shadow-sm bg-white dark:bg-gray-800">

@@ -156,5 +156,5 @@ body {
 .animate-wave {
   animation: wave 2s infinite;
   display: inline-block;
-  origin: 70% 70%;
+  transform-origin: 70% 70%;
 }

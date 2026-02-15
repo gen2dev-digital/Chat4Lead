@@ -12,7 +12,6 @@ export const EndConversationModal: React.FC<EndConversationModalProps> = ({
     onClose,
     onSkip,
     onSubmit,
-    primaryColor = '#6366f1',
 }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -42,7 +41,7 @@ export const EndConversationModal: React.FC<EndConversationModalProps> = ({
             <div className="w-full max-w-sm text-center">
                 <div
                     className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center text-white text-2xl shadow-lg animate-bounce"
-                    style={{ backgroundColor: primaryColor }}
+                    style={{ background: 'var(--c4l-primary-gradient)' }}
                 >
                     👋
                 </div>
@@ -99,7 +98,7 @@ export const EndConversationModal: React.FC<EndConversationModalProps> = ({
                         type="submit"
                         disabled={loading}
                         className="w-full py-3.5 rounded-xl text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-6"
-                        style={{ backgroundColor: primaryColor }}
+                        style={{ background: 'var(--c4l-primary-gradient)' }}
                     >
                         {loading ? 'Envoi en cours...' : 'Envoyer et Terminer'}
                     </button>

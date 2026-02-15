@@ -5,13 +5,11 @@ import { Send } from 'lucide-react';
 interface InputBoxProps {
     onSendMessage: (message: string) => void;
     disabled?: boolean;
-    primaryColor?: string;
 }
 
 export const InputBox: React.FC<InputBoxProps> = ({
     onSendMessage,
     disabled = false,
-    primaryColor = '#6366f1',
 }) => {
     const [message, setMessage] = useState('');
 
@@ -28,7 +26,6 @@ export const InputBox: React.FC<InputBoxProps> = ({
         }
     };
 
-    // Style dynamique via variables CSS
     const inputStyle = {
         backgroundColor: 'var(--c4l-bg-input)',
         color: 'var(--c4l-text-primary)',

@@ -14,7 +14,6 @@ interface ChatWindowProps {
     onClose: () => void;
     onEndChat?: (data?: { name: string; email: string; phone: string }) => void;
     onSendMessage: (message: string) => void;
-    primaryColor?: string;
     logoUrl?: string;
 }
 
@@ -26,7 +25,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     onClose,
     onEndChat,
     onSendMessage,
-    primaryColor = '#6366f1',
     logoUrl,
 }) => {
     const [showEndModal, setShowEndModal] = useState(false);
@@ -132,7 +130,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     onClose={() => setShowEndModal(false)}
                     onSkip={handleSkip}
                     onSubmit={handleModalSubmit}
-                    primaryColor={primaryColor}
                 />
             )}
 
@@ -142,14 +139,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                     messages={messages}
                     botName={botName}
                     logoUrl={logoUrl}
-                    primaryColor={primaryColor}
                     onOptionSelect={onSendMessage}
                 />
 
                 {/* Typing Indicator Overlay */}
                 {isTyping && (
                     <div className="absolute bottom-2 left-5 z-20">
-                        <TypingIndicator botName={botName} />
+                        <TypingIndicator />
                     </div>
                 )}
             </div>
@@ -159,7 +155,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 <InputBox
                     onSendMessage={onSendMessage}
                     disabled={!isConnected}
-                    primaryColor={primaryColor}
                 />
             </div>
         </div>

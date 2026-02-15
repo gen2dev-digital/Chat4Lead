@@ -65,9 +65,6 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
                     isOpen={isOpen}
                     unreadCount={unreadCount}
                     onClick={handleToggle}
-                    position={config.position}
-                    primaryColor={config.primaryColor}
-                    logoUrl={config.logoUrl}
                 />
             )}
 
@@ -80,9 +77,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
                     isConnected={isConnected}
                     onClose={handleClose}
                     onSendMessage={sendMessage}
-                    primaryColor={config.primaryColor}
-                    logoUrl={config.logoUrl}
                     onEndChat={handleEndChat}
+                    logoUrl={config.logoUrl}
                 />
             )}
         </>
