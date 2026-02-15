@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Message, LeadData, WidgetConfig, ConnectionStatus } from '../types';
+import type { Message, LeadData, WidgetConfig, ConnectionStatus } from '../types';
 
 // ──────────────────────────────────────────────
 //  TYPES DU STORE

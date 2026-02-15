@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { WidgetConfig } from '../types';
+import type { WidgetConfig, LeadData } from '../types';
 
 // ──────────────────────────────────────────────
 //  TYPES — Callbacks WebSocket
@@ -9,7 +9,7 @@ interface SocketCallbacks {
     onBotTyping: () => void;
     onBotMessage: (data: {
         reply: string;
-        leadData?: any;
+        leadData?: LeadData;
         score?: number;
         timestamp: string;
     }) => void;
@@ -32,7 +32,7 @@ interface SocketCallbacks {
 
 class SocketService {
     private socket: Socket | null = null;
-    private config: WidgetConfig | null = null;
+
     private callbacks: Partial<SocketCallbacks> = {};
     private reconnectAttempts = 0;
     private maxReconnectAttempts = 5;
@@ -46,7 +46,7 @@ class SocketService {
      * L'apiKey est envoyée dans le handshake pour authentification côté serveur.
      */
     connect(config: WidgetConfig, callbacks: Partial<SocketCallbacks>): void {
-        this.config = config;
+
         this.callbacks = callbacks;
 
         const baseUrl = config.apiUrl || 'http://localhost:3000';

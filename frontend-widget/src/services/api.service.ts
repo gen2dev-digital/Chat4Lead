@@ -1,4 +1,4 @@
-import { WidgetConfig } from '../types';
+import type { WidgetConfig, LeadData, Message } from '../types';
 
 // ──────────────────────────────────────────────
 //  TYPES — Réponses API
@@ -11,7 +11,7 @@ export interface InitConversationResponse {
 
 export interface SendMessageResponse {
     reply: string;
-    leadData?: any;
+    leadData?: LeadData;
     score?: number;
     actions?: string[];
 }
@@ -111,7 +111,7 @@ class ApiService {
      * Récupère l'historique complet d'une conversation.
      * Utile pour restaurer les messages après un rechargement de page.
      */
-    async getConversation(conversationId: string): Promise<any> {
+    async getConversation(conversationId: string): Promise<Message[]> {
         try {
             const response = await fetch(
                 `${this.baseUrl}/api/conversation/${conversationId}`,

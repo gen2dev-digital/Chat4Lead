@@ -30,6 +30,7 @@ export interface LeadData {
         surface?: number;
         volumeEstime?: number;
         dateSouhaitee?: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [key: string]: any;
     };
 }
