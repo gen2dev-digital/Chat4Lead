@@ -43,7 +43,7 @@ export const useChat = () => {
 
                 socketService.connect(config, {
                     onConnect: () => {
-                        console.log('✅ Socket connected');
+                        console.log('✅ Socket connected to:', config.apiUrl || 'http://localhost:3000');
                         setConnection({ isConnected: true, isConnecting: false });
 
                         // Rejoindre la conversation
