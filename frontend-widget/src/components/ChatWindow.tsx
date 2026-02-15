@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Minus, X } from 'lucide-react';
+import { Minus, X, Moon, Sun } from 'lucide-react';
 import { MessageList } from './MessageList';
 import { InputBox } from './InputBox';
 import { TypingIndicator } from './TypingIndicator';
@@ -31,6 +31,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 }) => {
     const [showEndModal, setShowEndModal] = useState(false);
 
+    // Toggle Dark Mode (Optional: could be a prop)
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
     const handleEndClick = () => {
         setShowEndModal(true);
     };
@@ -49,26 +54,29 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     return (
         <div
-            className="fixed bottom-24 right-6 w-[380px] h-[650px] max-h-[85vh] flex flex-col overflow-hidden z-[9998] animate-scale-in"
+            // Applique l'attribut data-theme si dark mode activé
+            data-theme={isDarkMode ? 'dark' : 'light'}
+            className="fixed bottom-24 right-6 w-[380px] h-[680px] max-h-[85vh] flex flex-col overflow-hidden z-[9998] animate-scale-in"
             style={{
-                backgroundColor: 'var(--c4l-bg-main)', // Fond très sombre
+                backgroundColor: 'var(--c4l-bg-main)',
                 borderRadius: 'var(--c4l-radius-lg)',
-                boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255,Rg255,255,0.1)',
+                boxShadow: 'var(--c4l-shadow-float)',
                 border: '1px solid var(--c4l-border)',
                 fontFamily: 'var(--c4l-font)',
+                transition: 'background-color 0.3s ease, border-color 0.3s ease',
             }}
         >
             {/* Header Gradient */}
             <div
-                className="px-6 py-5 flex items-center justify-between relative z-10 shrink-0"
+                className="px-6 py-4 flex items-center justify-between relative z-10 shrink-0 select-none shadow-sm"
                 style={{
-                    background: 'var(--c4l-primary-gradient)', // Gradient violet/bleu
+                    background: 'var(--c4l-primary-gradient)',
                 }}
             >
                 <div className="flex items-center gap-3">
                     {/* Avatar */}
                     <div className="relative">
-                        <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/20 shadow-sm">
+                        <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/30 shadow-sm">
                             {logoUrl ? (
                                 <img src={logoUrl} alt={botName} className="w-full h-full object-cover" />
                             ) : (
@@ -78,30 +86,39 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                             )}
                         </div>
                         {/* Status dot */}
-                        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#1e1b4b] ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
+                        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-indigo-900 ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
                     </div>
 
                     {/* Info */}
                     <div>
-                        <h3 className="text-white font-bold text-[15px] leading-tight">{botName}</h3>
-                        <p className="text-white/80 text-xs font-medium mt-0.5">
-                            {isConnected ? 'En ligne • Répond instantanément' : 'Hors ligne'}
+                        <h3 className="text-white font-bold text-[16px] leading-tight tracking-tight">{botName}</h3>
+                        <p className="text-white/80 text-[11px] font-medium mt-0.5 uppercase tracking-wider opacity-90">
+                            {isConnected ? 'En ligne' : 'Hors ligne'}
                         </p>
                     </div>
                 </div>
 
                 {/* Actions */}
                 <div className="flex items-center gap-1">
+                    {/* Theme Toggle (Petit Plus) */}
+                    <button
+                        onClick={toggleTheme}
+                        className="p-1.5 text-white/60 hover:text-white hover:bg-white/10 rounded-lg transition-colors mr-1"
+                        title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}
+                    >
+                        {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+                    </button>
+
                     <button
                         onClick={onClose}
-                        className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                        className="p-1.5 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                         title="Réduire"
                     >
                         <Minus size={20} />
                     </button>
                     <button
                         onClick={handleEndClick}
-                        className="p-2 text-white/70 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors"
+                        className="p-1.5 text-white/70 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors"
                         title="Fermer"
                     >
                         <X size={20} />
@@ -119,8 +136,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 />
             )}
 
-            {/* Messages Area : Fond sombre */}
-            <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: 'var(--c4l-bg-main)' }}>
+            {/* Messages Area */}
+            <div className="flex-1 overflow-hidden relative flex flex-col" style={{ backgroundColor: 'var(--c4l-bg-main)' }}>
                 <MessageList
                     messages={messages}
                     botName={botName}
@@ -131,25 +148,19 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
                 {/* Typing Indicator Overlay */}
                 {isTyping && (
-                    <div className="absolute bottom-4 left-4 z-20">
+                    <div className="absolute bottom-2 left-5 z-20">
                         <TypingIndicator botName={botName} />
                     </div>
                 )}
             </div>
 
-            {/* Input Area : Fond sombre + border-top */}
-            <div className="shrink-0" style={{ backgroundColor: 'var(--c4l-bg-main)' }}>
+            {/* Input Area */}
+            <div className="shrink-0 z-30">
                 <InputBox
                     onSendMessage={onSendMessage}
                     disabled={!isConnected}
                     primaryColor={primaryColor}
                 />
-                {/* Footer Branding */}
-                <div className="text-center pb-3 pt-1">
-                    <a href="#" className="text-[10px] text-gray-500 hover:text-gray-400 transition-colors font-medium flex items-center justify-center gap-1">
-                        Powered by <span className="font-bold text-white/90">Chat4Lead</span>
-                    </a>
-                </div>
             </div>
         </div>
     );
