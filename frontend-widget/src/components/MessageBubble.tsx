@@ -1,0 +1,50 @@
+import React from 'react';
+import type { Message } from '../types';
+
+interface MessageBubbleProps {
+    message: Message;
+    botName: string;
+}
+
+export const MessageBubble: React.FC<MessageBubbleProps> = ({
+    message,
+    botName,
+}) => {
+    const isUser = message.role === 'user';
+
+    return (
+        <div
+            className={`flex ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`}
+        >
+            <div
+                className={`max-w-[80%] rounded-2xl px-4 py-3 ${isUser
+                        ? 'bg-indigo-600 text-white rounded-br-sm'
+                        : 'bg-white text-gray-900 rounded-bl-sm shadow-sm'
+                    }`}
+            >
+                {/* Bot name pour messages assistant */}
+                {!isUser && (
+                    <div className="text-xs text-gray-500 font-medium mb-1">
+                        {botName}
+                    </div>
+                )}
+
+                {/* Content */}
+                <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                    {message.content}
+                </div>
+
+                {/* Timestamp */}
+                <div
+                    className={`text-xs mt-1 ${isUser ? 'text-indigo-200' : 'text-gray-400'
+                        }`}
+                >
+                    {new Date(message.timestamp).toLocaleTimeString('fr-FR', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+};
