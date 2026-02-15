@@ -51,6 +51,7 @@ export interface WidgetConfig {
     primaryColor?: string;
     position?: 'bottom-right' | 'bottom-left';
     welcomeMessage?: string;
+    autoOpen?: boolean;
 }
 
 /**

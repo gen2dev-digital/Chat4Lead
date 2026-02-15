@@ -68,7 +68,11 @@ window.Chat4Lead = {
 //  AUTO-INIT depuis data attributes du <script>
 // ──────────────────────────────────────────────
 
-const script = document.currentScript as HTMLScriptElement;
+// Pour les modules ES (Vite dev), document.currentScript est null
+// On cherche le script par ses data attributes ou src
+const script = (document.currentScript as HTMLScriptElement) ||
+  document.querySelector('script[data-key]');
+
 if (script) {
   const apiKey = script.getAttribute('data-key');
   if (apiKey) {
@@ -80,6 +84,7 @@ if (script) {
       position:
         (script.getAttribute('data-position') as WidgetConfig['position']) ||
         'bottom-right',
+      autoOpen: script.getAttribute('data-auto-open') === 'true',
     };
 
     // Init après DOM ready

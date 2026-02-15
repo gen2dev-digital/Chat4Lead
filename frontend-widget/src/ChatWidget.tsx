@@ -18,18 +18,17 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
         setConfig(config);
     }, [config, setConfig]);
 
-    // Auto-open après 5s si jamais ouvert (optionnel)
+    // Auto-open si configuré
     useEffect(() => {
-        const hasOpenedBefore = localStorage.getItem('chat4lead-opened');
-        if (!hasOpenedBefore && !isOpen) {
+        // Si autoOpen est true dans la config, on ouvre après un petit délai
+        if (config.autoOpen && !isOpen) {
             const timer = setTimeout(() => {
                 setIsOpen(true);
-                localStorage.setItem('chat4lead-opened', 'true');
-            }, 5000);
+            }, 1000); // 1 seconde de délai pour l'effet "arrivée sur le site"
 
             return () => clearTimeout(timer);
         }
-    }, [isOpen, setIsOpen]);
+    }, [config.autoOpen, isOpen, setIsOpen]);
 
     const handleToggle = () => {
         setIsOpen(!isOpen);
