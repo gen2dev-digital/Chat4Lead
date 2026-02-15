@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Minus, Trash2 } from 'lucide-react';
+import { Minus, Trash2 } from 'lucide-react';
 import { MessageList } from './MessageList';
 import { InputBox } from './InputBox';
 import { TypingIndicator } from './TypingIndicator';
