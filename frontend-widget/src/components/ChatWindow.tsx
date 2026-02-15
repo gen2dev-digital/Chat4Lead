@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Minus, Trash2 } from 'lucide-react';
+import { Minus, X } from 'lucide-react';
 import { MessageList } from './MessageList';
 import { InputBox } from './InputBox';
 import { TypingIndicator } from './TypingIndicator';
@@ -12,7 +12,7 @@ interface ChatWindowProps {
     isTyping: boolean;
     isConnected: boolean;
     onClose: () => void;
-    onEndChat?: (data?: { name: string; email: string; phone: string }) => void; // Callback de fin
+    onEndChat?: (data?: { name: string; email: string; phone: string }) => void;
     onSendMessage: (message: string) => void;
     primaryColor?: string;
     logoUrl?: string;
@@ -36,115 +36,121 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     };
 
     const handleModalSubmit = (data: { name: string; email: string; phone: string }) => {
-        // Envoi des données (logique metier via prop)
-        if (onEndChat) {
-            onEndChat(data);
-        }
+        if (onEndChat) onEndChat(data);
         setShowEndModal(false);
-        onClose(); // Ferme la fenetre
+        onClose();
     };
 
     const handleSkip = () => {
-        // "Non merci" -> On veut reset aussi
-        if (onEndChat) {
-            onEndChat(); // Reset sans data
-        }
+        if (onEndChat) onEndChat();
         setShowEndModal(false);
         onClose();
     };
 
     return (
         <div
-            className="fixed bottom-24 right-6 w-[400px] h-[600px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-[9998] animate-scale-in border border-gray-100/50"
+            className="fixed bottom-24 right-6 w-[380px] h-[650px] max-h-[85vh] flex flex-col overflow-hidden z-[9998] animate-scale-in"
+            style={{
+                backgroundColor: 'var(--c4l-bg-main)', // Fond très sombre
+                borderRadius: 'var(--c4l-radius-lg)',
+                boxShadow: '0 20px 50px -12px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255,Rg255,255,0.1)',
+                border: '1px solid var(--c4l-border)',
+                fontFamily: 'var(--c4l-font)',
+            }}
         >
-            {/* Header avec gradient */}
+            {/* Header Gradient */}
             <div
-                className="px-5 py-3.5 flex items-center justify-between shadow-sm relative z-10"
+                className="px-6 py-5 flex items-center justify-between relative z-10 shrink-0"
                 style={{
-                    background: `linear-gradient(135deg, ${primaryColor} 0%, ${primaryColor}dd 100%)`,
+                    background: 'var(--c4l-primary-gradient)', // Gradient violet/bleu
                 }}
             >
                 <div className="flex items-center gap-3">
-                    {/* Avatar / Logo entreprise */}
-                    <div className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden border border-white/20">
-                        {logoUrl ? (
-                            <img
-                                src={logoUrl}
-                                alt={botName}
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <span className="text-white font-semibold text-sm">
-                                {botName.charAt(0).toUpperCase()}
-                            </span>
-                        )}
+                    {/* Avatar */}
+                    <div className="relative">
+                        <div className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center overflow-hidden border border-white/20 shadow-sm">
+                            {logoUrl ? (
+                                <img src={logoUrl} alt={botName} className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-white font-bold text-sm">
+                                    {botName.charAt(0).toUpperCase()}
+                                </span>
+                            )}
+                        </div>
+                        {/* Status dot */}
+                        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#1e1b4b] ${isConnected ? 'bg-green-400' : 'bg-red-400'}`} />
                     </div>
 
-                    {/* Bot info */}
+                    {/* Info */}
                     <div>
-                        <h3 className="text-white font-bold text-sm tracking-wide">{botName}</h3>
-                        <div className="flex items-center gap-1.5 opacity-90">
-                            <div
-                                className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.6)]' : 'bg-red-400'
-                                    }`}
-                            />
-                            <span className="text-white/80 text-[10px] uppercase font-medium tracking-wider">
-                                {isConnected ? 'En ligne' : 'Hors ligne'}
-                            </span>
-                        </div>
+                        <h3 className="text-white font-bold text-[15px] leading-tight">{botName}</h3>
+                        <p className="text-white/80 text-xs font-medium mt-0.5">
+                            {isConnected ? 'En ligne • Répond instantanément' : 'Hors ligne'}
+                        </p>
                     </div>
                 </div>
 
-                {/* Actions: Minimize & End Chat */}
+                {/* Actions */}
                 <div className="flex items-center gap-1">
                     <button
                         onClick={onClose}
-                        className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all"
-                        aria-label="Réduire"
-                        title="Réduire la fenêtre"
+                        className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                        title="Réduire"
                     >
-                        <Minus className="w-5 h-5" />
+                        <Minus size={20} />
                     </button>
-
                     <button
                         onClick={handleEndClick}
-                        className="p-1.5 rounded-lg text-white/70 hover:text-red-200 hover:bg-red-500/20 transition-all"
-                        aria-label="Terminer la conversation"
-                        title="Terminer la conversation"
+                        className="p-2 text-white/70 hover:text-red-200 hover:bg-white/10 rounded-lg transition-colors"
+                        title="Fermer"
                     >
-                        <Trash2 className="w-4 h-4" />
+                        <X size={20} />
                     </button>
                 </div>
             </div>
 
-            {/* Modal de fin (Overlay) */}
+            {/* Modal Overlay */}
             {showEndModal && (
                 <EndConversationModal
-                    onClose={() => setShowEndModal(false)} // Juste fermer la modale (X)
-                    onSkip={handleSkip} // Reset la conversation (Non merci)
-                    onSubmit={handleModalSubmit} // Envoie et Reset
+                    onClose={() => setShowEndModal(false)}
+                    onSkip={handleSkip}
+                    onSubmit={handleModalSubmit}
                     primaryColor={primaryColor}
                 />
             )}
 
-            {/* Messages area */}
-            <MessageList
-                messages={messages}
-                botName={botName}
-                logoUrl={logoUrl}
-                primaryColor={primaryColor}
-                onOptionSelect={onSendMessage}
-            />
+            {/* Messages Area : Fond sombre */}
+            <div className="flex-1 overflow-hidden relative" style={{ backgroundColor: 'var(--c4l-bg-main)' }}>
+                <MessageList
+                    messages={messages}
+                    botName={botName}
+                    logoUrl={logoUrl}
+                    primaryColor={primaryColor}
+                    onOptionSelect={onSendMessage}
+                />
 
-            {/* Typing indicator */}
-            {isTyping && <TypingIndicator botName={botName} />}
+                {/* Typing Indicator Overlay */}
+                {isTyping && (
+                    <div className="absolute bottom-4 left-4 z-20">
+                        <TypingIndicator botName={botName} />
+                    </div>
+                )}
+            </div>
 
-            {/* Input box */}
-            <InputBox
-                onSendMessage={onSendMessage}
-                disabled={!isConnected}
-                primaryColor={primaryColor}
-            />
+            {/* Input Area : Fond sombre + border-top */}
+            <div className="shrink-0" style={{ backgroundColor: 'var(--c4l-bg-main)' }}>
+                <InputBox
+                    onSendMessage={onSendMessage}
+                    disabled={!isConnected}
+                    primaryColor={primaryColor}
+                />
+                {/* Footer Branding */}
+                <div className="text-center pb-3 pt-1">
+                    <a href="#" className="text-[10px] text-gray-500 hover:text-gray-400 transition-colors font-medium flex items-center justify-center gap-1">
+                        Powered by <span className="font-bold text-white/90">Chat4Lead</span>
+                    </a>
+                </div>
+            </div>
         </div>
     );
 };

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
+import type { WidgetConfig } from '../types';
 
 interface ChatBubbleProps {
     isOpen: boolean;
     unreadCount: number;
     onClick: () => void;
-    position?: 'bottom-right' | 'bottom-left';
+    position?: WidgetConfig['position'];
     primaryColor?: string;
     logoUrl?: string;
 }
@@ -14,59 +15,70 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     isOpen,
     unreadCount,
     onClick,
-    position = 'bottom-right',
     primaryColor = '#6366f1',
     logoUrl,
 }) => {
-    const positionClasses = position === 'bottom-right' ? 'right-6' : 'left-6';
+    const [showTooltip, setShowTooltip] = useState(false);
+
+    // Show tooltip after 2s on first load
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (!isOpen) setShowTooltip(true);
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [isOpen]);
 
     return (
-        <button
-            onClick={onClick}
-            className={`fixed bottom-6 ${positionClasses} w-16 h-16 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-opacity-50 z-[9999]`}
-            style={{
-                backgroundColor: primaryColor,
-                boxShadow: `0 8px 32px ${primaryColor}40`,
-            }}
-            aria-label={isOpen ? 'Fermer le chat' : 'Ouvrir le chat'}
-        >
-            {/* Icon avec animation de rotation */}
-            <div
-                className={`transition-transform duration-300 ${isOpen ? 'rotate-90' : 'rotate-0'
-                    }`}
+        <div className="fixed bottom-6 right-6 z-[9999] flex items-center gap-4 flex-row-reverse animate-scale-in">
+            {/* Main Button */}
+            <button
+                onClick={onClick}
+                className="group relative w-14 h-14 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgba(99,102,241,0.4)] transition-all duration-300 hover:scale-110 active:scale-95"
+                style={{
+                    background: 'var(--c4l-primary-gradient)', // Gradient violet
+                    border: '1px solid rgba(255,255,255,0.1)',
+                }}
+                aria-label={isOpen ? 'Fermer le chat' : 'Ouvrir le chat'}
             >
-                {isOpen ? (
-                    <X className="w-7 h-7 text-white" />
-                ) : logoUrl ? (
-                    <img
-                        src={logoUrl}
-                        alt="Chat"
-                        className="w-9 h-9 rounded-full object-cover border-2 border-white/30"
-                    />
-                ) : (
-                    <MessageCircle className="w-7 h-7 text-white" />
-                )}
-            </div>
+                {/* Icon */}
+                <div className="relative z-10 text-white transition-transform duration-300 group-hover:rotate-12">
+                    {isOpen ? <X size={26} /> : <MessageCircle size={26} fill="currentColor" />}
+                </div>
 
-            {/* Badge unread count */}
-            {!isOpen && unreadCount > 0 && (
+                {/* Pulse Effect */}
+                {!isOpen && (
+                    <span className="absolute inset-0 rounded-full animate-ping opacity-20 bg-white"></span>
+                )}
+
+                {/* Unread Badge */}
+                {!isOpen && unreadCount > 0 && (
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-[#0b0e14] shadow-sm animate-bounce">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                    </div>
+                )}
+            </button>
+
+            {/* Tooltip / Call to Action */}
+            {!isOpen && showTooltip && (
                 <div
-                    className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce"
-                    style={{
-                        boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
-                    }}
+                    className="hidden md:flex items-center gap-2 bg-[#1f2937] text-white px-4 py-2.5 rounded-full shadow-xl border border-white/5 animate-fade-in cursor-pointer hover:bg-[#374151] transition-colors"
+                    onClick={onClick}
                 >
-                    {unreadCount > 9 ? '9+' : unreadCount}
+                    <span className="text-sm font-medium whitespace-nowrap">Need help? Ask LeadBot!</span>
+                    <span className="text-lg animate-wave">👋</span>
+
+                    {/* Close Tooltip Button */}
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowTooltip(false);
+                        }}
+                        className="ml-1 text-gray-400 hover:text-white"
+                    >
+                        <X size={12} />
+                    </button>
                 </div>
             )}
-
-            {/* Pulse animation quand fermé */}
-            {!isOpen && (
-                <div
-                    className="absolute inset-0 rounded-full animate-ping opacity-20"
-                    style={{ backgroundColor: primaryColor }}
-                />
-            )}
-        </button>
+        </div>
     );
 };

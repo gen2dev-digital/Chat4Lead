@@ -5,34 +5,36 @@
    =================================================== */
 
 :root {
-  /* Brand Colors */
+  /* Brand Colors - Premium Violet/Blue Gradient */
   --c4l-primary: #6366f1;
-  --c4l-primary-dark: #4f46e5;
-  --c4l-primary-light: #818cf8;
-  --c4l-primary-glow: rgba(99, 102, 241, 0.35);
+  --c4l-primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 
-  /* Surface Colors */
-  --c4l-bg-dark: #0f1117;
-  --c4l-bg-card: #1a1d2e;
-  --c4l-bg-input: #252840;
-  --c4l-bg-message-user: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  --c4l-bg-message-bot: #1e2235;
-  --c4l-bg-header: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #7c3aed 100%);
+  /* Dark Theme Palette */
+  --c4l-bg-main: #0b0e14;
+  /* Fond très sombre (presque noir) */
+  --c4l-bg-card: #151925;
+  /* Fond des éléments (header, bulles bot) */
+  --c4l-bg-input: #1f2433;
+  /* Fond de l'input */
+  --c4l-border: #2a2f45;
+  /* Bordures subtiles */
 
   /* Text Colors */
-  --c4l-text-primary: #f1f5f9;
-  --c4l-text-secondary: #94a3b8;
-  --c4l-text-muted: #64748b;
-  --c4l-text-on-primary: #ffffff;
+  --c4l-text-primary: #ffffff;
+  --c4l-text-secondary: #9ca3af;
+  --c4l-text-tertiary: #6b7280;
 
-  /* Misc */
-  --c4l-border: rgba(148, 163, 184, 0.1);
-  --c4l-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.15);
-  --c4l-radius: 16px;
-  --c4l-radius-sm: 10px;
-  --c4l-radius-message: 18px;
-  --c4l-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --c4l-font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* Bubbles */
+  --c4l-bot-bubble: #1f2937;
+  /* Gris sombre pour le bot */
+  --c4l-user-bubble: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  /* Gradient pour le user */
+
+  /* Dimensions */
+  --c4l-radius-lg: 24px;
+  --c4l-radius-md: 16px;
+  --c4l-radius-sm: 12px;
+  --c4l-font: 'Inter', system-ui, sans-serif;
 }
 
 *,

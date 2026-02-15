@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { MessageBubble } from './MessageBubble';
 import type { Message } from '../types';
-import { Calculator, Lightbulb, Package } from 'lucide-react';
+import { Sparkles, MessageSquare, Package } from 'lucide-react';
 
 interface MessageListProps {
     messages: Message[];
@@ -20,131 +20,92 @@ export const MessageList: React.FC<MessageListProps> = ({
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll vers le bas quand nouveaux messages
+    // Auto-scroll on new message
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     const handleOptionClick = (text: string) => {
-        if (onOptionSelect) {
-            onOptionSelect(text);
-        }
+        if (onOptionSelect) onOptionSelect(text);
     };
 
     return (
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 bg-gray-50">
+        <div className="flex-1 overflow-y-auto px-5 py-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent">
+            {/* Welcome Screen */}
             {messages.length === 0 && (
-                <div className="animate-fade-in flex h-full flex-col items-center justify-center px-6 text-center">
-                    {/* Logo ou Initiale */}
+                <div className="flex flex-col items-center justify-center pt-8 animate-fade-in">
                     <div className="relative mb-6">
-                        {logoUrl ? (
-                            <div className="h-20 w-20 rounded-full bg-white p-1 shadow-lg">
-                                <img
-                                    src={logoUrl}
-                                    alt={botName}
-                                    className="h-full w-full rounded-full object-cover"
-                                />
-                            </div>
-                        ) : (
-                            <div
-                                className="flex h-20 w-20 items-center justify-center rounded-full shadow-lg"
-                                style={{ backgroundColor: primaryColor }}
-                            >
-                                <span className="text-3xl font-bold text-white">
-                                    {botName.charAt(0).toUpperCase()}
-                                </span>
-                            </div>
-                        )}
-                        <div className="absolute bottom-0 right-0 h-5 w-5 rounded-full border-4 border-gray-50 bg-green-400"></div>
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center border border-white/10 shadow-lg shadow-indigo-500/20">
+                            {logoUrl ? (
+                                <img src={logoUrl} alt={botName} className="w-16 h-16 rounded-full object-cover" />
+                            ) : (
+                                <span className="text-3xl font-bold text-white">Bot</span>
+                            )}
+                        </div>
+                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-4 border-[#0b0e14]"></div>
                     </div>
 
-                    <h4 className="mb-2 text-xl font-bold text-gray-900">Bienvenue !</h4>
-                    <p className="mb-8 text-sm leading-relaxed text-gray-500">
-                        Je suis {botName}, votre assistant virtuel intelligent.
+                    <h2 className="text-xl font-bold text-white mb-2 text-center">
+                        Bonjour ! 👋
+                    </h2>
+                    <p className="text-gray-400 text-sm text-center max-w-[260px] leading-relaxed mb-8">
+                        Je suis {botName}, votre assistant IA. Comment puis-je vous aider aujourd'hui ?
                     </p>
 
-                    {/* Capacités du bot interactives */}
-                    <div className="mb-6 w-full space-y-3">
+                    {/* Quick Options Chips */}
+                    <div className="w-full space-y-3">
                         <button
-                            onClick={() =>
-                                handleOptionClick(
-                                    'Je souhaite obtenir une estimation rapide pour mon déménagement.'
-                                )
-                            }
-                            className="group flex w-full cursor-pointer items-center gap-3 rounded-xl border border-gray-100 bg-white p-3 text-left shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-blue-100 hover:shadow-md"
+                            onClick={() => handleOptionClick('Je souhaite une estimation de prix.')}
+                            className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-[#151925] border border-white/5 hover:border-indigo-500/50 hover:bg-[#1a1f2e] transition-all group text-left"
                         >
-                            <div className="rounded-lg bg-blue-50 p-2 text-blue-600 transition-colors group-hover:bg-blue-100">
-                                <Calculator size={18} />
+                            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:text-indigo-300">
+                                <Sparkles size={16} />
                             </div>
                             <div>
-                                <span className="block text-xs font-bold text-gray-800 transition-colors group-hover:text-blue-700">
-                                    Estimation Rapide
-                                </span>
-                                <span className="text-[10px] text-gray-500">
-                                    Obtenez un devis en 2 minutes
-                                </span>
+                                <h4 className="text-sm font-semibold text-white group-hover:text-indigo-200">Voir les Tarifs</h4>
+                                <p className="text-[10px] text-gray-500">Estimation rapide en 2 min</p>
                             </div>
                         </button>
 
                         <button
-                            onClick={() =>
-                                handleOptionClick(
-                                    "J'ai besoin de conseils d'experts pour mon déménagement."
-                                )
-                            }
-                            className="group flex w-full cursor-pointer items-center gap-3 rounded-xl border border-gray-100 bg-white p-3 text-left shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-amber-100 hover:shadow-md"
+                            onClick={() => handleOptionClick('Je veux prendre rendez-vous pour une démo.')}
+                            className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-[#151925] border border-white/5 hover:border-purple-500/50 hover:bg-[#1a1f2e] transition-all group text-left"
                         >
-                            <div className="rounded-lg bg-amber-50 p-2 text-amber-600 transition-colors group-hover:bg-amber-100">
-                                <Lightbulb size={18} />
+                            <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:text-purple-300">
+                                <MessageSquare size={16} />
                             </div>
                             <div>
-                                <span className="block text-xs font-bold text-gray-800 transition-colors group-hover:text-amber-700">
-                                    Conseils d&apos;Experts
-                                </span>
-                                <span className="text-[10px] text-gray-500">
-                                    Nous répondons à vos questions
-                                </span>
+                                <h4 className="text-sm font-semibold text-white group-hover:text-purple-200">Réserver une Démo</h4>
+                                <p className="text-[10px] text-gray-500">Parlez à un expert humain</p>
                             </div>
                         </button>
 
                         <button
-                            onClick={() =>
-                                handleOptionClick(
-                                    "Je voudrais de l'aide pour calculer le volume de mon déménagement."
-                                )
-                            }
-                            className="group flex w-full cursor-pointer items-center gap-3 rounded-xl border border-gray-100 bg-white p-3 text-left shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-indigo-100 hover:shadow-md"
+                            onClick={() => handleOptionClick('Quelles sont vos fonctionnalités ?')}
+                            className="w-full flex items-center gap-3 p-3.5 rounded-xl bg-[#151925] border border-white/5 hover:border-blue-500/50 hover:bg-[#1a1f2e] transition-all group text-left"
                         >
-                            <div className="rounded-lg bg-indigo-50 p-2 text-indigo-600 transition-colors group-hover:bg-indigo-100">
-                                <Package size={18} />
+                            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:text-blue-300">
+                                <Package size={16} />
                             </div>
                             <div>
-                                <span className="block text-xs font-bold text-gray-800 transition-colors group-hover:text-indigo-700">
-                                    Calculateur Volume
-                                </span>
-                                <span className="text-[10px] text-gray-500">
-                                    Évaluez vos besoins précis
-                                </span>
+                                <h4 className="text-sm font-semibold text-white group-hover:text-blue-200">Fonctionnalités</h4>
+                                <p className="text-[10px] text-gray-500">Découvrir ce qu'on fait</p>
                             </div>
                         </button>
                     </div>
-
-                    <p className="text-xs text-gray-400">
-                        Cliquez sur une option ou écrivez ci-dessous 👇
-                    </p>
                 </div>
             )}
 
-            {messages.map((message) => (
+            {/* Messages */}
+            {messages.map((msg, index) => (
                 <MessageBubble
-                    key={message.id}
-                    message={message}
+                    key={msg.id || index}
+                    message={msg}
                     botName={botName}
                     logoUrl={logoUrl}
                 />
             ))}
 
-            {/* Scroll anchor */}
             <div ref={messagesEndRef} />
         </div>
     );
