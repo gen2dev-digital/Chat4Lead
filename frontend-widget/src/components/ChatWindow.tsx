@@ -79,7 +79,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
 
             {/* Messages area */}
-            <MessageList messages={messages} botName={botName} logoUrl={logoUrl} primaryColor={primaryColor} />
+            <MessageList
+                messages={messages}
+                botName={botName}
+                logoUrl={logoUrl}
+                primaryColor={primaryColor}
+                onOptionSelect={onSendMessage} // Connecter l'action de clic
+            />
 
             {/* Typing indicator */}
             {isTyping && <TypingIndicator botName={botName} />}
