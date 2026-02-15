@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": [
+            "ES2022"
+        ],
+        "strict": true,
+        "outDir": "./dist",
+        "rootDir": ".",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "resolveJsonModule": true,
+        "sourceMap": true,
+        "declaration": true,
+        "baseUrl": ".",
+        "paths": {
+            "@prisma/client": [
+                "node_modules/@prisma/client"
+            ],
+            "@prisma/client/*": [
+                "node_modules/@prisma/client/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

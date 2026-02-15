@@ -1,0 +1,15 @@
+node_modules/
+.env
+dist/
+*.log
+.DS_Store
+.cursor/
+.agent/
+.vscode/
+temp/
+tmp/
+coverage/
+build/
+.next/
+out/
+tsconfig.tsbuildinfo

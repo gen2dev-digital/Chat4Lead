@@ -1,0 +1,51 @@
+=== CHAT4LEAD - TEST FLOW COMPLET ===
+
+Health: ok | DB: connected | Redis: connected
+
+Conversation ID: 3071b2f4-2e89-4065-ad0f-30f6632c4e51
+
+
+--- Message 1 ---
+>>> USER: Bonjour, je souhaite déménager
+<<< TOM (45979ms):
+Failed to process message
+
+--- Message 2 ---
+>>> USER: De Paris vers Versailles
+<<< TOM (47329ms):
+Failed to process message
+
+--- Message 3 ---
+>>> USER: Un appartement F3 de 70m²
+<<< TOM (11617ms):
+Bonjour ! Je me présente, je suis Tom de Déménagements Test Paris. Je suis là pour vous accompagner dans votre projet de déménagement et vous proposer la meilleure solution adaptée à vos besoins. 😊
+
+Vous déménagez de Paris à Versailles, c'est un beau projet ! Un F3 de 70m², c'est un volume intéressant. Pour mieux comprendre vos besoins, pouvez-vous me dire à quel étage se trouve votre appartement actuel à Paris et si vous avez ascenseur ? 🤔
+
+--- Message 4 ---
+>>> USER: Au 3ème étage sans ascenseur
+<<< TOM (1471ms):
+C'est noté ! Vous êtes au 3ème étage sans ascenseur à Paris, et vous allez déménager à Versailles. Cela signifie que nous allons devoir prendre en compte les coûts et les difficultés liés au portage des meubles et des cartons. 
+
+Maintenant, pour mieux estimer le volume de vos biens, pouvez-vous me dire si vous avez des pièces particulières, comme une cave ou un garage, qui contiennent des objets à déménager ? 📦
+
+--- Message 5 ---
+>>> USER: Je pensais à la formule Standard
+<<< TOM (1368ms):
+La formule Standard est une excellente choix ! Elle inclut le chargement, le transport, le déchargement, ainsi que l'emballage des objets fragiles et le démontage/remontage du mobilier. Cela vous permettra de vous décharger d'une partie du travail et de vous concentrer sur d'autres aspects de votre déménagement.
+
+Étant donné que vous avez un F3 de 70m² et que vous êtes au 3ème étage sans ascenseur, je dirais que le volume de vos biens est probablement autour de 35-40m³. Mais pour être plus précis, je vous propose de passer en revue vos pièces ensemble pour calculer précisément le volume. 
+
+Pouvez-vous me dire combien de chambres et de salons vous avez dans votre appartement, ainsi que si vous avez des meubles particulièrement volumineux, comme un canapé ou un lit king-size ? 🛋️
+
+--- Message 6 ---
+>>> USER: Oui bien sûr, je suis Sophie Martin, mon numéro est le 06 12 34 56 78
+<<< TOM (8267ms):
+Merci beaucoup, Sophie ! Je note votre numéro de téléphone, 06 12 34 56 78. Je vais vous appeler demain pour confirmer les détails de votre déménagement.
+
+Pour revenir à votre projet, vous avez un F3 de 70m² avec 2 chambres et un salon, c'est ça ? Et pouvez-vous me dire si vous avez une cuisine équipée et des meubles de jardin à déménager ? 
+
+Et juste pour confirmer, vous avez choisi la formule Standard, qui inclut l'emballage des objets fragiles et le démontage/remontage du mobilier. C'est bien cela ? 📝
+
+
+=== TEST TERMINE ===

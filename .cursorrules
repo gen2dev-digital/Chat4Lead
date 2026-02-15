@@ -1,0 +1,20 @@
+project_name: Chat4Lead MVP
+stack:
+  - Node.js 20 LTS
+  - TypeScript 5.0+
+  - React 18
+  - PostgreSQL 15
+  - Redis 7
+  - Prisma ORM
+  
+coding_style:
+  - Use TypeScript strict mode
+  - Prefer functional components (React)
+  - Use async/await over promises
+  - Add JSDoc comments for complex functions
+  
+preferences:
+  - Create modular, reusable code
+  - Prioritize type safety
+  - Write self-documenting code
+  - Add error handling everywhere

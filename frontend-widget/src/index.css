@@ -1,0 +1,55 @@
+/* ===================================================
+   CHAT4LEAD WIDGET — Design System & Global Styles
+   =================================================== */
+
+:root {
+  /* Brand Colors */
+  --c4l-primary: #6366f1;
+  --c4l-primary-dark: #4f46e5;
+  --c4l-primary-light: #818cf8;
+  --c4l-primary-glow: rgba(99, 102, 241, 0.35);
+
+  /* Surface Colors */
+  --c4l-bg-dark: #0f1117;
+  --c4l-bg-card: #1a1d2e;
+  --c4l-bg-input: #252840;
+  --c4l-bg-message-user: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --c4l-bg-message-bot: #1e2235;
+  --c4l-bg-header: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #7c3aed 100%);
+
+  /* Text Colors */
+  --c4l-text-primary: #f1f5f9;
+  --c4l-text-secondary: #94a3b8;
+  --c4l-text-muted: #64748b;
+  --c4l-text-on-primary: #ffffff;
+
+  /* Misc */
+  --c4l-border: rgba(148, 163, 184, 0.1);
+  --c4l-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(99, 102, 241, 0.15);
+  --c4l-radius: 16px;
+  --c4l-radius-sm: 10px;
+  --c4l-radius-message: 18px;
+  --c4l-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --c4l-font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--c4l-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Demo page background */
+#root {
+  min-height: 100vh;
+  background: linear-gradient(145deg, #0c0e16 0%, #131627 50%, #0f1117 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
