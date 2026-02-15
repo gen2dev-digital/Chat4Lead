@@ -187,5 +187,6 @@ export const useChat = () => {
         isTyping,
         isConnected: connection.isConnected,
         sendMessage,
+        reset: useChatStore((state) => state.reset),
     };
 };

@@ -11,7 +11,7 @@ interface ChatWidgetProps {
 
 export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
     const { setConfig, isOpen, setIsOpen, unreadCount } = useChatStore();
-    const { messages, isTyping, isConnected, sendMessage } = useChat();
+    const { messages, isTyping, isConnected, sendMessage, reset } = useChat();
 
     // Initialiser la config
     useEffect(() => {
@@ -38,6 +38,23 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
         setIsOpen(false);
     };
 
+    const handleEndChat = async (data?: { name: string; email: string; phone: string }) => {
+        if (data) {
+            // Envoyer les infos finales comme un message système caché ou normal
+            // Pour l'instant on l'envoie comme un message utilisateur pour que le bot le traite
+            // Idéalement, on aurait un endpoint dédié /api/leads/update
+            const infoMessage = `[INFO DE CONTACT] Nom: ${data.name}, Email: ${data.email}, Tel: ${data.phone}`;
+            await sendMessage(infoMessage);
+        }
+
+        // Fermer et reset après un court délai pour laisser le message partir
+        setTimeout(() => {
+            setIsOpen(false);
+            reset(); // Vide le store et le localStorage
+            localStorage.removeItem('chat4lead-opened'); // Permet de ré-ouvrir auto si refresh
+        }, 1000);
+    };
+
     const botName = config.botName || 'Assistant';
 
     return (
@@ -50,7 +67,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
                     onClick={handleToggle}
                     position={config.position}
                     primaryColor={config.primaryColor}
-                    logoUrl={config.logoUrl} // Passer le logo
+                    logoUrl={config.logoUrl}
                 />
             )}
 
@@ -64,7 +81,8 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
                     onClose={handleClose}
                     onSendMessage={sendMessage}
                     primaryColor={config.primaryColor}
-                    logoUrl={config.logoUrl} // Passer le logo
+                    logoUrl={config.logoUrl}
+                    onEndChat={handleEndChat}
                 />
             )}
         </>

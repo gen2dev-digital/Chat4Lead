@@ -2,210 +2,136 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Message, LeadData, WidgetConfig, ConnectionStatus } from '../types';
 
-// ──────────────────────────────────────────────
-//  TYPES DU STORE
-// ──────────────────────────────────────────────
-
 interface ChatState {
-    // ── Configuration ──
+    // Configuration
     config: WidgetConfig | null;
-
-    // ── État conversation ──
-    conversationId: string | null;
-    messages: Message[];
-    leadData: LeadData | null;
-
-    // ── État UI ──
-    isOpen: boolean;
-    isTyping: boolean;
-    unreadCount: number;
-
-    // ── État connexion WebSocket ──
-    connection: ConnectionStatus;
-
-    // ── Actions ──
     setConfig: (config: WidgetConfig) => void;
+
+    // État de la conversation
+    conversationId: string | null;
     setConversationId: (id: string) => void;
+
+    messages: Message[];
     addMessage: (message: Message) => void;
     addMessages: (messages: Message[]) => void;
-    setLeadData: (data: LeadData) => void;
+
+    leadData: Partial<LeadData>;
+    setLeadData: (data: Partial<LeadData>) => void;
+
+    // État UI
+    isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+
+    isTyping: boolean;
     setIsTyping: (isTyping: boolean) => void;
+
+    unreadCount: number;
+
+    // État Connexion
+    connection: ConnectionStatus;
     setConnection: (status: Partial<ConnectionStatus>) => void;
-    markMessagesAsRead: () => void;
-    clearChat: () => void;
+
+    // Reset
     reset: () => void;
 }
 
-// ──────────────────────────────────────────────
-//  ÉTAT INITIAL
-// ──────────────────────────────────────────────
-
 const initialState = {
-    config: null as WidgetConfig | null,
-    conversationId: null as string | null,
-    messages: [] as Message[],
-    leadData: null as LeadData | null,
+    // Ne pas reset la config pour garder la clé API etc
+    conversationId: null,
+    messages: [],
+    leadData: {},
     isOpen: false,
     isTyping: false,
     unreadCount: 0,
     connection: {
         isConnected: false,
         isConnecting: false,
-        error: undefined,
-    } as ConnectionStatus,
+    },
 };
-
-// ──────────────────────────────────────────────
-//  STORE ZUSTAND — État global du widget
-// ──────────────────────────────────────────────
-//
-// Utilise le middleware `persist` pour sauvegarder
-// conversationId, messages et leadData dans le localStorage.
-// Ainsi, si l'utilisateur recharge la page, il retrouve
-// sa conversation en cours.
-//
 
 export const useChatStore = create<ChatState>()(
     persist(
         (set) => ({
+            config: null,
             ...initialState,
 
-            // ────────────────────────────────
-            //  CONFIGURATION
-            // ────────────────────────────────
+            setConfig: (config) => set({ config }),
 
-            setConfig: (config) => {
-                set({ config });
-            },
-
-            // ────────────────────────────────
-            //  CONVERSATION
-            // ────────────────────────────────
-
-            setConversationId: (id) => {
-                set({ conversationId: id });
-            },
+            setConversationId: (id) => set({ conversationId: id }),
 
             /**
-             * Ajoute un message à la conversation.
+             * Ajoute un message à la liste.
              * Si le widget est fermé et que c'est un message assistant,
              * incrémente le compteur de messages non lus.
              */
-            addMessage: (message) => {
+            addMessage: (message) =>
                 set((state) => {
                     const newMessages = [...state.messages, message];
 
-                    // Incrémenter unread count si widget fermé et message assistant
-                    const newUnreadCount =
-                        !state.isOpen && message.role === 'assistant'
-                            ? state.unreadCount + 1
-                            : state.unreadCount;
+                    let newUnreadCount = state.unreadCount;
+                    if (!state.isOpen && message.role === 'assistant') {
+                        newUnreadCount += 1;
+                    }
 
                     return {
                         messages: newMessages,
                         unreadCount: newUnreadCount,
                     };
-                });
-            },
+                }),
 
             /**
              * Ajoute plusieurs messages d'un coup (ex: chargement historique).
              */
-            addMessages: (messages) => {
+            addMessages: (messages) =>
                 set((state) => ({
                     messages: [...state.messages, ...messages],
-                }));
-            },
-
-            // ────────────────────────────────
-            //  LEAD DATA
-            // ────────────────────────────────
+                })),
 
             /**
              * Met à jour les données du lead (merge avec existant).
              */
-            setLeadData: (data) => {
+            setLeadData: (data) =>
                 set((state) => ({
                     leadData: { ...state.leadData, ...data },
-                }));
-            },
+                })),
 
             // ────────────────────────────────
             //  ÉTAT UI
             // ────────────────────────────────
 
-            /**
-             * Ouvre/ferme le widget.
-             * Remet le compteur non-lus à 0 à l'ouverture.
-             */
-            setIsOpen: (isOpen) => {
-                set({
+            setIsOpen: (isOpen) =>
+                set((state) => ({
                     isOpen,
-                    // Reset unread count quand on ouvre le widget
-                    ...(isOpen ? { unreadCount: 0 } : {}),
-                });
-            },
+                    unreadCount: isOpen ? 0 : state.unreadCount, // Reset count on open
+                })),
 
-            /**
-             * Indicateur "le bot est en train d'écrire".
-             */
-            setIsTyping: (isTyping) => {
-                set({ isTyping });
-            },
+            setIsTyping: (isTyping) => set({ isTyping }),
 
             // ────────────────────────────────
-            //  CONNEXION WEBSOCKET
+            //  CONNEXION
             // ────────────────────────────────
 
-            /**
-             * Met à jour l'état de la connexion WebSocket (merge partiel).
-             */
-            setConnection: (status) => {
+            setConnection: (status) =>
                 set((state) => ({
                     connection: { ...state.connection, ...status },
-                }));
-            },
+                })),
 
             // ────────────────────────────────
-            //  UTILITAIRES
+            //  RESET GLOBAL
             // ────────────────────────────────
-
-            markMessagesAsRead: () => {
-                set({ unreadCount: 0 });
-            },
-
-            /**
-             * Efface l'historique de la conversation
-             * sans toucher à la config ni à la connexion.
-             */
-            clearChat: () => {
-                set({
-                    messages: [],
-                    leadData: null,
-                    unreadCount: 0,
-                });
-            },
-
-            /**
-             * Reset complet du store (retour à l'état initial).
-             */
-            reset: () => {
-                set(initialState);
-            },
+            reset: () => set((state) => ({
+                ...initialState,
+                config: state.config, // Garder la config
+            })),
         }),
         {
             name: 'chat4lead-widget-storage',
-
-            /**
-             * Ne persiste QUE ces 3 champs dans le localStorage.
-             * Le reste (isOpen, isTyping, connection...) est éphémère
-             * et se réinitialise à chaque chargement de page.
-             */
             partialize: (state) => ({
+                // On persiste seulement ce qui est nécessaire pour reprendre la conv
                 conversationId: state.conversationId,
                 messages: state.messages,
                 leadData: state.leadData,
+                unreadCount: state.unreadCount,
             }),
         }
     )
