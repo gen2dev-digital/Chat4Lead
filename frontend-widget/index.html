@@ -1,17 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Chat4Lead - Widget de conversation intelligent pour la qualification de leads" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>Chat4Lead Widget</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat4Lead Widget</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- Point d'ancrage pour le widget -->
+  <div id="chat4lead-root"></div>
+
+  <!-- Script principal -->
+  <script type="module" src="/src/main.tsx"></script>
+
+  <!-- Simulation d'intégration (pour le dev) -->
+  <script>
+    // Simulation des data-attributes qui seraient sur le script tag en prod
+    window.onload = () => {
+      // On utilise une clé dummy ici, le vrai test se fera via test.html
+      // ou en modifiant cette config si nécessaire pour le dev local
+      const config = {
+        apiKey: "dev-test-key",
+        botName: "Tom (Dev)",
+        primaryColor: "#6366f1",
+        position: "bottom-right",
+        apiUrl: "http://localhost:3000"
+      };
+
+      // Si Chat4Lead est chargé, on l'init
+      if (window.Chat4Lead) {
+        window.Chat4Lead.init(config);
+      }
+    };
+  </script>
+</body>
+
 </html>
