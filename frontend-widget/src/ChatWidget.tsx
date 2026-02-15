@@ -50,6 +50,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
                     onClick={handleToggle}
                     position={config.position}
                     primaryColor={config.primaryColor}
+                    logoUrl={config.logoUrl} // Passer le logo
                 />
             )}
 
@@ -63,6 +64,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({ config }) => {
                     onClose={handleClose}
                     onSendMessage={sendMessage}
                     primaryColor={config.primaryColor}
+                    logoUrl={config.logoUrl} // Passer le logo
                 />
             )}
         </>

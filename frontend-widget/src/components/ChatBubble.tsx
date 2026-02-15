@@ -7,6 +7,7 @@ interface ChatBubbleProps {
     onClick: () => void;
     position?: 'bottom-right' | 'bottom-left';
     primaryColor?: string;
+    logoUrl?: string;
 }
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({
@@ -15,6 +16,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
     onClick,
     position = 'bottom-right',
     primaryColor = '#6366f1',
+    logoUrl,
 }) => {
     const positionClasses = position === 'bottom-right' ? 'right-6' : 'left-6';
 
@@ -35,6 +37,12 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({
             >
                 {isOpen ? (
                     <X className="w-7 h-7 text-white" />
+                ) : logoUrl ? (
+                    <img
+                        src={logoUrl}
+                        alt="Chat"
+                        className="w-9 h-9 rounded-full object-cover border-2 border-white/30"
+                    />
                 ) : (
                     <MessageCircle className="w-7 h-7 text-white" />
                 )}

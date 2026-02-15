@@ -13,6 +13,7 @@ interface ChatWindowProps {
     onClose: () => void;
     onSendMessage: (message: string) => void;
     primaryColor?: string;
+    logoUrl?: string;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -23,12 +24,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     onClose,
     onSendMessage,
     primaryColor = '#6366f1',
+    logoUrl,
 }) => {
     return (
         <div
             className="fixed bottom-24 right-6 w-[400px] h-[600px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden z-[9998] animate-scale-in"
         >
-            {/* Header */}
+            {/* Header avec gradient */}
             <div
                 className="px-6 py-4 flex items-center justify-between"
                 style={{
@@ -36,11 +38,19 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                 }}
             >
                 <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                        <span className="text-white font-semibold text-lg">
-                            {botName.charAt(0).toUpperCase()}
-                        </span>
+                    {/* Avatar / Logo entreprise */}
+                    <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+                        {logoUrl ? (
+                            <img
+                                src={logoUrl}
+                                alt={botName}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-white font-semibold text-lg">
+                                {botName.charAt(0).toUpperCase()}
+                            </span>
+                        )}
                     </div>
 
                     {/* Bot info */}
@@ -69,7 +79,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
 
             {/* Messages area */}
-            <MessageList messages={messages} botName={botName} />
+            <MessageList messages={messages} botName={botName} logoUrl={logoUrl} primaryColor={primaryColor} />
 
             {/* Typing indicator */}
             {isTyping && <TypingIndicator botName={botName} />}

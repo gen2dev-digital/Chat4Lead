@@ -52,6 +52,7 @@ export interface WidgetConfig {
     position?: 'bottom-right' | 'bottom-left';
     welcomeMessage?: string;
     autoOpen?: boolean;
+    logoUrl?: string;
 }
 
 /**

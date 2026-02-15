@@ -85,6 +85,7 @@ if (script) {
         (script.getAttribute('data-position') as WidgetConfig['position']) ||
         'bottom-right',
       autoOpen: script.getAttribute('data-auto-open') === 'true',
+      logoUrl: script.getAttribute('data-logo-url') || undefined, // Parse logo URL
     };
 
     // Init après DOM ready
