@@ -44,9 +44,12 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         onClose(); // Ferme la fenetre
     };
 
-    const handleForceClose = () => {
+    const handleSkip = () => {
+        // "Non merci" -> On veut reset aussi
+        if (onEndChat) {
+            onEndChat(); // Reset sans data
+        }
         setShowEndModal(false);
-        if (onEndChat) onEndChat(); // Juste close sans data
         onClose();
     };
 
@@ -117,8 +120,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
             {/* Modal de fin (Overlay) */}
             {showEndModal && (
                 <EndConversationModal
-                    onClose={() => setShowEndModal(false)}
-                    onSubmit={handleModalSubmit}
+                    onClose={() => setShowEndModal(false)} // Juste fermer la modale (X)
+                    onSkip={handleSkip} // Reset la conversation (Non merci)
+                    onSubmit={handleModalSubmit} // Envoie et Reset
                     primaryColor={primaryColor}
                 />
             )}
