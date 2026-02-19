@@ -1,15 +1,14 @@
 {
-    "version": 2,
-    "functions": {
-        "api/main.ts": {
-            "includeFiles": "node_modules/.prisma/client/**",
-            "maxDuration": 25
-        }
-    },
-    "rewrites": [
-        {
-            "source": "/api/(.*)",
-            "destination": "/api/main"
-        }
-    ]
+  "version": 2,
+  "buildCommand": "npm run build",
+  "functions": {
+    "api/main.ts": {
+      "includeFiles": "node_modules/.prisma/client/**",
+      "maxDuration": 25
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/main" },
+    { "source": "/", "destination": "/tests/index.html" }
+  ]
 }

@@ -11,5 +11,6 @@ tmp/
 coverage/
 build/
 .next/
+backend/public/
 out/
 tsconfig.tsbuildinfo
