@@ -867,7 +867,7 @@
             <td style="font-family:monospace;font-size:.78rem;color:var(--muted)">${s.sessionId}</td>
             <td style="color:var(--muted);font-size:.82rem">${new Date(s.createdAt).toLocaleString('fr-FR')}</td>
             <td>${s.feedback ? '<span style="color:var(--green)">✓ Soumis</span>' : (s.phase === 'phase1' ? '<span style="color:var(--muted)">Auto</span>' : '<span style="color:var(--muted)">En attente</span>')}</td>
-            <td>${s.reportPath ? `<a class="report-btn" href="${s.reportPath}" target="_blank">Voir →</a>` : '—'}</td>
+            <td>${s.reportFilename ? `<a class="report-btn" href="${API_BASE}/api/test-session/report/${s.sessionId}" target="_blank">Voir →</a>` : '—'}</td>
           </tr>
         `}).join('')}
       </tbody>

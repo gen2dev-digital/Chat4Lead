@@ -1227,7 +1227,7 @@
 
                 if (res.reportUrl) {
                     const link = document.getElementById('report-link');
-                    link.href = res.reportUrl;
+                    link.href = BACKEND_BASE + res.reportUrl;
                     link.style.display = 'inline-block';
                 }
             } catch (e) {

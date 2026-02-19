@@ -127,7 +127,7 @@ export class MessageHandler {
             // ── 8.  Recalculer le score et priorité ──────────────
             const newScore = this.calculateScore(currentLead);
             if (currentLead) {
-                await prisma.lead.update({
+                currentLead = await prisma.lead.update({
                     where: { id: currentLead.id },
                     data: {
                         score: newScore,

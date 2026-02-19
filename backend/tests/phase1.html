@@ -1300,16 +1300,34 @@
             }
 
             if (actions && actions.length > 0) {
-                const acts = document.createElement('div');
-                acts.className = 'bot-actions';
-                actions.forEach(act => {
-                    const btn = document.createElement('button');
-                    btn.className = 'bot-act-btn';
-                    btn.textContent = act;
-                    btn.onclick = () => sendMsgText(act);
-                    acts.appendChild(btn);
-                });
-                m.appendChild(acts);
+                const systemActions = ['email_notification_queued', 'conversation_qualified', 'crm_push_queued', 'satisfaction_request_sent', 'appointment_module_triggered'];
+                const userActions = actions.filter(a => !systemActions.includes(a));
+                const sysActions = actions.filter(a => systemActions.includes(a));
+
+                if (sysActions.length > 0) {
+                    const badges = document.createElement('div');
+                    badges.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;';
+                    sysActions.forEach(act => {
+                        const badge = document.createElement('span');
+                        badge.style.cssText = 'display:inline-block;font-size:.7rem;padding:2px 8px;border-radius:6px;background:rgba(108,99,255,.12);border:1px solid rgba(108,99,255,.2);color:var(--accent);';
+                        badge.textContent = ACTION_LABELS[act] || act;
+                        badges.appendChild(badge);
+                    });
+                    m.appendChild(badges);
+                }
+
+                if (userActions.length > 0) {
+                    const acts = document.createElement('div');
+                    acts.className = 'bot-actions';
+                    userActions.forEach(act => {
+                        const btn = document.createElement('button');
+                        btn.className = 'bot-act-btn';
+                        btn.textContent = act;
+                        btn.onclick = () => sendMsgText(act);
+                        acts.appendChild(btn);
+                    });
+                    m.appendChild(acts);
+                }
             }
 
             body.appendChild(m);
@@ -1389,17 +1407,19 @@
                 scoreEl.style.cursor = 'help';
             }
 
-            // Priority
+            // Priority & Lead data
             const lead = res.leadData;
-            if (lead?.priorite) {
-                state.lastPriority = lead.priorite;
-                const pEl = document.getElementById('live-priority');
-                pEl.textContent = lead.priorite;
-                pEl.className = 'priority-badge ' + lead.priorite;
-                const priorityTips = { CHAUD: 'Prioritaire — projet complet/urgent', TIEDE: 'Intéressant — quelques infos manquantes', MOYEN: 'À suivre — projet lointain', FROID: 'Peu qualifié — infos insuffisantes' };
-                pEl.title = priorityTips[lead.priorite] || '';
-                pEl.style.cursor = 'help';
+            if (lead) {
                 state.lastLead = lead;
+                if (lead.priorite) {
+                    state.lastPriority = lead.priorite;
+                    const pEl = document.getElementById('live-priority');
+                    pEl.textContent = lead.priorite;
+                    pEl.className = 'priority-badge ' + lead.priorite;
+                    const priorityTips = { CHAUD: 'Prioritaire — projet complet/urgent', TIEDE: 'Intéressant — quelques infos manquantes', MOYEN: 'À suivre — projet lointain', FROID: 'Peu qualifié — infos insuffisantes' };
+                    pEl.title = priorityTips[lead.priorite] || '';
+                    pEl.style.cursor = 'help';
+                }
             }
 
             // Entities
@@ -1457,7 +1477,7 @@
                 }).then(r => r.json());
 
                 if (res.reportUrl) {
-                    document.getElementById('r-conv-link').href = res.reportUrl;
+                    document.getElementById('r-conv-link').href = backendBase + res.reportUrl;
                     document.getElementById('r-conv-link').textContent = '🔗 Voir rapport complet';
                 }
             } catch (e) {
@@ -1575,7 +1595,7 @@
                 status.style.color = 'var(--success)';
 
                 if (res.reportUrl) {
-                    document.getElementById('r-conv-link').href = res.reportUrl;
+                    document.getElementById('r-conv-link').href = backendBase + res.reportUrl;
                 }
             } catch (e) {
                 console.error(e);

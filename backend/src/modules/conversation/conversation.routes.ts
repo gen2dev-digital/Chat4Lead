@@ -137,6 +137,7 @@ router.post(
             res.json({
                 reply: result.reply,
                 score: result.score,
+                leadData: result.leadData,
                 actions: result.actions,
                 metadata: result.metadata,
             });
