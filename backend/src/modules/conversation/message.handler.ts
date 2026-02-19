@@ -270,7 +270,8 @@ export class MessageHandler {
                 'bonjour', 'merci', 'parfait', 'projet', 'arrivée', 'départ',
             ]);
 
-            const cityWithPostalPattern = /([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)\s+(\d{5})|(\d{5})\s+([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)/gi;
+            // No 'i' flag: only match properly capitalized city names to avoid capturing full sentences
+            const cityWithPostalPattern = /([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)\s+(\d{5})|(\d{5})\s+([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)/g;
             let match;
             while ((match = cityWithPostalPattern.exec(combined)) !== null) {
                 const ville = match[1] || match[4];
@@ -835,6 +836,16 @@ export class MessageHandler {
         'appointment_module_triggered',
     ];
 
+    // Patterns lisibles que le LLM génère parfois par erreur
+    private static readonly SYSTEM_NOISE_PATTERNS = [
+        /email\s+de\s+notification\s+envoy[ée][^\n]*/gi,
+        /notification\s+email\s+(?:envoy[ée]|queue[ée])[^\n]*/gi,
+        /lead\s+qualifi[ée]\s+automatiquement[^\n]*/gi,
+        /fiche\s+envoy[ée]e?\s+au\s+crm[^\n]*/gi,
+        /conversation\s+qualifi[ée][^\n]*/gi,
+        /(?:✅|🚀|📧)\s*(?:email|lead|fiche|crm)[^\n]*/gi,
+    ];
+
     private sanitizeReply(text: string): string {
         let cleaned = text;
 
@@ -850,21 +861,26 @@ export class MessageHandler {
         // 4. Supprimer les # markdown en début de ligne
         cleaned = cleaned.replace(/^#{1,6}\s+/gm, '');
 
-        // 5. Supprimer les codes d'action techniques qui auraient fuité dans le texte
+        // 5. Supprimer les codes d'action techniques
         for (const code of MessageHandler.TECH_ACTION_CODES) {
             cleaned = cleaned.replace(new RegExp(code, 'gi'), '');
         }
 
-        // 6. Trim chaque ligne individuellement
+        // 6. Supprimer les messages système lisibles que le LLM génère par erreur
+        for (const pattern of MessageHandler.SYSTEM_NOISE_PATTERNS) {
+            cleaned = cleaned.replace(pattern, '');
+        }
+
+        // 7. Trim chaque ligne individuellement
         cleaned = cleaned
             .split('\n')
             .map(line => line.trim())
             .join('\n');
 
-        // 7. Réduire TOUS les sauts de ligne excessifs (même les lignes vides) à un seul retour à la ligne
+        // 8. Réduire TOUS les sauts de ligne excessifs à un seul retour à la ligne
         cleaned = cleaned.replace(/\n{2,}/g, '\n');
 
-        // 8. Trim global (pas de \n en début ou fin)
+        // 9. Trim global (pas de \n en début ou fin)
         cleaned = cleaned.trim();
 
         return cleaned;

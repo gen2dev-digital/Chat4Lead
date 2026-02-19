@@ -1,7 +1,6 @@
 {
   "name": "chat4lead-backend",
   "version": "1.0.0",
-  "type": "module",
   "description": "Backend for Chat4Lead lead qualification SaaS",
   "main": "dist/server.js",
   "scripts": {
