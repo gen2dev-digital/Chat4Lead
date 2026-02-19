@@ -436,15 +436,14 @@ export class MessageHandler {
             entities.creneauRappel = 'Pas de préférence';
         }
 
-        // ── Satisfaction ──
-        const satisfactionMatch = combined.match(/\b([123])\b/);
-        if (satisfactionMatch) {
-            entities.satisfactionScore = parseInt(satisfactionMatch[1], 10);
-            const mapping: Record<string, string> = { '1': 'Très utile et fluide', '2': 'Correct', '3': 'Pas assez clair' };
-            entities.satisfaction = mapping[satisfactionMatch[1]];
-        } else if (lowerCombined.length > 50 && (lowerCombined.includes('utile') || lowerCombined.includes('merci') || lowerCombined.includes('bien'))) {
-            // Commentaire libre si long et positif/neutre
-            entities.satisfaction = combined.trim();
+        // ── Satisfaction (extraite du message utilisateur uniquement) ──
+        const noteMatch = message.match(/\[NOTE:\s*(\d)\/5\]\s*(.*)/i);
+        if (noteMatch) {
+            entities.satisfactionScore = parseInt(noteMatch[1], 10);
+            const comment = noteMatch[2]?.trim();
+            entities.satisfaction = comment
+                ? `${noteMatch[1]}/5 — ${comment}`
+                : `${noteMatch[1]}/5`;
         }
 
         // ── Formule (Eco, Standard, Luxe) ──
@@ -828,6 +827,14 @@ export class MessageHandler {
      *  - Normalise les sauts de ligne (max 2 consécutifs)
      *  - Trim chaque ligne
      */
+    private static readonly TECH_ACTION_CODES = [
+        'email_notification_queued',
+        'conversation_qualified',
+        'crm_push_queued',
+        'satisfaction_request_sent',
+        'appointment_module_triggered',
+    ];
+
     private sanitizeReply(text: string): string {
         let cleaned = text;
 
@@ -843,16 +850,21 @@ export class MessageHandler {
         // 4. Supprimer les # markdown en début de ligne
         cleaned = cleaned.replace(/^#{1,6}\s+/gm, '');
 
-        // 5. Trim chaque ligne individuellement
+        // 5. Supprimer les codes d'action techniques qui auraient fuité dans le texte
+        for (const code of MessageHandler.TECH_ACTION_CODES) {
+            cleaned = cleaned.replace(new RegExp(code, 'gi'), '');
+        }
+
+        // 6. Trim chaque ligne individuellement
         cleaned = cleaned
             .split('\n')
             .map(line => line.trim())
             .join('\n');
 
-        // 6. Réduire TOUS les sauts de ligne excessifs (même les lignes vides) à un seul retour à la ligne
+        // 7. Réduire TOUS les sauts de ligne excessifs (même les lignes vides) à un seul retour à la ligne
         cleaned = cleaned.replace(/\n{2,}/g, '\n');
 
-        // 7. Trim global (pas de \n en début ou fin)
+        // 8. Trim global (pas de \n en début ou fin)
         cleaned = cleaned.trim();
 
         return cleaned;

@@ -63,13 +63,27 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     }}
                 >
                     {(() => {
-                        const techTags = ['email_notification_queued', 'conversation_qualified', 'crm_push_queued', 'satisfaction_request_sent', 'appointment_module_triggered'];
+                        const techTags = [
+                            'email_notification_queued', 'conversation_qualified',
+                            'crm_push_queued', 'satisfaction_request_sent',
+                            'appointment_module_triggered',
+                        ];
+                        const techLabels = [
+                            '📧 Email de notification envoyé',
+                            '✅ Lead qualifié automatiquement',
+                            '🚀 Envoyé au CRM',
+                            '⭐️ Avis demandé',
+                            '📅 RDV proposé',
+                            '📧 Email notifié',
+                            '✅ Qualifié',
+                        ];
                         let raw = message.content
                             .replace(/<br\s*\/?>/gi, '\n')
                             .replace(/<\/?[a-z][a-z0-9]*[^>]*>/gi, '')
                             .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1');
                         techTags.forEach(tag => { raw = raw.replace(new RegExp(tag, 'g'), ''); });
-                        raw = raw.trim();
+                        techLabels.forEach(label => { raw = raw.replace(new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), ''); });
+                        raw = raw.replace(/\n{2,}/g, '\n').trim();
 
                         return raw.split('\n').map((line, i, arr) => (
                             <React.Fragment key={i}>
