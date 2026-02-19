@@ -400,7 +400,7 @@ export class MessageHandler {
         } catch (e) { logger.error('❌ City extraction failed', e); }
 
         // ── Prénom / Nom (Logic Refactored) ──
-        const { prenom, nom } = this.extractName(userMessage);
+        const { prenom, nom } = this.extractName(message);
         if (prenom && !existingProjetData.prenom) {
             entities.prenom = prenom;
             logger.info('✅ Prénom extrait', { prenom });
