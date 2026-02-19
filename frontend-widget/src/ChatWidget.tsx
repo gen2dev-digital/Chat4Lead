@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { ChatBubble } from './components/ChatBubble';
-import { ChatWindow } from './components/ChatWindow';
-import { useChatStore } from './store/chat.store';
-import { useChat } from './hooks/useChat';
+import { ChatBubble } from './components/ChatBubble.tsx';
+import { ChatWindow } from './components/ChatWindow.tsx';
+import { useChatStore } from './store/chat.store.ts';
+import { useChat } from './hooks/useChat.ts';
 import type { WidgetConfig } from './types';
 
 interface ChatWidgetProps {

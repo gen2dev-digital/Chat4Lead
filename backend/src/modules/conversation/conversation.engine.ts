@@ -28,7 +28,7 @@ export class ConversationEngine {
                 throw new Error(`Conversation ${conversationId} non trouvée`);
             }
 
-            const configMetier = conversation.entreprise.configs.find(c => c.metier === conversation.metier);
+            const configMetier = conversation.entreprise.configs.find((c: any) => c.metier === conversation.metier);
             if (!configMetier) {
                 throw new Error(`Configuration métier non trouvée pour ${conversation.metier}`);
             }

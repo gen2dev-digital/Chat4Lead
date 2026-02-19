@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat4Lead — Validation Pro · Phase 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0e0f14;
+            --surface: #161820;
+            --surface2: #1d1f2a;
+            --border: #2a2d3d;
+            --accent: #ffb86c;
+            /* Gold/Orange for Pro */
+            --accent2: #ff6b6b;
+            --accent3: #63ffda;
+            --text: #e8eaf0;
+            --text-muted: #7a7d96;
+            --success: #4ade80;
+            --warning: #facc15;
+            --red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 10%, rgba(255, 184, 108, .12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(99, 255, 218, .08) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrap {
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(22, 24, 32, .8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: -.5px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .badge-pro {
+            margin-left: auto;
+            background: var(--accent);
+            color: #000;
+            font-size: .7rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
+        /* Hero */
+        .hero {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 60px 24px 40px;
+            text-align: center;
+        }
+
+        .hero-eyebrow {
+            font-family: 'Syne', sans-serif;
+            font-size: .75rem;
+            font-weight: 700;
+            letter-spacing: .15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            margin-bottom: 22px;
+        }
+
+        h1 em {
+            font-style: normal;
+            color: var(--accent);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 620px;
+            margin: 0 auto 40px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            transition: transform .2s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .info-val {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .info-label {
+            font-size: .75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Scenarios */
+        .scenario-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 720px;
+            margin: 0 auto 48px;
+            text-align: left;
+        }
+
+        .scenario-section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .scenario-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .sc-title {
+            font-size: .95rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .sc-desc {
+            font-size: .85rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent);
+            color: #000;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            padding: 18px 40px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 32px rgba(255, 184, 108, .4);
+        }
+
+        /* Chat */
+        #chat-section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        .chat-header-pro {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .chat-header-pro h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .sc-tag {
+            font-size: .75rem;
+            font-weight: 700;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 8px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+
+        .chat-layout {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+        }
+
+        @media (max-width: 800px) {
+            .chat-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .chat-window {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-hdr {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bot-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .bot-info {
+            flex: 1;
+        }
+
+        .bot-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: .95rem;
+            line-height: 1.2;
+        }
+
+        .bot-status {
+            font-size: .72rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .bot-status span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .4;
+            }
+        }
+
+        .timer {
+            font-family: 'Syne', sans-serif;
+            font-size: .8rem;
+            color: var(--text-muted);
+        }
+
+        .chat-body {
+            height: 420px;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: .92rem;
+            line-height: 1.55;
+            animation: msgFade .3s ease;
+        }
+
+        @keyframes msgFade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg.bot {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+        }
+
+        .msg.user {
+            background: var(--accent);
+            color: #000;
+            font-weight: 500;
+            border-bottom-right-radius: 4px;
+            align-self: flex-end;
+        }
+
+        .chat-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface2);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-inp {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .95rem;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .chat-inp:focus {
+            border-color: var(--accent);
+        }
+
+        .snd-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform .15s;
+        }
+
+        .snd-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Live Insights Sidebar */
+        .insights-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .insights-header {
+            font-family: 'Syne', sans-serif;
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .insights-header::before {
+            content: '';
+            width: 3px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .score-box {
+            text-align: center;
+            background: var(--surface2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .score-val {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .score-lbl {
+            font-size: .75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .priority-tag {
+            display: inline-block;
+            margin-top: 12px;
+            font-weight: 700;
+            font-size: .75rem;
+            letter-spacing: .05em;
+            padding: 5px 14px;
+            border-radius: 8px;
+            text-transform: uppercase;
+        }
+
+        .priority-tag.CHAUD {
+            background: rgba(74, 222, 128, .15);
+            color: var(--success);
+        }
+
+        .priority-tag.TIEDE {
+            background: rgba(250, 204, 21, .15);
+            color: var(--warning);
+        }
+
+        .priority-tag.FROID {
+            background: rgba(239, 68, 68, .2);
+            color: var(--red);
+        }
+
+        .end-btn-wrap {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .end-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            border-radius: 999px;
+            font-size: .85rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .end-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Questionnaire */
+        #feedback-section {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 24px 80px;
+        }
+
+        .fb-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .fb-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .fb-header p {
+            color: var(--text-muted);
+        }
+
+        .fb-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 640px) {
+            .fb-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .fb-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 24px;
+        }
+
+        .fb-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .fb-label {
+            font-family: 'Syne', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .opt-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .opt-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: .9rem;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .opt-item:hover {
+            border-color: var(--accent);
+        }
+
+        .opt-item.selected {
+            border-color: var(--accent);
+            background: rgba(255, 184, 108, .1);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .opt-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        .opt-item.selected .opt-dot {
+            border-color: var(--accent);
+        }
+
+        .opt-item.selected .opt-dot::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .fb-input {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: .9rem;
+            outline: none;
+            transition: border-color .2s;
+            resize: vertical;
+        }
+
+        .fb-input:focus {
+            border-color: var(--accent);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #000;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 18px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all .2s;
+            margin-top: 32px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 184, 108, .3);
+        }
+
+        /* Thanks */
+        #thanks-section {
+            display: none;
+            text-align: center;
+            padding: 120px 24px;
+        }
+
+        .thanks-icon {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 24px;
+        }
+
+        #thanks-section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+        }
+
+        #thanks-section p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .report-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 32px;
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--accent);
+            padding: 12px 24px;
+            border-radius: 999px;
+            transition: all .2s;
+        }
+
+        .report-link:hover {
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* Loader */
+        .typing {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+        }
+
+        .typing span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: dotBounce 1.4s infinite;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes dotBounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-6px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <header class="top-bar">
+            <div class="logo">Chat<span>4</span>Lead</div>
+            <div class="badge-pro">Phase 3 · Validation Pro</div>
+        </header>
+
+        <section id="intro-section" class="hero">
+            <div class="hero-eyebrow">Scénarios 100% Libres</div>
+            <h1>Votre expertise pour<br>valider <em>nos leads</em></h1>
+            <p>Aidez-nous à valider que les prospects capturés sont exploitables. Utilisez votre propre expérience
+                métier pour challenger Tom.</p>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-val">5–10'</div>
+                    <div class="info-label">Durée totale estimée</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-val">2 max</div>
+                    <div class="info-label">Scénarios à tester</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-val">100%</div>
+                    <div class="info-label">Libre & confidentiel</div>
+                </div>
+            </div>
+
+            <div class="scenario-section">
+                <h2>💡 Instructions de Scénario</h2>
+                <div class="scenario-box">
+                    <div class="sc-title">Option A : Scénario Simple</div>
+                    <div class="sc-desc">Utilisez un cas classique (ex: 2 pièces, courte distance) ou votre propre
+                        exemple simple pour vérifier que les infos de base sont capturées.</div>
+                </div>
+                <div class="scenario-box">
+                    <div class="sc-title">Option B : Cas Réel de votre Activité</div>
+                    <div class="sc-desc">Utilisez un dossier réel que vous avez traité récemment. Challengez le bot sur
+                        des détails techniques (volume, accès, date urgente).</div>
+                </div>
+            </div>
+
+            <button class="cta-btn" onclick="startPro()">Commencer le test &rarr;</button>
+        </section>
+
+        <section id="chat-section">
+            <div class="chat-header-pro">
+                <h2>Challenger Tom</h2>
+                <div class="sc-tag">Mode Expert</div>
+            </div>
+
+            <div class="chat-layout">
+                <div class="chat-window">
+                    <div class="chat-hdr">
+                        <div class="bot-avatar">🤖</div>
+                        <div class="bot-info">
+                            <div class="bot-name">Tom — Assistant Chat4Lead</div>
+                            <div class="bot-status"><span></span> En ligne</div>
+                        </div>
+                        <div class="timer" id="timer">00:00</div>
+                    </div>
+                    <div class="chat-body" id="chat-body"></div>
+                    <div class="chat-footer">
+                        <input type="text" class="chat-inp" id="chat-input" placeholder="Comme un vrai client…"
+                            onkeydown="if(event.key==='Enter')sendMsg()">
+                        <button class="snd-btn" onclick="sendMsg()" id="send-btn">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="insights-card">
+                        <div class="insights-header">Analyse en temps réel</div>
+                        <div class="score-box">
+                            <div class="score-val" id="live-score">—</div>
+                            <div class="score-lbl">Score Bot / 100</div>
+                            <div class="priority-tag" id="priority-tag">—</div>
+                        </div>
+                        <p style="font-size: .72rem; color: var(--text-muted); line-height: 1.5;">Ce score est calculé
+                            par l'IA selon la complétude et la valeur du lead.</p>
+                    </div>
+
+                    <div class="end-btn-wrap">
+                        <button class="end-btn" onclick="endChat()">Terminer & Valider &rarr;</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="feedback-section">
+            <div class="fb-header">
+                <h2>🎯 Validation Commerciale</h2>
+                <p>Votre œil d'expert : ce prospect est-il prêt à être rappelé ?</p>
+            </div>
+
+            <div class="fb-grid">
+                <!-- BLOC 1: QUALITÉ DU LEAD -->
+                <div class="fb-card full"
+                    style="background:rgba(255,184,108,0.05); border-color:var(--accent); text-align:center;">
+                    <h3 style="color:var(--accent); font-family:Syne; text-transform:uppercase; letter-spacing:2px;">━━━
+                        BLOC 1 : QUALITÉ DU LEAD ━━━━━━━━━━━━━━</h3>
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">1. INFOS COLLECTÉES : suffisantes pour rappeler ?</span>
+                    <div class="opt-list" id="q-infos">
+                        <div class="opt-item" onclick="sel('q-infos', this, 'Oui, tout y est')"><span
+                                class="opt-dot"></span> Oui, tout y est</div>
+                        <div class="opt-item" onclick="sel('q-infos', this, 'Oui mais il manque des infos')"><span
+                                class="opt-dot"></span> Oui mais il manque...</div>
+                        <div class="opt-item" onclick="sel('q-infos', this, 'Non, inexploitable')"><span
+                                class="opt-dot"></span> Non, inexploitable</div>
+                    </div>
+                    <input type="text" class="fb-input" id="q-infos-detail" placeholder="Qu'est-ce qu'il manque ?"
+                        style="margin-top:10px;">
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">2. DÉCISION COMMERCIALE : tu le rappelles ?</span>
+                    <div class="opt-list" id="q-rappel">
+                        <div class="opt-item" onclick="sel('q-rappel', this, 'En priorité (dans l\'heure)')"><span
+                                class="opt-dot"></span> En priorité (dans l'heure)</div>
+                        <div class="opt-item" onclick="sel('q-rappel', this, 'Dans la journée')"><span
+                                class="opt-dot"></span> Dans la journée</div>
+                        <div class="opt-item" onclick="sel('q-rappel', this, 'Cette semaine')"><span
+                                class="opt-dot"></span> Cette semaine</div>
+                        <div class="opt-item" onclick="sel('q-rappel', this, 'Non')"><span class="opt-dot"></span> Non
+                        </div>
+                    </div>
+                    <input type="text" class="fb-input" id="q-rappel-detail" placeholder="Si non, pourquoi ?"
+                        style="margin-top:10px;">
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">3. CLASSIFICATION CHAUD/TIÈDE/FROID</span>
+                    <p style="font-size:0.8rem; margin-bottom:10px; color:var(--text-muted)">Le bot a classé ce lead :
+                        <span id="bot-class-display" style="font-weight:bold; color:var(--accent)">...</span></p>
+                    <div class="opt-list" id="q-classif">
+                        <div class="opt-item" onclick="sel('q-classif', this, 'Oui, c\'est exact')"><span
+                                class="opt-dot"></span> Oui, c'est exact</div>
+                        <div class="opt-item" onclick="sel('q-classif', this, 'Plutôt oui')"><span
+                                class="opt-dot"></span> Plutôt oui</div>
+                        <div class="opt-item" onclick="sel('q-classif', this, 'Non')"><span class="opt-dot"></span> Non
+                        </div>
+                    </div>
+                    <input type="text" class="fb-input" id="q-classif-detail" placeholder="Si non, on priorise par..."
+                        style="margin-top:10px;">
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">4. QUESTIONS MANQUANTES</span>
+                    <textarea class="fb-input" id="q-questions-manquantes"
+                        placeholder="Ex: monte-meuble, objets valeur, accès difficile..." rows="3"></textarea>
+                </div>
+
+                <!-- BLOC 2: INTÉRÊT COMMERCIAL -->
+                <div class="fb-card full"
+                    style="background:rgba(99, 255, 218, 0.05); border-color:var(--accent3); text-align:center;">
+                    <h3 style="color:var(--accent3); font-family:Syne; text-transform:uppercase; letter-spacing:2px;">
+                        ━━━ BLOC 2 : INTÉRÊT COMMERCIAL ━━━━━━━━━</h3>
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">5. COMPARAISON PROCESS ACTUEL</span>
+                    <div class="opt-list" id="q-process">
+                        <div class="opt-item" onclick="sel('q-process', this, 'Formulaire web basique')"><span
+                                class="opt-dot"></span> Formulaire web basique</div>
+                        <div class="opt-item" onclick="sel('q-process', this, 'Appel entrant direct')"><span
+                                class="opt-dot"></span> Appel entrant direct</div>
+                        <div class="opt-item" onclick="sel('q-process', this, 'Rien de structuré')"><span
+                                class="opt-dot"></span> Rien de structuré (main)</div>
+                        <div class="opt-item" onclick="sel('q-process', this, 'Autre')"><span class="opt-dot"></span>
+                            Autre</div>
+                    </div>
+                    <input type="text" class="fb-input" id="q-process-detail" placeholder="Si autre, précisez"
+                        style="margin-top:10px;">
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">6. GAIN PERÇU par rapport à l'actuel</span>
+                    <div class="opt-list" id="q-gain">
+                        <div class="opt-item" onclick="sel('q-gain', this, 'Vrai gain de temps')"><span
+                                class="opt-dot"></span> Un vrai gain de temps</div>
+                        <div class="opt-item" onclick="sel('q-gain', this, 'Intéressant mais pas décisif')"><span
+                                class="opt-dot"></span> Intéressant mais pas décisif</div>
+                        <div class="opt-item" onclick="sel('q-gain', this, 'Neutre')"><span class="opt-dot"></span>
+                            Neutre, pas de différence</div>
+                        <div class="opt-item" onclick="sel('q-gain', this, 'Moins bien')"><span class="opt-dot"></span>
+                            Moins bien que l'actuel</div>
+                    </div>
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">7. INTENTION D'ADOPTION</span>
+                    <div class="opt-list" id="q-adoption">
+                        <div class="opt-item" onclick="sel('q-adoption', this, 'Oui, immédiatement')"><span
+                                class="opt-dot"></span> Oui, immédiatement</div>
+                        <div class="opt-item" onclick="sel('q-adoption', this, 'Oui, après avoir vu :')"><span
+                                class="opt-dot"></span> Oui, après avoir vu...</div>
+                        <div class="opt-item" onclick="sel('q-adoption', this, 'À étudier avec équipe')"><span
+                                class="opt-dot"></span> À étudier avec équipe</div>
+                        <div class="opt-item" onclick="sel('q-adoption', this, 'Non')"><span class="opt-dot"></span> Non
+                        </div>
+                    </div>
+                    <input type="text" class="fb-input" id="q-adoption-detail"
+                        placeholder="Frein principal ou condition ?" style="margin-top:10px;">
+                </div>
+
+                <!-- BLOC 3: BUDGET -->
+                <div class="fb-card full"
+                    style="background:rgba(239, 68, 68, 0.05); border-color:var(--red); text-align:center;">
+                    <h3 style="color:var(--red); font-family:Syne; text-transform:uppercase; letter-spacing:2px;">━━━
+                        BLOC 3 : BUDGET (CRITIQUE) ━━━━━━━━━</h3>
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">8. VALEUR PERÇUE d'un lead qualifié</span>
+                    <div class="opt-list" id="q-valeur">
+                        <div class="opt-item" onclick="sel('q-valeur', this, 'Beaucoup plus (2x plus)')"><span
+                                class="opt-dot"></span> Beaucoup plus (x2)</div>
+                        <div class="opt-item" onclick="sel('q-valeur', this, 'Un peu plus (10-20%)')"><span
+                                class="opt-dot"></span> Un peu plus (+10-20%)</div>
+                        <div class="opt-item" onclick="sel('q-valeur', this, 'Pareil')"><span class="opt-dot"></span>
+                            Pareil, le prix est le prix</div>
+                        <div class="opt-item" onclick="sel('q-valeur', this, 'Préfère qualifier moi-même')"><span
+                                class="opt-dot"></span> Préfère qualifier moi-même</div>
+                    </div>
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">9. BUDGET ABONNEMENT mensuel raisonnable</span>
+                    <div class="opt-list" id="q-budget">
+                        <div class="opt-item" onclick="sel('q-budget', this, '< 50€/mois')"><span
+                                class="opt-dot"></span> Moins de 50€/mois</div>
+                        <div class="opt-item" onclick="sel('q-budget', this, '50–150€/mois')"><span
+                                class="opt-dot"></span> 50–150€/mois</div>
+                        <div class="opt-item" onclick="sel('q-budget', this, '150–300€/mois')"><span
+                                class="opt-dot"></span> 150–300€/mois</div>
+                        <div class="opt-item" onclick="sel('q-budget', this, '+300€/mois (si ROI)')"><span
+                                class="opt-dot"></span> +300€/mois (si ROI)</div>
+                        <div class="opt-item" onclick="sel('q-budget', this, 'Payer au lead')"><span
+                                class="opt-dot"></span> Je préfère payer au lead</div>
+                    </div>
+                </div>
+
+                <!-- BLOC 4: AMÉLIORATION -->
+                <div class="fb-card full">
+                    <span class="fb-label">10. PRIORITÉ #1 à améliorer avant utilisation</span>
+                    <textarea class="fb-input" id="q-priorite-1" placeholder="Votre conseil le plus important..."
+                        rows="2"></textarea>
+                </div>
+            </div>
+
+            <button class="submit-btn" id="submit-btn" onclick="submit()">Envoyer ma validation ✓</button>
+        </section>
+
+        <section id="thanks-section">
+            <div class="thanks-icon">✓</div>
+            <h2>Expertise validée</h2>
+            <p>Merci pour votre retour professionnel. Vos observations vont nous aider à calibrer l'intelligence de Tom
+                pour qu'il soit un vrai allié pour votre activité.</p>
+            <a href="#" id="report-link" class="report-link" style="display:none">🔗 Voir le rapport de session</a>
+            <div style="margin-top: 20px;">
+                <a href="./reports/dashboard-synthese.html" style="color:var(--text-muted); font-size: .85rem;">📊
+                    Accéder au Dashboard Global</a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const state = {
+            conversationId: null,
+            sessionId: null,
+            startTime: null,
+            timerInterval: null,
+            answers: {},
+            lastScore: 0,
+            lastPriority: '—',
+            sending: false
+        };
+
+        const API_BASE = window.location.origin + '/api';
+
+        async function apiCall(method, path, body) {
+            const res = await fetch(API_BASE + path, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: body ? JSON.stringify(body) : undefined
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        }
+
+        async function startPro() {
+            document.getElementById('intro-section').style.display = 'none';
+            document.getElementById('chat-section').style.display = 'block';
+            state.startTime = new Date();
+
+            state.timerInterval = setInterval(() => {
+                const s = Math.floor((new Date() - state.startTime) / 1000);
+                const m = Math.floor(s / 60);
+                document.getElementById('timer').textContent = `${String(m).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+            }, 1000);
+
+            try {
+                const init = await apiCall('POST', '/conversation/init', {});
+                state.conversationId = init.conversationId;
+
+                const sess = await fetch('/api/test-session/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phase: 'phase3', conversationId: state.conversationId })
+                }).then(r => r.json());
+                state.sessionId = sess.sessionId;
+
+                addBotMsg("Bonjour ! Je suis Tom, votre assistant déménagement 🚚 Comment puis-je vous aider aujourd'hui ?");
+            } catch (e) {
+                addErrorMsg("Serveur hors ligne. Lancez le backend sur le port 3000.");
+            }
+        }
+
+        function addBotMsg(text) {
+            const chatBody = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = 'msg bot';
+            div.textContent = text;
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function addErrorMsg(text) {
+            const chatBody = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = 'msg bot';
+            div.style.color = 'var(--red)';
+            div.textContent = `⚠️ ${text}`;
+            chatBody.appendChild(div);
+        }
+
+        let loader = null;
+        function showTyping() {
+            const chatBody = document.getElementById('chat-body');
+            loader = document.createElement('div');
+            loader.className = 'typing';
+            loader.innerHTML = '<span></span><span></span><span></span>';
+            chatBody.appendChild(loader);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+        function hideTyping() {
+            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+        }
+
+        async function sendMsg() {
+            if (state.sending) return;
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            input.value = '';
+            const chatBody = document.getElementById('chat-body');
+            const div = document.createElement('div');
+            div.className = 'msg user';
+            div.textContent = text;
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            state.sending = true;
+            document.getElementById('send-btn').disabled = true;
+            showTyping();
+
+            try {
+                const res = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: text });
+                hideTyping();
+                addBotMsg(res.reply);
+
+                if (res.score != null) {
+                    state.lastScore = res.score;
+                    document.getElementById('live-score').textContent = res.score;
+                    const tag = document.getElementById('priority-tag');
+                    const priority = res.leadData?.priorite || 'MOYEN';
+                    state.lastPriority = priority;
+                    tag.textContent = priority;
+                    tag.className = `priority-tag ${priority}`;
+                }
+            } catch (e) {
+                hideTyping();
+                addErrorMsg("Erreur de connexion.");
+            } finally {
+                state.sending = false;
+                document.getElementById('send-btn').disabled = false;
+            }
+        }
+
+        function endChat() {
+            clearInterval(state.timerInterval);
+            document.getElementById('chat-section').style.display = 'none';
+            document.getElementById('feedback-section').style.display = 'block';
+            document.getElementById('bot-class-display').textContent = state.lastPriority || 'TIÈDE';
+            window.scrollTo(0, 0);
+        }
+
+        function sel(qId, el, val) {
+            document.querySelectorAll(`#${qId} .opt-item`).forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            state.answers[qId] = val;
+        }
+
+        async function submit() {
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Envoi en cours…';
+
+            const feedback = {
+                infosSuffisantes: state.answers['q-infos'],
+                infosDetail: document.getElementById('q-infos-detail').value,
+                decision: state.answers['q-rappel'],
+                decisionDetail: document.getElementById('q-rappel-detail').value,
+                classifOk: state.answers['q-classif'],
+                classifDetail: document.getElementById('q-classif-detail').value,
+                questionsManquantes: document.getElementById('q-questions-manquantes').value,
+                comparaisonProcess: state.answers['q-process'],
+                comparaisonDetail: document.getElementById('q-process-detail').value,
+                gainPercu: state.answers['q-gain'],
+                intentionAdoption: state.answers['q-adoption'],
+                adoptionDetail: document.getElementById('q-adoption-detail').value,
+                valeurPerçue: state.answers['q-valeur'],
+                budgetMensuel: state.answers['q-budget'],
+                priorite1: document.getElementById('q-priorite-1').value,
+                computedScore: state.lastScore,
+                computedPriority: state.lastPriority
+            };
+
+            try {
+                const res = await fetch(`/api/test-session/${state.sessionId}/feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ feedback, conversationId: state.conversationId })
+                }).then(r => r.json());
+
+                document.getElementById('feedback-section').style.display = 'none';
+                document.getElementById('thanks-section').style.display = 'block';
+
+                if (res.reportUrl) {
+                    const link = document.getElementById('report-link');
+                    link.href = res.reportUrl;
+                    link.style.display = 'inline-flex';
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Envoyer ma validation ✓';
+                alert("Erreur lors de l'envoi.");
+            }
+        }
+    </script>
+</body>
+
+</html>

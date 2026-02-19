@@ -1,0 +1,252 @@
+[
+    {
+        "id": "test-01",
+        "name": "Lead parfait",
+        "description": "Lead qui donne toutes les infos facilement",
+        "messages": [
+            "Bonjour, je voudrais déménager",
+            "De Paris 15ème vers Versailles",
+            "Un appartement F3 de 70m² au 3ème étage sans ascenseur",
+            "Oui il y a un parking en bas",
+            "Le 15 mars",
+            "Je suis Sophie Martin",
+            "sophie.martin@email.com",
+            "06 12 34 56 78",
+            "La formule Standard me semble bien"
+        ],
+        "expected": {
+            "score_min": 80,
+            "priorite": "CHAUD",
+            "fields": {
+                "email": "sophie.martin@email.com",
+                "telephone": "0612345678",
+                "prenom": "Sophie",
+                "nom": "Martin"
+            }
+        }
+    },
+    {
+        "id": "test-02",
+        "name": "Lead difficile",
+        "description": "Lead qui donne peu d'infos",
+        "messages": [
+            "bjr",
+            "jdemenage",
+            "paris",
+            "petit appart",
+            "je sais pas",
+            "bientot",
+            "marc",
+            "pas de mail",
+            "06 98 76 54 32"
+        ],
+        "expected": {
+            "score_max": 50,
+            "priorite": [
+                "MOYEN",
+                "FROID"
+            ],
+            "fields": {
+                "telephone": "0698765432"
+            }
+        }
+    },
+    {
+        "id": "test-03",
+        "name": "Lead qui digresse",
+        "description": "Lead qui pose des questions hors sujet",
+        "messages": [
+            "Bonjour, je déménage",
+            "De Lyon, au fait vous travaillez le week-end ?",
+            "Et vous gérez les pianos ?",
+            "Ok super. Donc Lyon vers Marseille",
+            "80m²",
+            "Le 20 mars",
+            "Je suis Thomas",
+            "thomas@email.com",
+            "06 11 22 33 44"
+        ],
+        "expected": {
+            "score_min": 70,
+            "fields": {
+                "email": "thomas@email.com",
+                "telephone": "0611223344",
+                "prenom": "Thomas"
+            }
+        }
+    },
+    {
+        "id": "test-04",
+        "name": "Lead objection prix",
+        "description": "Lead qui trouve ça trop cher",
+        "messages": [
+            "Bonjour",
+            "Paris vers Bordeaux, 80m²",
+            "Quel est le prix ?",
+            "C'est trop cher !"
+        ],
+        "expected": {
+            "score_min": 15,
+            "bot_should_defend_price": true
+        }
+    },
+    {
+        "id": "test-05",
+        "name": "Lead urgence",
+        "description": "Déménagement dans 5 jours",
+        "messages": [
+            "Bonjour, je dois déménager dans 5 jours",
+            "Paris vers Lille, 50m²",
+            "Je suis Thomas",
+            "thomas.urgent@email.com",
+            "06 11 22 33 44"
+        ],
+        "expected": {
+            "score_min": 60,
+            "priorite": [
+                "CHAUD",
+                "TIEDE"
+            ],
+            "fields": {
+                "email": "thomas.urgent@email.com",
+                "telephone": "0611223344",
+                "prenom": "Thomas"
+            }
+        }
+    },
+    {
+        "id": "test-06",
+        "name": "Lead avec fautes de frappe",
+        "description": "Lead qui fait beaucoup de fautes d'orthographe",
+        "messages": [
+            "bonjur je veu demenagé",
+            "de pari ver lion",
+            "un appart de 60m²",
+            "o 2eme etage san assenseur",
+            "le 10 avri",
+            "je suis jean",
+            "jean.dupon@gmail.com",
+            "06 23 45 67 89",
+            "la formule standard"
+        ],
+        "expected": {
+            "score_min": 60,
+            "priorite": [
+                "CHAUD",
+                "TIEDE"
+            ],
+            "fields": {
+                "prenom": "Jean",
+                "telephone": "0623456789"
+            }
+        }
+    },
+    {
+        "id": "test-07",
+        "name": "Lead qui change d'avis",
+        "description": "Lead qui modifie ses réponses précédentes",
+        "messages": [
+            "Bonjour, je déménage de Paris vers Marseille",
+            "En fait non, plutôt vers Lyon",
+            "Un F3 de 70m²",
+            "Ah non pardon, c'est un F4 de 85m²",
+            "Le 5 mars",
+            "Finalement plutôt le 12 mars",
+            "Je m'appelle Marie Dubois",
+            "marie.dubois@email.com",
+            "06 34 56 78 90"
+        ],
+        "expected": {
+            "score_min": 70,
+            "fields": {
+                "prenom": "Marie",
+                "nom": "Dubois",
+                "email": "marie.dubois@email.com"
+            }
+        }
+    },
+    {
+        "id": "test-08",
+        "name": "Lead ultra-pressé",
+        "description": "Lead qui donne des réponses minimales",
+        "messages": [
+            "salut",
+            "demenagement",
+            "lille",
+            "roubaix",
+            "50m²",
+            "2eme",
+            "parking ok",
+            "20 mars",
+            "je suis paul",
+            "paul@mail.fr",
+            "0645678901",
+            "formule standard"
+        ],
+        "expected": {
+            "score_min": 60,
+            "fields": {
+                "prenom": "Paul",
+                "email": "paul@mail.fr",
+                "telephone": "0645678901"
+            }
+        }
+    },
+    {
+        "id": "test-09",
+        "name": "Lead curieux",
+        "description": "Lead qui pose plein de questions techniques",
+        "messages": [
+            "Bonjour, vous faites le démontage des meubles IKEA ?",
+            "Et vous avez une assurance pour la casse ?",
+            "C'est combien par m³ ?",
+            "Vous travaillez le dimanche ?",
+            "Ok merci. Je déménage de Nantes vers Angers",
+            "90m², maison avec escalier",
+            "Le 25 mars",
+            "Je m'appelle Claire Martin",
+            "claire.martin@email.com",
+            "06 56 78 90 12",
+            "Je prends la formule Luxe"
+        ],
+        "expected": {
+            "score_min": 75,
+            "priorite": [
+                "CHAUD",
+                "TIEDE"
+            ],
+            "fields": {
+                "prenom": "Claire",
+                "nom": "Martin",
+                "email": "claire.martin@email.com"
+            }
+        }
+    },
+    {
+        "id": "test-10",
+        "name": "Déménagement énorme",
+        "description": "Lead avec très gros volume (maison + dépendances)",
+        "messages": [
+            "Bonjour, je déménage une grande maison",
+            "De Toulouse vers Nice",
+            "C'est une maison de 250m² sur 3 étages",
+            "Avec une cave remplie, un garage et un grenier aussi",
+            "Il y a aussi 2 pianos",
+            "Le 10 avril",
+            "Je suis Robert Durand",
+            "robert.durand@email.com",
+            "06 67 89 01 23",
+            "Je pense qu'il me faut la formule Luxe"
+        ],
+        "expected": {
+            "score_min": 80,
+            "priorite": "CHAUD",
+            "fields": {
+                "prenom": "Robert",
+                "nom": "Durand",
+                "email": "robert.durand@email.com",
+                "telephone": "0667890123"
+            }
+        }
+    }
+]

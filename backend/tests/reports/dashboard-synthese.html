@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat4Lead — Dashboard Synthèse Tests Manuels</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --accent: #6366f1;
+            --green: #10b981;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --teal: #14b8a6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 15% 5%, rgba(99, 102, 241, .12) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 85% 90%, rgba(20, 184, 166, .08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-left: 8px;
+        }
+
+        .header-badge {
+            margin-left: auto;
+            background: rgba(99, 102, 241, .15);
+            border: 1px solid rgba(99, 102, 241, .3);
+            color: var(--accent);
+            font-size: .72rem;
+            font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 999px;
+        }
+
+        /* Phase cards */
+        .phases {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .phases {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .phase-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .phase-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .phase-icon {
+            font-size: 1.4rem;
+        }
+
+        .phase-title {
+            font-family: 'Syne', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .phase-sub {
+            font-size: .75rem;
+            color: var(--muted);
+        }
+
+        .phase-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: .85rem;
+        }
+
+        .phase-stat:last-child {
+            border-bottom: none;
+        }
+
+        .phase-stat-label {
+            color: var(--muted);
+        }
+
+        .phase-stat-value {
+            font-weight: 600;
+        }
+
+        /* Main grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .card.full {
+            grid-column: 1 / -1;
+        }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        /* Problems list */
+        .problem-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .problem-item:last-child {
+            border-bottom: none;
+        }
+
+        .problem-rank {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--muted);
+            min-width: 24px;
+        }
+
+        .problem-text {
+            flex: 1;
+            font-size: .88rem;
+        }
+
+        .problem-count {
+            font-size: .75rem;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .severity {
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .severity.high {
+            background: rgba(239, 68, 68, .15);
+            color: var(--red);
+        }
+
+        .severity.med {
+            background: rgba(245, 158, 11, .15);
+            color: var(--amber);
+        }
+
+        .severity.low {
+            background: rgba(16, 185, 129, .15);
+            color: var(--green);
+        }
+
+        /* GO/NO-GO */
+        .gongo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .gongo-item {
+            background: rgba(16, 185, 129, .06);
+            border: 1px solid rgba(16, 185, 129, .2);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .gongo-item.warn {
+            background: rgba(245, 158, 11, .06);
+            border-color: rgba(245, 158, 11, .2);
+        }
+
+        .gongo-item.fail {
+            background: rgba(239, 68, 68, .06);
+            border-color: rgba(239, 68, 68, .2);
+        }
+
+        .gongo-label {
+            font-size: .75rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .gongo-value {
+            font-family: 'Syne', sans-serif;
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .gongo-status {
+            font-size: .7rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .gongo-item .gongo-status {
+            color: var(--green);
+        }
+
+        .gongo-item.warn .gongo-status {
+            color: var(--amber);
+        }
+
+        .gongo-item.fail .gongo-status {
+            color: var(--red);
+        }
+
+        /* Sessions table */
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .83rem;
+        }
+
+        .sessions-table th {
+            text-align: left;
+            padding: 8px 12px;
+            color: var(--muted);
+            font-size: .72rem;
+            font-weight: 600;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sessions-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(51, 65, 85, .5);
+        }
+
+        .sessions-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .sessions-table tr:hover td {
+            background: rgba(99, 102, 241, .04);
+        }
+
+        .badge-phase1 {
+            background: rgba(108, 99, 255, .15);
+            color: #afadff;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .badge-phase2 {
+            background: rgba(99, 102, 241, .15);
+            color: var(--accent);
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .badge-phase3 {
+            background: rgba(201, 168, 76, .15);
+            color: #c9a84c;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+
+        .report-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: .72rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color .2s, color .2s;
+            text-decoration: none;
+        }
+
+        .report-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Verdict banner */
+        .verdict {
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .verdict.go {
+            background: rgba(16, 185, 129, .08);
+            border: 1px solid rgba(16, 185, 129, .25);
+        }
+
+        .verdict.nogo {
+            background: rgba(239, 68, 68, .08);
+            border: 1px solid rgba(239, 68, 68, .25);
+        }
+
+        .verdict-icon {
+            font-size: 2.5rem;
+        }
+
+        .verdict-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .verdict-sub {
+            font-size: .88rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 80px 0;
+            color: var(--muted);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 48px;
+            color: var(--muted);
+        }
+
+        .empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        .empty-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .empty-desc {
+            font-size: .85rem;
+        }
+
+        /* Refresh btn */
+        .refresh-btn {
+            background: rgba(99, 102, 241, .1);
+            border: 1px solid rgba(99, 102, 241, .3);
+            color: var(--accent);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .82rem;
+            font-weight: 500;
+            padding: 8px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(99, 102, 241, .2);
+        }
+
+        /* Links */
+        .quick-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .quick-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: .82rem;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: border-color .2s;
+        }
+
+        .quick-link:hover {
+            border-color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">Chat<span>4</span>Lead</div>
+            <h1>Dashboard Synthèse</h1>
+            <div class="header-badge">Tests Manuels</div>
+            <button class="refresh-btn" onclick="loadDashboard()">↻ Actualiser</button>
+        </div>
+
+        <!-- Quick links -->
+        <div class="quick-links">
+            <a class="quick-link" href="../phase1.html" target="_blank">🛠️ Ouvrir Phase 1 (Dev)</a>
+            <a class="quick-link" href="../phase2.html" target="_blank">🚚 Ouvrir Phase 2 (Proches)</a>
+            <a class="quick-link" href="../phase3.html" target="_blank">🏢 Ouvrir Phase 3 (Déménageurs)</a>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>Chargement des données…</div>
+        </div>
+
+        <!-- Content (hidden until loaded) -->
+        <div id="content" style="display:none">
+
+            <!-- Verdict -->
+            <div id="verdict-banner" class="verdict go">
+                <div class="verdict-icon" id="verdict-icon">✅</div>
+                <div>
+                    <div class="verdict-title" id="verdict-title">En attente de données</div>
+                    <div class="verdict-sub" id="verdict-sub">Lancez des tests pour voir le verdict GO/NO-GO</div>
+                </div>
+            </div>
+
+            <!-- Phase cards -->
+            <div class="phases">
+                <div class="phase-card">
+                    <div class="phase-card-header">
+                        <div class="phase-icon">🧑‍💻</div>
+                        <div>
+                            <div class="phase-title">Phase 1 — Dev</div>
+                            <div class="phase-sub">Outils & Scénarios Presets</div>
+                        </div>
+                    </div>
+                    <div class="phase-stat"><span class="phase-stat-label">Sessions</span><span class="phase-stat-value"
+                            id="p1-total">—</span></div>
+                    <div class="phase-stat"><span class="phase-stat-label">Note Qualité (Moy.)</span><span
+                            class="phase-stat-value" id="p1-note">—</span></div>
+                    <div class="phase-stat">
+                        <span class="phase-stat-label">Réussis / Échecs</span>
+                        <span class="phase-stat-value">
+                            <span id="p1-success" style="color:var(--green)">—</span> /
+                            <span id="p1-fail" style="color:var(--red)">—</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="phase-card">
+                    <div class="phase-card-header">
+                        <div class="phase-icon">👥</div>
+                        <div>
+                            <div class="phase-title">Phase 2 — Proches</div>
+                            <div class="phase-sub">Amis & famille</div>
+                        </div>
+                    </div>
+                    <div class="phase-stat"><span class="phase-stat-label">Sessions</span><span class="phase-stat-value"
+                            id="p2-total">—</span></div>
+                    <div class="phase-stat"><span class="phase-stat-label">Avec feedback</span><span
+                            class="phase-stat-value" id="p2-feedback">—</span></div>
+                    <div class="phase-stat"><span class="phase-stat-label">Naturalité moy.</span><span
+                            class="phase-stat-value" id="p2-naturalite">—</span></div>
+                    <div class="phase-stat"><span class="phase-stat-label">Donneraient numéro</span><span
+                            class="phase-stat-value" id="p2-numero">—</span></div>
+                </div>
+
+                <div class="phase-card">
+                    <div class="phase-card-header">
+                        <div class="phase-icon">🏢</div>
+                        <div>
+                            <div class="phase-title">Phase 3 — Pros</div>
+                            <div class="phase-sub">Déménageurs & commerciaux</div>
+                        </div>
+                    </div>
+                    <div class="phase-stat"><span class="phase-stat-label">Sessions</span><span class="phase-stat-value"
+                            id="p3-total">—</span></div>
+                    <div class="phase-stat"><span class="phase-stat-label">Avec feedback</span><span
+                            class="phase-stat-value" id="p3-feedback">—</span></div>
+                    <div class="phase-stat"><span class="phase-stat-label">Infos suffisantes</span><span
+                            class="phase-stat-value" id="p3-infos">—</span></div>
+                </div>
+            </div>
+
+            <!-- Main grid -->
+            <div class="main-grid">
+
+                <!-- GO/NO-GO -->
+                <div class="card full">
+                    <div class="card-title">🎯 Critères GO/NO-GO Production</div>
+                    <div class="gongo-grid">
+                        <div class="gongo-item" id="gng-naturalite">
+                            <div class="gongo-label">Naturalité ≥ 7/10</div>
+                            <div class="gongo-value" id="gng-naturalite-val">—</div>
+                            <div class="gongo-status" id="gng-naturalite-status">En attente</div>
+                        </div>
+                        <div class="gongo-item" id="gng-numero">
+                            <div class="gongo-label">70%+ donneraient numéro</div>
+                            <div class="gongo-value" id="gng-numero-val">—</div>
+                            <div class="gongo-status" id="gng-numero-status">En attente</div>
+                        </div>
+                        <div class="gongo-item" id="gng-infos">
+                            <div class="gongo-label">Infos suffisantes (pros)</div>
+                            <div class="gongo-value" id="gng-infos-val">—</div>
+                            <div class="gongo-status" id="gng-infos-status">En attente</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Problems -->
+                <div class="card">
+                    <div class="card-title">🐛 Problèmes Détectés</div>
+                    <div id="problems-list">
+                        <div class="empty">
+                            <div class="empty-icon">🔍</div>
+                            <div class="empty-title">Aucun problème remonté</div>
+                            <div class="empty-desc">Les problèmes apparaîtront après les premiers feedbacks</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggestions -->
+                <div class="card">
+                    <div class="card-title">💡 Suggestions d'Amélioration</div>
+                    <div id="suggestions-list">
+                        <div class="empty">
+                            <div class="empty-icon">💬</div>
+                            <div class="empty-title">Aucune suggestion</div>
+                            <div class="empty-desc">Les suggestions apparaîtront après les premiers feedbacks</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessions table -->
+                <div class="card full">
+                    <div class="card-title">📋 Toutes les Sessions</div>
+                    <div id="sessions-container">
+                        <div class="empty">
+                            <div class="empty-icon">🚀</div>
+                            <div class="empty-title">Aucune session enregistrée</div>
+                            <div class="empty-desc">Partagez les liens Phase 1, Phase 2 ou Phase 3 pour commencer les
+                                tests</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div><!-- #content -->
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+
+        async function loadDashboard() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('content').style.display = 'none';
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const profile = urlParams.get('profile');
+            const url = API_BASE + '/api/test-session/dashboard' + (profile ? `?testerProfile=${encodeURIComponent(profile)}` : '');
+
+            try {
+                const data = await fetch(url).then(r => r.json());
+                renderDashboard(data);
+            } catch (e) {
+                document.getElementById('loading').innerHTML = `
+      <div style="color:#ef4444;font-size:1rem;">⚠️ Impossible de charger les données</div>
+      <div style="color:var(--muted);font-size:.85rem;margin-top:8px;">Vérifiez que le serveur est bien lancé.</div>
+    `;
+                console.error(e);
+            }
+        }
+
+        function renderDashboard(data) {
+            const { sessions = [], stats = {} } = data;
+            const p1 = stats.phase1 || {};
+            const p2 = stats.phase2 || {};
+            const p3 = stats.phase3 || {};
+
+            // Phase 1 stats
+            document.getElementById('p1-total').textContent = p1.total ?? 0;
+            document.getElementById('p1-note').textContent = p1.avgNote != null ? p1.avgNote + '/10' : '—';
+            document.getElementById('p1-success').textContent = p1.successCount ?? 0;
+            document.getElementById('p1-fail').textContent = p1.failCount ?? 0;
+
+            // Phase 2 stats
+            document.getElementById('p2-total').textContent = p2.total ?? 0;
+            document.getElementById('p2-feedback').textContent = p2.withFeedback ?? 0;
+            document.getElementById('p2-naturalite').textContent = p2.avgNaturalite != null ? p2.avgNaturalite + '/10' : '—';
+            document.getElementById('p2-numero').textContent = p2.pctDonneraitNumero != null ? p2.pctDonneraitNumero + '%' : '—';
+
+            // Phase 3 stats
+            document.getElementById('p3-total').textContent = p3.total ?? 0;
+            document.getElementById('p3-feedback').textContent = p3.withFeedback ?? 0;
+            document.getElementById('p3-infos').textContent = p3.pctInfosSuffisantes != null ? p3.pctInfosSuffisantes + '%' : '—';
+
+            // GO/NO-GO
+            updateGNG('gng-naturalite', p2.avgNaturalite, p2.avgNaturalite != null ? p2.avgNaturalite + '/10' : '—', p2.avgNaturalite >= 7);
+            updateGNG('gng-numero', p2.pctDonneraitNumero, p2.pctDonneraitNumero != null ? p2.pctDonneraitNumero + '%' : '—', p2.pctDonneraitNumero >= 70);
+            updateGNG('gng-infos', p3.pctInfosSuffisantes, p3.pctInfosSuffisantes != null ? p3.pctInfosSuffisantes + '%' : '—', p3.pctInfosSuffisantes >= 80);
+
+            // Verdict
+            const hasData = (p2.withFeedback || 0) + (p3.withFeedback || 0) > 0;
+            const allGo = p2.avgNaturalite >= 7 && p2.pctDonneraitNumero >= 70 && (p3.withFeedback === 0 || p3.pctInfosSuffisantes >= 80);
+            const vBanner = document.getElementById('verdict-banner');
+            if (!hasData) {
+                document.getElementById('verdict-icon').textContent = '⏳';
+                document.getElementById('verdict-title').textContent = 'En attente de données';
+                document.getElementById('verdict-sub').textContent = 'Lancez des tests pour voir le verdict GO/NO-GO';
+            } else if (allGo) {
+                vBanner.className = 'verdict go';
+                document.getElementById('verdict-icon').textContent = '✅';
+                document.getElementById('verdict-title').textContent = 'GO PRODUCTION';
+                document.getElementById('verdict-sub').textContent = 'Tous les critères sont validés. Corrections mineures recommandées avant lancement.';
+            } else {
+                vBanner.className = 'verdict nogo';
+                document.getElementById('verdict-icon').textContent = '⚠️';
+                document.getElementById('verdict-title').textContent = 'Ajustements nécessaires';
+                document.getElementById('verdict-sub').textContent = 'Certains critères ne sont pas encore atteints. Continuez les tests.';
+            }
+
+            // Problems & suggestions from feedback
+            const allFeedbacks = sessions.filter(s => s.feedback);
+            renderProblems(allFeedbacks);
+            renderSuggestions(allFeedbacks);
+
+            // Sessions table
+            renderSessions(sessions);
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+        }
+
+        function updateGNG(id, rawVal, displayVal, isPass) {
+            const el = document.getElementById(id);
+            const valEl = document.getElementById(id + '-val');
+            const statusEl = document.getElementById(id + '-status');
+            valEl.textContent = displayVal;
+            if (rawVal == null) {
+                el.className = 'gongo-item warn';
+                statusEl.textContent = '⏳ En attente';
+            } else if (isPass) {
+                el.className = 'gongo-item';
+                statusEl.textContent = '✅ PASS';
+            } else {
+                el.className = 'gongo-item fail';
+                statusEl.textContent = '❌ FAIL';
+            }
+        }
+
+        function renderProblems(feedbacks) {
+            const container = document.getElementById('problems-list');
+            // Collect "questionBizarre" from phase2 and "questionsManquantes" from phase3
+            const items = [];
+            feedbacks.forEach(s => {
+                const fb = s.feedback;
+                if (s.phase === 'phase1' && fb.problemes) items.push({ text: fb.problemes, phase: '1 🛠️' });
+                if (s.phase === 'phase2' && fb.questionBizarre) items.push({ text: fb.questionBizarre, phase: '2 👥' });
+                if (s.phase === 'phase3' && fb.questionsManquantes) items.push({ text: fb.questionsManquantes, phase: '3 🏢' });
+            });
+
+            if (!items.length) {
+                container.innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Aucun problème remonté</div><div class="empty-desc">Les problèmes apparaîtront après les premiers feedbacks</div></div>`;
+                return;
+            }
+
+            container.innerHTML = items.slice(0, 8).map((item, i) => `
+    <div class="problem-item">
+      <div class="problem-rank">${i + 1}</div>
+      <div>
+        <div class="problem-text">${escHtml(item.text)}</div>
+        <div class="problem-count">Phase ${item.phase}</div>
+      </div>
+    </div>
+  `).join('');
+        }
+
+        function renderSuggestions(feedbacks) {
+            const container = document.getElementById('suggestions-list');
+            const items = [];
+            feedbacks.forEach(s => {
+                const fb = s.feedback;
+                if (s.phase === 'phase1' && fb.suggestions) items.push({ text: fb.suggestions, phase: '1 🛠️' });
+                if (s.phase === 'phase2' && fb.commentaire) items.push({ text: fb.commentaire, phase: '2 👥' });
+                if (s.phase === 'phase3' && fb.utilisationDetail) items.push({ text: fb.utilisationDetail, phase: '3 🏢' });
+            });
+
+            if (!items.length) {
+                container.innerHTML = `<div class="empty"><div class="empty-icon">💬</div><div class="empty-title">Aucune suggestion</div><div class="empty-desc">Les suggestions apparaîtront après les premiers feedbacks</div></div>`;
+                return;
+            }
+
+            container.innerHTML = items.slice(0, 8).map((item, i) => `
+    <div class="problem-item">
+      <div class="problem-rank">${i + 1}</div>
+      <div>
+        <div class="problem-text">${escHtml(item.text)}</div>
+        <div class="problem-count">Phase ${item.phase}</div>
+      </div>
+    </div>
+  `).join('');
+        }
+
+        function renderSessions(sessions) {
+            const container = document.getElementById('sessions-container');
+            if (!sessions.length) {
+                container.innerHTML = `<div class="empty"><div class="empty-icon">🚀</div><div class="empty-title">Aucune session enregistrée</div><div class="empty-desc">Partagez les liens Phase 2 et Phase 3 avec vos testeurs pour commencer</div></div>`;
+                return;
+            }
+
+            const sorted = [...sessions].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            container.innerHTML = `
+    <table class="sessions-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Session ID</th>
+          <th>Date</th>
+          <th>Feedback</th>
+          <th>Rapport</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${sorted.map(s => {
+                let badgeClass = 'badge-phase2';
+                let badgeLabel = '👥 Phase 2';
+                if (s.phase === 'phase1') { badgeClass = 'badge-phase1'; badgeLabel = '🛠️ Phase 1'; }
+                else if (s.phase === 'phase3') { badgeClass = 'badge-phase3'; badgeLabel = '🏢 Phase 3'; }
+
+                return `
+          <tr>
+            <td><span class="${badgeClass}">${badgeLabel}</span></td>
+            <td style="font-family:monospace;font-size:.78rem;color:var(--muted)">${s.sessionId}</td>
+            <td style="color:var(--muted);font-size:.82rem">${new Date(s.createdAt).toLocaleString('fr-FR')}</td>
+            <td>${s.feedback ? '<span style="color:var(--green)">✓ Soumis</span>' : (s.phase === 'phase1' ? '<span style="color:var(--muted)">Auto</span>' : '<span style="color:var(--muted)">En attente</span>')}</td>
+            <td>${s.reportPath ? `<a class="report-btn" href="${s.reportPath}" target="_blank">Voir →</a>` : '—'}</td>
+          </tr>
+        `}).join('')}
+      </tbody>
+    </table>
+  `;
+        }
+
+        function escHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        // Auto-load on start
+        loadDashboard();
+    </script>
+</body>
+
+</html>

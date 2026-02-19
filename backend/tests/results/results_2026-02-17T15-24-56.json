@@ -1,0 +1,334 @@
+[
+  {
+    "id": "test-32",
+    "name": "Déménagement entreprise",
+    "description": "Directrice des opérations qui déménage des bureaux complets 800m²",
+    "timestamp": "2026-02-17T15:22:26.432Z",
+    "passed": true,
+    "messages_sent": 10,
+    "errors": [],
+    "conversation_id": "31a6b33c-d44c-4b91-a6a0-220d9872783d",
+    "final_score": 90,
+    "final_lead": {
+      "prenom": "Isabelle",
+      "nom": "Fontaine",
+      "email": "i.fontaine@techcorp.fr",
+      "telephone": "0145678900",
+      "score": 90,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 800,
+        "villeDepart": "Paris",
+        "villeArrivee": "Boulogne",
+        "volumeEstime": 400
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je suis directrice des opérations chez TechCorp",
+        "bot": "Bonjour ! 👋\n\nBienvenue chez Déménagements Test Paris. Je suis Tom, votre assistant de qualification.\n\nVous envisagez un déménagement ? Je vais vous poser quelques questions pour bien comprendre votre projet.\n\n**Commençons : de quelle ville à quelle ville souhaitez-vous déménager ?**",
+        "score": 20,
+        "latency_ms": 2235
+      },
+      {
+        "user": "Nous déménageons nos bureaux de Paris La Défense vers Boulogne-Billancourt",
+        "bot": "Parfait ! Paris La Défense vers Boulogne-Billancourt, c'est noté. 📍\n\n**Quelques questions rapidement :**\n\nConcernant vos bureaux actuels à La Défense :\n- **Quel étage occupez-vous ?** (avec ou sans ascenseur ?)",
+        "score": 30,
+        "latency_ms": 2150
+      },
+      {
+        "user": "Ce sont 800m² de bureaux sur 2 étages avec ascenseur",
+        "bot": "Excellent, 800 m² sur 2 étages avec ascenseur. ✓\n\n**Et à Boulogne-Billancourt, comment sera configuré le nouvel espace ?**\n(Étage, ascenseur, surface identique ?)",
+        "score": 70,
+        "latency_ms": 2348
+      },
+      {
+        "user": "Il y a environ 50 postes de travail, 10 salles de réunion, une salle serveurs",
+        "bot": "Merci pour ces détails. C'est un projet conséquent ! \n\nPour affiner le volume à déménager, j'ai besoin de savoir :\n\n**À Boulogne-Billancourt, quel sera l'étage et y a-t-il un ascenseur ?**",
+        "score": 70,
+        "latency_ms": 1513
+      },
+      {
+        "user": "Nous avons besoin d'une prestation clef en main avec gestion des serveurs informatiques",
+        "bot": "Parfait, prestation **Luxe (clef en main)** avec gestion serveurs – c'est noté. 🔧\n\nAvant de finaliser, j'ai besoin de :\n\n**1. Quel étage à Boulogne et ascenseur ou pas ?**\n**2. Quelle est votre date de déménagement prévue ?**",
+        "score": 70,
+        "latency_ms": 1658
+      },
+      {
+        "user": "Le déménagement doit se faire sur un weekend pour ne pas impacter la production",
+        "bot": "Compris, déménagement sur un **weekend** pour zéro impact production. 📅\n\nJuste deux infos rapides :\n\n**1. Quel weekend en particulier ?** (approximativement)\n**2. À Boulogne : quel étage et ascenseur disponible ?**",
+        "score": 70,
+        "latency_ms": 1354
+      },
+      {
+        "user": "Budget estimé : 50 000€",
+        "bot": "Noté, budget estimé **50 000€**. ✓\n\nAvant de vous proposer un devis, il me manque juste :\n\n**1. Quel étage à Boulogne et y a-t-il un ascenseur ?**\n**2. Quelle date de weekend vous convient ?** (ex: fin janvier, début février...)",
+        "score": 70,
+        "latency_ms": 2716
+      },
+      {
+        "user": "Je m'appelle Isabelle Fontaine",
+        "bot": "Merci Isabelle ! 👋\n\nRécapitulons avant de conclure :\n- **Trajet** : Paris → Boulogne (~10 km)\n- **Surface** : 800 m² (~400 m³)\n- **Prestation** : Luxe clef en main + serveurs informatiques\n- **Budget** : 50 000€\n- **Timing** : Weekend (production à préserver)\n\nIl me manque juste :\n**1. Quel étage à Boulogne et ascenseur ?**\n**2. Quelle date de weekend ?** (approximativement)\n\nPuis vos coordonnées (tél + email) pour que notre équipe vous recontacte. 📞",
+        "score": 70,
+        "latency_ms": 3575
+      },
+      {
+        "user": "i.fontaine@techcorp.fr",
+        "bot": "Parfait, j'ai noté votre email. 📧\n\nReste juste :\n**1. Quel étage à Boulogne et ascenseur disponible ?**\n**2. Quelle date de weekend ?** (approximativement)\n**3. Votre numéro de téléphone ?**",
+        "score": 80,
+        "latency_ms": 1774
+      },
+      {
+        "user": "01 45 67 89 00",
+        "bot": "Merci Isabelle ! 📞\n\nReste plus que :\n**1. Quel étage à Boulogne et ascenseur ?**\n**2. Quelle date de weekend ?** (approximativement)",
+        "score": 90,
+        "latency_ms": 1842
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 85,
+        "actual": 90,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Isabelle",
+        "actual": "Isabelle",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Fontaine",
+        "actual": "Fontaine",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "i.fontaine@techcorp.fr",
+        "actual": "i.fontaine@techcorp.fr",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0145678900",
+        "actual": "0145678900",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 43.9
+  },
+  {
+    "id": "test-28",
+    "name": "Lead en anglais — BOT DOIT RÉPONDRE EN ANGLAIS",
+    "description": "Lead qui écrit en anglais — test détection langue + réponse adaptée",
+    "timestamp": "2026-02-17T15:23:30.337Z",
+    "passed": true,
+    "messages_sent": 7,
+    "errors": [],
+    "conversation_id": "ec159b2c-30e0-47d7-8d2c-edb57f2b5632",
+    "final_score": 70,
+    "final_lead": {
+      "prenom": "John",
+      "nom": "Smith",
+      "email": "john.smith@email.com",
+      "telephone": "0612345678",
+      "score": 70,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 80,
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Hello, I need to move",
+        "bot": "Hello! 👋 Welcome to **Déménagements Test Paris**. I'm Tom, and I'm here to help you plan your move!\n\nLet me start with the basics: **Where are you moving from, and where are you moving to?**",
+        "score": 10,
+        "latency_ms": 2754
+      },
+      {
+        "user": "From Paris to London",
+        "bot": "Got it! **Paris to London** – that's quite the move! 🚚\n\nJust so you know, London is outside our usual service zones (we mainly cover the Paris region and France), but don't worry – I'll still help you with all the details, and our team can discuss options with you.\n\nNow, let me ask about your **current home in Paris**: How many rooms does it have, and what floor are you on? Is there an elevator in your building?",
+        "score": 10,
+        "latency_ms": 2670
+      },
+      {
+        "user": "It's a 3 bedroom apartment, 80m²",
+        "bot": "Perfect! A 3-bedroom, 80m² apartment. \n\nQuick follow-up: **What floor are you on in Paris, and is there an elevator?** This helps us plan the logistics for moving your belongings out.",
+        "score": 30,
+        "latency_ms": 4270
+      },
+      {
+        "user": "March 15th",
+        "bot": "Great! **March 15th** is noted. ✓\n\nBut first, let me confirm the Paris apartment details: **What floor are you on, and is there an elevator in your building?**\n\nOnce I have that, I'll ask about your London place too.",
+        "score": 40,
+        "latency_ms": 1561
+      },
+      {
+        "user": "John Smith",
+        "bot": "Thanks, John! 👤\n\nNow, back to the practical details for your Paris apartment: **What floor are you on, and is there an elevator?**",
+        "score": 50,
+        "latency_ms": 2097
+      },
+      {
+        "user": "john.smith@email.com",
+        "bot": "Got it, John. I have your email. 📧\n\nI still need a couple of details to move forward:\n\n1. **What floor is your Paris apartment on, and is there an elevator?**\n2. **Where in London are you moving to?**\n\nOnce I have these, we can estimate your volume and finalize everything.",
+        "score": 60,
+        "latency_ms": 3470
+      },
+      {
+        "user": "0612345678",
+        "bot": "Perfect, John. I have your phone number. 📞\n\nNow, to finish qualifying your move, I need:\n\n1. **What floor is your Paris apartment on, and is there an elevator?**\n2. **Where in London are you moving to?**\n\nThese details help us calculate the access difficulty and distance.",
+        "score": 70,
+        "latency_ms": 2472
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 50,
+        "actual": 70,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "John",
+        "actual": "John",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Smith",
+        "actual": "Smith",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "john.smith@email.com",
+        "actual": "john.smith@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 34.6
+  },
+  {
+    "id": "test-29",
+    "name": "Lead multi-langue (FR/EN/ES)",
+    "description": "Lead qui alterne entre 3 langues dans la même conversation",
+    "timestamp": "2026-02-17T15:24:24.969Z",
+    "passed": true,
+    "messages_sent": 8,
+    "errors": [],
+    "conversation_id": "ee8be932-2349-4fb9-bb1d-5713e8838aa0",
+    "final_score": 75,
+    "final_lead": {
+      "prenom": "Carlos",
+      "nom": "Rodriguez",
+      "email": "carlos.rodriguez@email.com",
+      "telephone": null,
+      "score": 75,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 85,
+        "villeArrivee": "Madrid",
+        "dateSouhaitee": "20/01/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je voudrais déménager",
+        "bot": "Bonjour ! 👋\n\nBienvenue chez **Déménagements Test Paris** ! Je suis Tom, et je suis ravi de vous aider à préparer votre déménagement.\n\nPour commencer, **d'où et vers où souhaitez-vous déménager ?** (villes de départ et d'arrivée)",
+        "score": 10,
+        "latency_ms": 1613
+      },
+      {
+        "user": "Actually, I'm moving from Paris to Madrid",
+        "bot": "Great! So you're moving from **Paris to Madrid** (~1,270 km). \n\nJust to let you know, that's outside our main service zones, but we can still explore your project and our team will get back to you to discuss possibilities.\n\nNow, **what type of accommodation are you moving from in Paris?** (apartment, house, etc.) **And which floor, with or without an elevator?**",
+        "score": 10,
+        "latency_ms": 2784
+      },
+      {
+        "user": "C'est un appartement de 85m²",
+        "bot": "Parfait ! Un appartement de 85 m².\n\n**À quel étage se trouve votre appartement, et avez-vous un ascenseur ?**",
+        "score": 30,
+        "latency_ms": 1380
+      },
+      {
+        "user": "3rd floor, no elevator",
+        "bot": "Noté — 3e étage sans ascenseur à Paris.\n\nEt à Madrid, **quel type de logement vous accueillera ?** (appartement, maison ?) **Et à quel étage, avec ou sans ascenseur ?**",
+        "score": 35,
+        "latency_ms": 2277
+      },
+      {
+        "user": "En avril, le 20",
+        "bot": "Parfait, **20 avril** c'est noté.\n\nAvant de parler de la date précise, j'ai besoin de quelques infos sur votre logement à Madrid :\n\n**Quel type de logement ?** (appartement, maison...) **Et à quel étage, avec ou sans ascenseur ?**",
+        "score": 55,
+        "latency_ms": 1576
+      },
+      {
+        "user": "My name is Carlos Rodriguez",
+        "bot": "Merci Carlos ! C'est noté.\n\nRevenons à Madrid — **quel type de logement vous accueillera ?** (appartement, maison...) **Et à quel étage, avec ou sans ascenseur ?**",
+        "score": 65,
+        "latency_ms": 2407
+      },
+      {
+        "user": "carlos.rodriguez@email.com",
+        "bot": "Bien reçu, Carlos. Email noté : carlos.rodriguez@email.com\n\nMaintenant, pour finaliser votre projet — **à Madrid, quel type de logement ?** (appartement, maison...) **Et à quel étage, avec ou sans ascenseur ?**",
+        "score": 75,
+        "latency_ms": 1239
+      },
+      {
+        "user": "+34 612 345 678",
+        "bot": "Parfait, Carlos. Téléphone noté : +34 612 345 678\n\nRevenons à l'essentiel — **à Madrid, quel type de logement vous attend ?** (appartement, maison...) **Et à quel étage, avec ou sans ascenseur ?**",
+        "score": 75,
+        "latency_ms": 1109
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 55,
+        "actual": 75,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Carlos",
+        "actual": "Carlos",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Rodriguez",
+        "actual": "Rodriguez",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "carlos.rodriguez@email.com",
+        "actual": "carlos.rodriguez@email.com",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 32
+  }
+]

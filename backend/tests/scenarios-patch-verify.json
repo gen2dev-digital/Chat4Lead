@@ -1,0 +1,78 @@
+[
+    {
+        "id": "test-32",
+        "name": "Déménagement entreprise",
+        "description": "Directrice des opérations qui déménage des bureaux complets 800m²",
+        "messages": [
+            "Bonjour, je suis directrice des opérations chez TechCorp",
+            "Nous déménageons nos bureaux de Paris La Défense vers Boulogne-Billancourt",
+            "Ce sont 800m² de bureaux sur 2 étages avec ascenseur",
+            "Il y a environ 50 postes de travail, 10 salles de réunion, une salle serveurs",
+            "Nous avons besoin d'une prestation clef en main avec gestion des serveurs informatiques",
+            "Le déménagement doit se faire sur un weekend pour ne pas impacter la production",
+            "Budget estimé : 50 000€",
+            "Je m'appelle Isabelle Fontaine",
+            "i.fontaine@techcorp.fr",
+            "01 45 67 89 00"
+        ],
+        "expected": {
+            "score_min": 85,
+            "priorite": [
+                "CHAUD"
+            ],
+            "fields": {
+                "prenom": "Isabelle",
+                "nom": "Fontaine",
+                "email": "i.fontaine@techcorp.fr",
+                "telephone": "0145678900"
+            }
+        }
+    },
+    {
+        "id": "test-28",
+        "name": "Lead en anglais — BOT DOIT RÉPONDRE EN ANGLAIS",
+        "description": "Lead qui écrit en anglais — test détection langue + réponse adaptée",
+        "messages": [
+            "Hello, I need to move",
+            "From Paris to London",
+            "It's a 3 bedroom apartment, 80m²",
+            "March 15th",
+            "John Smith",
+            "john.smith@email.com",
+            "0612345678"
+        ],
+        "expected": {
+            "score_min": 50,
+            "bot_language": "en",
+            "fields": {
+                "prenom": "John",
+                "nom": "Smith",
+                "email": "john.smith@email.com",
+                "telephone": "0612345678"
+            }
+        }
+    },
+    {
+        "id": "test-29",
+        "name": "Lead multi-langue (FR/EN/ES)",
+        "description": "Lead qui alterne entre 3 langues dans la même conversation",
+        "messages": [
+            "Bonjour, je voudrais déménager",
+            "Actually, I'm moving from Paris to Madrid",
+            "C'est un appartement de 85m²",
+            "3rd floor, no elevator",
+            "En avril, le 20",
+            "My name is Carlos Rodriguez",
+            "carlos.rodriguez@email.com",
+            "+34 612 345 678"
+        ],
+        "expected": {
+            "score_min": 55,
+            "fields": {
+                "prenom": "Carlos",
+                "nom": "Rodriguez",
+                "email": "carlos.rodriguez@email.com"
+            }
+        }
+    }
+]

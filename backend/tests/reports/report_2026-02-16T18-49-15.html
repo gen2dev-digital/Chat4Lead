@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Tests Chat4Lead — 16/02/2026 19:49:15</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);margin-bottom:32px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.stat-value{font-size:36px;font-weight:700}
+.stat-label{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.test{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.test-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .15s}
+.test-header:hover{background:rgba(99,102,241,.06)}
+.test-name{font-weight:600;font-size:16px}
+.test-desc{color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.badge.pass{background:rgba(16,185,129,.15);color:var(--green)}
+.badge.fail{background:rgba(239,68,68,.15);color:var(--red)}
+.test-body{padding:0 24px 24px;display:none}
+.test.open .test-body{display:block}
+.exchange{margin:8px 0}
+.msg{padding:10px 14px;border-radius:10px;margin:4px 0;max-width:85%;font-size:14px;word-wrap:break-word}
+.msg.user{background:var(--accent);color:#fff;margin-left:auto;text-align:right}
+.msg.bot{background:#334155}
+.msg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.assertion{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin:4px 0;font-size:14px}
+.assertion.pass{background:rgba(16,185,129,.08)}
+.assertion.fail{background:rgba(239,68,68,.08)}
+.assertion-icon{font-size:16px}
+.lead-table{width:100%;border-collapse:collapse;margin:12px 0}
+.lead-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+.lead-table td:first-child{color:var(--muted);width:140px}
+.section-title{font-size:14px;font-weight:600;color:var(--accent);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.verdict{font-size:18px;font-weight:700;padding:16px 24px;border-radius:12px;margin-top:32px;text-align:center}
+.verdict.good{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.verdict.warn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.verdict.bad{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Rapport Tests Chat4Lead</h1>
+<p class="subtitle">Généré le 16/02/2026 19:49:15 — Durée totale : 91s</p>
+
+<div class="summary">
+  <div class="stat"><div class="stat-value">1</div><div class="stat-label">Tests exécutés</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--green)">1</div><div class="stat-label">Réussis</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--red)">0</div><div class="stat-label">Échoués</div></div>
+  <div class="stat"><div class="stat-value" style="color:#10b981">100%</div><div class="stat-label">Taux de succès</div></div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead urgence <span style="color:var(--muted);font-weight:400;font-size:13px">test-05</span></div>
+      <div class="test-desc">Déménagement dans 5 jours</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>5</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Thomas</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>thomas.urgent@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0611223344</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>90.6s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (5/5)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 60, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;thomas.urgent@email.com&quot;, obtenu &quot;thomas.urgent@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0611223344&quot;, obtenu &quot;0611223344&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu &quot;Thomas&quot;</div>
+
+    <div class="section-title">💬 Conversation (5 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je dois déménager dans 5 jours</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">55805ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lille, 50m²</div>
+      <div class="msg bot">C'est noté, donc... vous souhaitez déménager de Paris à Lille avec une surface totale de 50 m². Pouvez-vous me dire si vous connaissez déjà votre nouveau logement à Lille ou si vous avez des difficultés pour accéder à votre ancienne maison à Paris ?</div>
+      <div class="msg-meta">22579ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Thomas</div>
+      <div class="msg bot">Salut Thomas, je suis Tom, ton assistant pour ton déménagement. Donc, vous allez déménager de Paris à Lille avec 50 m². Qu'est-ce que vous pouvez me dire sur votre logement ? Quel étage vous logez-vous actuellement ?</div>
+      <div class="msg-meta">565ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas.urgent@email.com</div>
+      <div class="msg bot">C'est noté Thomas, donc... vous avez une adresse email que vous souhaitez garder sous le coude. Désolé, mais ça ne me renseigne pas beaucoup sur votre logement. Pouvez-vous me dire sur quel étage vous logez-vous actuellement ?</div>
+      <div class="msg-meta">630ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 11 22 33 44</div>
+      <div class="msg bot">C'est noté, mais... ce ne semble pas être un numéro de téléphone valide. Je suppose que vous voulez me donner un numéro de téléphone pour que je puisse vous contacter plus facilement pour votre projet de déménagement ?</div>
+      <div class="msg-meta">634ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict good">✅ Qualité validée — 100% de réussite</div>
+</div>
+</body>
+</html>

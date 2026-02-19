@@ -1,0 +1,129 @@
+[
+  {
+    "id": "test-01",
+    "name": "Lead parfait",
+    "description": "Lead qui donne toutes les infos facilement",
+    "timestamp": "2026-02-16T16:57:25.409Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "079fead1-fd79-49d6-87e1-e9641e8d56a7",
+    "final_score": 85,
+    "final_lead": {
+      "prenom": "Sophie",
+      "nom": "Martin",
+      "email": "sophie.martin@email.com",
+      "telephone": "0612345678",
+      "score": 85,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 3,
+        "formule": "STANDARD",
+        "surface": 70,
+        "nbPieces": 3,
+        "ascenseur": false,
+        "villeDepart": "Paris",
+        "villeArrivee": "Versailles",
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je voudrais déménager",
+        "bot": "Bonjour ! Je suis Tom, votre assistant pour Déménagements Test Paris. Comment puis-je vous aider aujourd'hui ? Quel est le but de votre déménagement (départ, arrivée, etc.) ?",
+        "score": 10,
+        "latency_ms": 708
+      },
+      {
+        "user": "De Paris 15ème vers Versailles",
+        "bot": "C'est noté Sophie, donc... vous déménagez de Paris 15ème vers Versailles. Pourriez-vous me donner plus de détails sur vos logements ? Quel est le type de logement que vous quittez et celui que vous occupez à Versailles ? Est-ce un appartement ou une maison ?",
+        "score": 20,
+        "latency_ms": 774
+      },
+      {
+        "user": "Un appartement F3 de 70m² au 3ème étage sans ascenseur",
+        "bot": "Donc, vous quittez un appartement F3 de 70m² situé au 3ème étage sans ascenseur à Paris 15ème et vous arrivez à Versailles. Pourriez-vous me donner une idée de votre volume de déménagement ? Quels meubles avez-vous à déménager ? Est-ce un déménagement complet ou seulement quelques éléments ?",
+        "score": 40,
+        "latency_ms": 17380
+      },
+      {
+        "user": "Oui il y a un parking en bas",
+        "bot": "C'est noté Sophie, donc... il y a un parking en bas qui facilitera la manutention des objets lourds. Pourriez-vous me donner un aperçu de la quantité de meubles que vous avez ? Par exemple, combien de chambres, de lits, de meubles de salon, etc. ? Cela m'aidera à estimer votre volume de déménagement.",
+        "score": 40,
+        "latency_ms": 18209
+      },
+      {
+        "user": "Le 15 mars",
+        "bot": "Donc, vous souhaitez déménager le 15 mars. Je vais maintenant vous poser quelques questions pour déterminer la prestation et les coûts de votre déménagement. Voulez-vous que nous effectuions un déménagement standard, économique ou luxe ?",
+        "score": 50,
+        "latency_ms": 38642
+      },
+      {
+        "user": "Je suis Sophie Martin",
+        "bot": "Bonjour Sophie, c'est noté ! Donc, vous êtes Sophie Martin et vous souhaitez déménager le 15 mars. Pourriez-vous me dire combien de pièces vous avez dans votre appartement actuel et combien vous aurez dans votre nouvel appartement ?",
+        "score": 60,
+        "latency_ms": 19726
+      },
+      {
+        "user": "sophie.martin@email.com",
+        "bot": "C'est noté Sophie, donc... votre adresse email est bien sophie.martin@email.com. Maintenant, je vais passer à la prochaine étape. Pouvez-vous me donner quelques informations sur votre logement actuel et votre nouvel appartement ? Par exemple, combien d'étages à chaque endroit, etc. ?",
+        "score": 70,
+        "latency_ms": 7913
+      },
+      {
+        "user": "06 12 34 56 78",
+        "bot": "C'est noté Sophie, donc... votre numéro de téléphone est bien 06 12 34 56 78. Maintenant, je vais passer à la prochaine étape. Pouvez-vous me dire quels sont les villes de départ et d'arrivée de votre déménagement ?",
+        "score": 80,
+        "latency_ms": 23751
+      },
+      {
+        "user": "La formule Standard me semble bien",
+        "bot": "C'est noté Sophie, donc... vous avez choisi la formule Standard pour votre déménagement. Cela inclut les services Eco, Fragile et Démontage. Je vais prendre en compte cela pour votre estimation. Maintenant, je vais vous poser la question suivante : combien de pièces votre nouvel appartement compte-t-il ?",
+        "score": 85,
+        "latency_ms": 17618
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 85,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "sophie.martin@email.com",
+        "actual": "sophie.martin@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Sophie",
+        "actual": "Sophie",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Martin",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 164.9
+  }
+]

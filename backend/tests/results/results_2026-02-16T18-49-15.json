@@ -1,0 +1,95 @@
+[
+  {
+    "id": "test-05",
+    "name": "Lead urgence",
+    "description": "Déménagement dans 5 jours",
+    "timestamp": "2026-02-16T18:47:44.954Z",
+    "passed": true,
+    "messages_sent": 5,
+    "errors": [],
+    "conversation_id": "8103e246-41ef-4344-acaa-2eec6df97c8c",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": "Thomas",
+      "nom": null,
+      "email": "thomas.urgent@email.com",
+      "telephone": "0611223344",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 50,
+        "villeArrivee": "Lille",
+        "dateSouhaitee": "21/02/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je dois déménager dans 5 jours",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 30,
+        "latency_ms": 55805
+      },
+      {
+        "user": "Paris vers Lille, 50m²",
+        "bot": "C'est noté, donc... vous souhaitez déménager de Paris à Lille avec une surface totale de 50 m². Pouvez-vous me dire si vous connaissez déjà votre nouveau logement à Lille ou si vous avez des difficultés pour accéder à votre ancienne maison à Paris ?",
+        "score": 50,
+        "latency_ms": 22579
+      },
+      {
+        "user": "Je suis Thomas",
+        "bot": "Salut Thomas, je suis Tom, ton assistant pour ton déménagement. Donc, vous allez déménager de Paris à Lille avec 50 m². Qu'est-ce que vous pouvez me dire sur votre logement ? Quel étage vous logez-vous actuellement ?",
+        "score": 60,
+        "latency_ms": 565
+      },
+      {
+        "user": "thomas.urgent@email.com",
+        "bot": "C'est noté Thomas, donc... vous avez une adresse email que vous souhaitez garder sous le coude. Désolé, mais ça ne me renseigne pas beaucoup sur votre logement. Pouvez-vous me dire sur quel étage vous logez-vous actuellement ?",
+        "score": 70,
+        "latency_ms": 630
+      },
+      {
+        "user": "06 11 22 33 44",
+        "bot": "C'est noté, mais... ce ne semble pas être un numéro de téléphone valide. Je suppose que vous voulez me donner un numéro de téléphone pour que je puisse vous contacter plus facilement pour votre projet de déménagement ?",
+        "score": 80,
+        "latency_ms": 634
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 80,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "thomas.urgent@email.com",
+        "actual": "thomas.urgent@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0611223344",
+        "actual": "0611223344",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Thomas",
+        "actual": "Thomas",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 90.6
+  }
+]

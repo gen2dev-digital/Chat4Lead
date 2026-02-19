@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ChatWidget } from './ChatWidget';
+import { ChatWidget } from './ChatWidget.tsx';
 import type { WidgetConfig } from './types';
 import './index.css';
 

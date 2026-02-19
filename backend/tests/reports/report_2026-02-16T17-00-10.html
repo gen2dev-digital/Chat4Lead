@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Tests Chat4Lead — 16/02/2026 18:00:10</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);margin-bottom:32px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.stat-value{font-size:36px;font-weight:700}
+.stat-label{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.test{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.test-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .15s}
+.test-header:hover{background:rgba(99,102,241,.06)}
+.test-name{font-weight:600;font-size:16px}
+.test-desc{color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.badge.pass{background:rgba(16,185,129,.15);color:var(--green)}
+.badge.fail{background:rgba(239,68,68,.15);color:var(--red)}
+.test-body{padding:0 24px 24px;display:none}
+.test.open .test-body{display:block}
+.exchange{margin:8px 0}
+.msg{padding:10px 14px;border-radius:10px;margin:4px 0;max-width:85%;font-size:14px;word-wrap:break-word}
+.msg.user{background:var(--accent);color:#fff;margin-left:auto;text-align:right}
+.msg.bot{background:#334155}
+.msg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.assertion{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin:4px 0;font-size:14px}
+.assertion.pass{background:rgba(16,185,129,.08)}
+.assertion.fail{background:rgba(239,68,68,.08)}
+.assertion-icon{font-size:16px}
+.lead-table{width:100%;border-collapse:collapse;margin:12px 0}
+.lead-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+.lead-table td:first-child{color:var(--muted);width:140px}
+.section-title{font-size:14px;font-weight:600;color:var(--accent);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.verdict{font-size:18px;font-weight:700;padding:16px 24px;border-radius:12px;margin-top:32px;text-align:center}
+.verdict.good{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.verdict.warn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.verdict.bad{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Rapport Tests Chat4Lead</h1>
+<p class="subtitle">Généré le 16/02/2026 18:00:10 — Durée totale : 165s</p>
+
+<div class="summary">
+  <div class="stat"><div class="stat-value">1</div><div class="stat-label">Tests exécutés</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--green)">1</div><div class="stat-label">Réussis</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--red)">0</div><div class="stat-label">Échoués</div></div>
+  <div class="stat"><div class="stat-value" style="color:#10b981">100%</div><div class="stat-label">Taux de succès</div></div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead parfait <span style="color:var(--muted);font-weight:400;font-size:13px">test-01</span></div>
+      <div class="test-desc">Lead qui donne toutes les infos facilement</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>85/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>STANDARD</td></tr>
+      <tr><td>Durée</td><td>164.9s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (6/6)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 80, obtenu 85</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie.martin@email.com&quot;, obtenu &quot;sophie.martin@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu &quot;Martin&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je voudrais déménager</div>
+      <div class="msg bot">Bonjour ! Je suis Tom, votre assistant pour Déménagements Test Paris. Comment puis-je vous aider aujourd'hui ? Quel est le but de votre déménagement (départ, arrivée, etc.) ?</div>
+      <div class="msg-meta">708ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Paris 15ème vers Versailles</div>
+      <div class="msg bot">C'est noté Sophie, donc... vous déménagez de Paris 15ème vers Versailles. Pourriez-vous me donner plus de détails sur vos logements ? Quel est le type de logement que vous quittez et celui que vous occupez à Versailles ? Est-ce un appartement ou une maison ?</div>
+      <div class="msg-meta">774ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Un appartement F3 de 70m² au 3ème étage sans ascenseur</div>
+      <div class="msg bot">Donc, vous quittez un appartement F3 de 70m² situé au 3ème étage sans ascenseur à Paris 15ème et vous arrivez à Versailles. Pourriez-vous me donner une idée de votre volume de déménagement ? Quels meubles avez-vous à déménager ? Est-ce un déménagement complet ou seulement quelques éléments ?</div>
+      <div class="msg-meta">17380ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Oui il y a un parking en bas</div>
+      <div class="msg bot">C'est noté Sophie, donc... il y a un parking en bas qui facilitera la manutention des objets lourds. Pourriez-vous me donner un aperçu de la quantité de meubles que vous avez ? Par exemple, combien de chambres, de lits, de meubles de salon, etc. ? Cela m'aidera à estimer votre volume de déménagement.</div>
+      <div class="msg-meta">18209ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 15 mars</div>
+      <div class="msg bot">Donc, vous souhaitez déménager le 15 mars. Je vais maintenant vous poser quelques questions pour déterminer la prestation et les coûts de votre déménagement. Voulez-vous que nous effectuions un déménagement standard, économique ou luxe ?</div>
+      <div class="msg-meta">38642ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Sophie Martin</div>
+      <div class="msg bot">Bonjour Sophie, c'est noté ! Donc, vous êtes Sophie Martin et vous souhaitez déménager le 15 mars. Pourriez-vous me dire combien de pièces vous avez dans votre appartement actuel et combien vous aurez dans votre nouvel appartement ?</div>
+      <div class="msg-meta">19726ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">sophie.martin@email.com</div>
+      <div class="msg bot">C'est noté Sophie, donc... votre adresse email est bien sophie.martin@email.com. Maintenant, je vais passer à la prochaine étape. Pouvez-vous me donner quelques informations sur votre logement actuel et votre nouvel appartement ? Par exemple, combien d'étages à chaque endroit, etc. ?</div>
+      <div class="msg-meta">7913ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 12 34 56 78</div>
+      <div class="msg bot">C'est noté Sophie, donc... votre numéro de téléphone est bien 06 12 34 56 78. Maintenant, je vais passer à la prochaine étape. Pouvez-vous me dire quels sont les villes de départ et d'arrivée de votre déménagement ?</div>
+      <div class="msg-meta">23751ms · score=80</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">La formule Standard me semble bien</div>
+      <div class="msg bot">C'est noté Sophie, donc... vous avez choisi la formule Standard pour votre déménagement. Cela inclut les services Eco, Fragile et Démontage. Je vais prendre en compte cela pour votre estimation. Maintenant, je vais vous poser la question suivante : combien de pièces votre nouvel appartement compte-t-il ?</div>
+      <div class="msg-meta">17618ms · score=85</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict good">✅ Qualité validée — 100% de réussite</div>
+</div>
+</body>
+</html>

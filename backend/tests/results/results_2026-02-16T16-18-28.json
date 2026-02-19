@@ -1,0 +1,126 @@
+[
+  {
+    "id": "test-01",
+    "name": "Lead parfait",
+    "description": "Lead qui donne toutes les infos facilement",
+    "timestamp": "2026-02-16T16:16:52.637Z",
+    "passed": false,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "2fcbe892-34cf-4cc4-aa91-50ec5c0b5fe0",
+    "final_score": 50,
+    "final_lead": {
+      "prenom": "Sophie",
+      "nom": "Martin",
+      "email": "sophie.martin@email.com",
+      "telephone": "0612345678",
+      "score": 50,
+      "priorite": "MOYEN",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 3,
+        "formule": "STANDARD",
+        "surface": 70,
+        "nbPieces": 3,
+        "ascenseur": false
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je voudrais déménager",
+        "bot": "Bonjour ! Je me présente, je suis Tom de Déménagements Test Paris. Je suis là pour vous accompagner dans votre projet de déménagement et vous proposer la meilleure solution adaptée à vos besoins. 😊 Pouvez-vous me dire d'où vous allez déménager et où vous allez vous installer ?",
+        "score": 10,
+        "latency_ms": 1163
+      },
+      {
+        "user": "De Paris 15ème vers Versailles",
+        "bot": "Un déménagement dans la région Île-de-France ! C'est noté, vous allez déménager de Paris 15ème vers Versailles. Puis-je savoir quel type de logement vous avez actuellement à Paris 15ème et quel type de logement vous allez occuper à Versailles ? Est-ce un appartement, une maison, un studio ?",
+        "score": 10,
+        "latency_ms": 830
+      },
+      {
+        "user": "Un appartement F3 de 70m² au 3ème étage sans ascenseur",
+        "bot": "C'est noté, vous avez un appartement F3 de 70m² au 3ème étage sans ascenseur à Paris 15ème. Cela peut être un peu compliqué pour le déménagement, mais ne vous inquiétez pas, nous sommes équipés pour gérer ce type de situation. Pouvez-vous me dire approximativement combien de pièces vous avez dans cet appartement et si vous avez des meubles volumineux, tels que des canapés ou des bibliothèques ?",
+        "score": 25,
+        "latency_ms": 872
+      },
+      {
+        "user": "Oui il y a un parking en bas",
+        "bot": "C'est pratique ! Le parking en bas de l'immeuble facilitera certainement le chargement de nos camions. C'est noté, vous avez un appartement F3 de 70m² au 3ème étage sans ascenseur, mais avec un parking en bas. Maintenant, pour estimer le volume de vos biens, puis-je savoir si vous avez une idée de la quantité de cartons et de meubles que vous allez déménager ? Ou si vous préférez, nous pouvons utiliser une méthode de calcul pour estimer le volume en fonction de la surface de votre appartement ?",
+        "score": 25,
+        "latency_ms": 1164
+      },
+      {
+        "user": "Le 15 mars",
+        "bot": "Vous avez une date précise pour votre déménagement, le 15 mars. C'est noté ! Nous allons nous assurer de réserver cette date pour vous. Maintenant, pour affiner notre estimation, je voudrais revenir sur le volume de vos biens. Comme nous avons déjà discuté, vous avez un appartement F3 de 70m². En utilisant notre méthode de calcul, nous pouvons estimer que le volume de vos biens sera d'environ 35-40m³. Est-ce que cela vous semble raisonnable ?",
+        "score": 25,
+        "latency_ms": 5274
+      },
+      {
+        "user": "Je suis Sophie Martin",
+        "bot": "Enchanté Sophie ! C'est noté, vous êtes Sophie Martin et vous allez déménager de Paris 15ème à Versailles le 15 mars. Je vais vous proposer une solution de déménagement personnalisée en fonction de vos besoins. Pour confirmer, vous avez un appartement F3 de 70m² au 3ème étage sans ascenseur à Paris 15ème, et vous allez vous installer à Versailles. Nous avons estimé le volume de vos biens à environ 35-40m³. Quelle formule de déménagement vous intéresse ? Nous avons trois options : Eco, Standard et Luxe. Quelle est votre préférence ?",
+        "score": 25,
+        "latency_ms": 15959
+      },
+      {
+        "user": "sophie.martin@email.com",
+        "bot": "Merci de me communiquer votre adresse e-mail, Sophie ! C'est noté, votre adresse e-mail est sophie.martin@email.com. Nous allons vous envoyer un récapitulatif de votre demande de déménagement et une estimation détaillée de nos services.\n\n📋 **VOTRE PROJET DE DÉMÉNAGEMENT**\n\n👤 **Client** : Sophie Martin\n📍 **Parcours** : Paris 15ème ➡️ Versailles\n📦 **Volume** : 35-40 m³\n🏗️ **Accès** : 3ème étage sans ascenseur\n🛠️ **Prestation** : À définir (Eco, Standard ou Luxe)\n\n💰 **ESTIMATION** : À définir\n\n**Prochaine étape** : Notre expert va vous appeler demain pour discuter des détails de votre déménagement et vous proposer une estimation personnalisée. Nous vous remercions de votre confiance et nous sommes impatients de vous aider à réaliser votre déménagement !",
+        "score": 35,
+        "latency_ms": 16421
+      },
+      {
+        "user": "06 12 34 56 78",
+        "bot": "Merci de me communiquer votre numéro de téléphone, Sophie ! C'est noté, votre numéro de téléphone est 06 12 34 56 78. Nous allons vous appeler demain pour discuter des détails de votre déménagement et vous proposer une estimation personnalisée.\n\nJe vais vous récapituler les informations que nous avons collectées :\n\n📋 **VOTRE PROJET DE DÉMÉNAGEMENT**\n\n👤 **Client** : Sophie Martin\n📍 **Parcours** : Paris 15ème ➡️ Versailles\n📦 **Volume** : 35-40 m³\n🏗️ **Accès** : 3ème étage sans ascenseur\n🛠️ **Prestation** : À définir (Eco, Standard ou Luxe)\n📞 **Téléphone** : 06 12 34 56 78\n📧 **E-mail** : sophie.martin@email.com\n\n💰 **ESTIMATION** : À définir\n\nNous vous remercions de votre confiance et nous sommes impatients de vous aider à réaliser votre déménagement ! Notre expert vous appellera demain pour discuter des détails et vous proposer une estimation personnalisée. À bientôt, Sophie !",
+        "score": 45,
+        "latency_ms": 17413
+      },
+      {
+        "user": "La formule Standard me semble bien",
+        "bot": "Excellente choix, Sophie ! La formule Standard est notre option la plus populaire et elle convient parfaitement à la plupart des déménagements. Avec cette formule, nous nous occupons de tout, desde l'emballage de vos biens jusqu'au déchargement à votre nouvelle adresse.\n\n📋 **VOTRE PROJET DE DÉMÉNAGEMENT**\n\n👤 **Client** : Sophie Martin\n📍 **Parcours** : Paris 15ème ➡️ Versailles\n📦 **Volume** : 35-40 m³\n🏗️ **Accès** : 3ème étage sans ascenseur\n🛠️ **Prestation** : Formule Standard\n📞 **Téléphone** : 06 12 34 56 78\n📧 **E-mail** : sophie.martin@email.com\n\n💰 **ESTIMATION** : Nous estimons que le coût de votre déménagement sera compris entre 800€ et 1 200€ TTC, en fonction des détails finals de votre déménagement.\n\nNous allons vous envoyer un contrat de déménagement pour que vous puissiez le signer et nous retourner. Nous nous occupons de tout le reste. Notre équipe de déménageurs expérimentés sera chez vous le 15 mars pour vous aider à déménager.\n\nJe vous remercie de votre confiance, Sophie. Nous sommes impatients de vous aider à réaliser votre déménagement !",
+        "score": 50,
+        "latency_ms": 23915
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 50,
+        "passed": false
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "MOYEN",
+        "passed": false
+      },
+      {
+        "type": "field.email",
+        "expected": "sophie.martin@email.com",
+        "actual": "sophie.martin@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Sophie",
+        "actual": "Sophie",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Martin",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 95.6
+  }
+]

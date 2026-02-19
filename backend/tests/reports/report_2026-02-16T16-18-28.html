@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Tests Chat4Lead — 16/02/2026 17:18:28</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);margin-bottom:32px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.stat-value{font-size:36px;font-weight:700}
+.stat-label{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.test{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.test-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .15s}
+.test-header:hover{background:rgba(99,102,241,.06)}
+.test-name{font-weight:600;font-size:16px}
+.test-desc{color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.badge.pass{background:rgba(16,185,129,.15);color:var(--green)}
+.badge.fail{background:rgba(239,68,68,.15);color:var(--red)}
+.test-body{padding:0 24px 24px;display:none}
+.test.open .test-body{display:block}
+.exchange{margin:8px 0}
+.msg{padding:10px 14px;border-radius:10px;margin:4px 0;max-width:85%;font-size:14px;word-wrap:break-word}
+.msg.user{background:var(--accent);color:#fff;margin-left:auto;text-align:right}
+.msg.bot{background:#334155}
+.msg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.assertion{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin:4px 0;font-size:14px}
+.assertion.pass{background:rgba(16,185,129,.08)}
+.assertion.fail{background:rgba(239,68,68,.08)}
+.assertion-icon{font-size:16px}
+.lead-table{width:100%;border-collapse:collapse;margin:12px 0}
+.lead-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+.lead-table td:first-child{color:var(--muted);width:140px}
+.section-title{font-size:14px;font-weight:600;color:var(--accent);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.verdict{font-size:18px;font-weight:700;padding:16px 24px;border-radius:12px;margin-top:32px;text-align:center}
+.verdict.good{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.verdict.warn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.verdict.bad{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Rapport Tests Chat4Lead</h1>
+<p class="subtitle">Généré le 16/02/2026 17:18:28 — Durée totale : 96s</p>
+
+<div class="summary">
+  <div class="stat"><div class="stat-value">1</div><div class="stat-label">Tests exécutés</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--green)">0</div><div class="stat-label">Réussis</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--red)">1</div><div class="stat-label">Échoués</div></div>
+  <div class="stat"><div class="stat-value" style="color:#ef4444">0%</div><div class="stat-label">Taux de succès</div></div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead parfait <span style="color:var(--muted);font-weight:400;font-size:13px">test-01</span></div>
+      <div class="test-desc">Lead qui donne toutes les infos facilement</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>50/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>STANDARD</td></tr>
+      <tr><td>Durée</td><td>95.6s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/6)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 80, obtenu 50</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie.martin@email.com&quot;, obtenu &quot;sophie.martin@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu &quot;Martin&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je voudrais déménager</div>
+      <div class="msg bot">Bonjour ! Je me présente, je suis Tom de Déménagements Test Paris. Je suis là pour vous accompagner dans votre projet de déménagement et vous proposer la meilleure solution adaptée à vos besoins. 😊 Pouvez-vous me dire d'où vous allez déménager et où vous allez vous installer ?</div>
+      <div class="msg-meta">1163ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Paris 15ème vers Versailles</div>
+      <div class="msg bot">Un déménagement dans la région Île-de-France ! C'est noté, vous allez déménager de Paris 15ème vers Versailles. Puis-je savoir quel type de logement vous avez actuellement à Paris 15ème et quel type de logement vous allez occuper à Versailles ? Est-ce un appartement, une maison, un studio ?</div>
+      <div class="msg-meta">830ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Un appartement F3 de 70m² au 3ème étage sans ascenseur</div>
+      <div class="msg bot">C'est noté, vous avez un appartement F3 de 70m² au 3ème étage sans ascenseur à Paris 15ème. Cela peut être un peu compliqué pour le déménagement, mais ne vous inquiétez pas, nous sommes équipés pour gérer ce type de situation. Pouvez-vous me dire approximativement combien de pièces vous avez dans cet appartement et si vous avez des meubles volumineux, tels que des canapés ou des bibliothèques ?</div>
+      <div class="msg-meta">872ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Oui il y a un parking en bas</div>
+      <div class="msg bot">C'est pratique ! Le parking en bas de l'immeuble facilitera certainement le chargement de nos camions. C'est noté, vous avez un appartement F3 de 70m² au 3ème étage sans ascenseur, mais avec un parking en bas. Maintenant, pour estimer le volume de vos biens, puis-je savoir si vous avez une idée de la quantité de cartons et de meubles que vous allez déménager ? Ou si vous préférez, nous pouvons utiliser une méthode de calcul pour estimer le volume en fonction de la surface de votre appartement ?</div>
+      <div class="msg-meta">1164ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 15 mars</div>
+      <div class="msg bot">Vous avez une date précise pour votre déménagement, le 15 mars. C'est noté ! Nous allons nous assurer de réserver cette date pour vous. Maintenant, pour affiner notre estimation, je voudrais revenir sur le volume de vos biens. Comme nous avons déjà discuté, vous avez un appartement F3 de 70m². En utilisant notre méthode de calcul, nous pouvons estimer que le volume de vos biens sera d'environ 35-40m³. Est-ce que cela vous semble raisonnable ?</div>
+      <div class="msg-meta">5274ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Sophie Martin</div>
+      <div class="msg bot">Enchanté Sophie ! C'est noté, vous êtes Sophie Martin et vous allez déménager de Paris 15ème à Versailles le 15 mars. Je vais vous proposer une solution de déménagement personnalisée en fonction de vos besoins. Pour confirmer, vous avez un appartement F3 de 70m² au 3ème étage sans ascenseur à Paris 15ème, et vous allez vous installer à Versailles. Nous avons estimé le volume de vos biens à environ 35-40m³. Quelle formule de déménagement vous intéresse ? Nous avons trois options : Eco, Standard et Luxe. Quelle est votre préférence ?</div>
+      <div class="msg-meta">15959ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">sophie.martin@email.com</div>
+      <div class="msg bot">Merci de me communiquer votre adresse e-mail, Sophie ! C'est noté, votre adresse e-mail est sophie.martin@email.com. Nous allons vous envoyer un récapitulatif de votre demande de déménagement et une estimation détaillée de nos services.<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br><br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris 15ème ➡️ Versailles<br>📦 **Volume** : 35-40 m³<br>🏗️ **Accès** : 3ème étage sans ascenseur<br>🛠️ **Prestation** : À définir (Eco, Standard ou Luxe)<br><br>💰 **ESTIMATION** : À définir<br><br>**Prochaine étape** : Notre expert va vous appeler demain pour discuter des détails de votre déménagement et vous proposer une estimation personnalisée. Nous vous remercions de votre confiance et nous sommes impatients de vous aider à réaliser votre déménagement !</div>
+      <div class="msg-meta">16421ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 12 34 56 78</div>
+      <div class="msg bot">Merci de me communiquer votre numéro de téléphone, Sophie ! C'est noté, votre numéro de téléphone est 06 12 34 56 78. Nous allons vous appeler demain pour discuter des détails de votre déménagement et vous proposer une estimation personnalisée.<br><br>Je vais vous récapituler les informations que nous avons collectées :<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br><br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris 15ème ➡️ Versailles<br>📦 **Volume** : 35-40 m³<br>🏗️ **Accès** : 3ème étage sans ascenseur<br>🛠️ **Prestation** : À définir (Eco, Standard ou Luxe)<br>📞 **Téléphone** : 06 12 34 56 78<br>📧 **E-mail** : sophie.martin@email.com<br><br>💰 **ESTIMATION** : À définir<br><br>Nous vous remercions de votre confiance et nous sommes impatients de vous aider à réaliser votre déménagement ! Notre expert vous appellera demain pour discuter des détails et vous proposer une estimation personnalisée. À bientôt, Sophie !</div>
+      <div class="msg-meta">17413ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">La formule Standard me semble bien</div>
+      <div class="msg bot">Excellente choix, Sophie ! La formule Standard est notre option la plus populaire et elle convient parfaitement à la plupart des déménagements. Avec cette formule, nous nous occupons de tout, desde l'emballage de vos biens jusqu'au déchargement à votre nouvelle adresse.<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br><br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris 15ème ➡️ Versailles<br>📦 **Volume** : 35-40 m³<br>🏗️ **Accès** : 3ème étage sans ascenseur<br>🛠️ **Prestation** : Formule Standard<br>📞 **Téléphone** : 06 12 34 56 78<br>📧 **E-mail** : sophie.martin@email.com<br><br>💰 **ESTIMATION** : Nous estimons que le coût de votre déménagement sera compris entre 800€ et 1 200€ TTC, en fonction des détails finals de votre déménagement.<br><br>Nous allons vous envoyer un contrat de déménagement pour que vous puissiez le signer et nous retourner. Nous nous occupons de tout le reste. Notre équipe de déménageurs expérimentés sera chez vous le 15 mars pour vous aider à déménager.<br><br>Je vous remercie de votre confiance, Sophie. Nous sommes impatients de vous aider à réaliser votre déménagement !</div>
+      <div class="msg-meta">23915ms · score=50</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict bad">❌ Optimisation prompt nécessaire — 0% de réussite</div>
+</div>
+</body>
+</html>

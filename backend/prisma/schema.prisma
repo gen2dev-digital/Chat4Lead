@@ -108,6 +108,9 @@ model Lead {
   statut           StatutLead   @default(NOUVEAU)
   notificationSent Boolean      @default(false)
   pushedToCRM      Boolean      @default(false)
+  creneauRappel    String?
+  satisfaction     String?
+  satisfactionScore Int?
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
 

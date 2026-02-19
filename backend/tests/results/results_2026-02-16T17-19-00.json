@@ -1,0 +1,1065 @@
+[
+  {
+    "id": "test-01",
+    "name": "Lead parfait",
+    "description": "Lead qui donne toutes les infos facilement",
+    "timestamp": "2026-02-16T17:00:37.456Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "e66155e6-69c2-49f0-ad0d-9e0cb3a4bafa",
+    "final_score": 85,
+    "final_lead": {
+      "prenom": "Sophie",
+      "nom": "Martin",
+      "email": "sophie.martin@email.com",
+      "telephone": "0612345678",
+      "score": 85,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 3,
+        "formule": "STANDARD",
+        "surface": 70,
+        "nbPieces": 3,
+        "ascenseur": false,
+        "villeDepart": "Paris",
+        "villeArrivee": "Versailles",
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je voudrais déménager",
+        "bot": "Bonjour ! Je suis Tom, votre assistant pour Déménagements Test Paris. Comment puis-je vous aider aujourd'hui pour votre déménagement ? \n\nPouvez-vous me dire où vous souhaitez déménager (départ et arrivée) ?",
+        "score": 10,
+        "latency_ms": 2752
+      },
+      {
+        "user": "De Paris 15ème vers Versailles",
+        "bot": "C'est noté ! Alors, vous déménagez de Paris 15ème vers Versailles. C'est une belle destination !\n\nPouvez-vous me dire quel est votre logement actuel (appartement, maison, etc.) et combien d'étages il y a ?",
+        "score": 20,
+        "latency_ms": 4992
+      },
+      {
+        "user": "Un appartement F3 de 70m² au 3ème étage sans ascenseur",
+        "bot": "C'est noté ! Alors, vous avez un appartement F3 de 70m² situé au 3ème étage sans ascenseur. Il faudra donc prévoir la mise en place d'échafaudages ou de cordes pour accéder à votre appartement.\n\nPouvez-vous me dire combien d'objets et de meubles vous avez pour que je puisse estimer le volume de vos effets personnels ?",
+        "score": 40,
+        "latency_ms": 16094
+      },
+      {
+        "user": "Oui il y a un parking en bas",
+        "bot": "C'est une belle commodité ! Il faudra donc ne pas oublier de prévenir les équipes de déménagement pour qu'elles puissent accéder au parking en bas et charger les meubles et les objets.\n\nMaintenant, pour le volume, nous allons évaluer les meubles et les objets dont vous disposez. Puis-je vous demander combien de pièces il y a dans votre appartement ?",
+        "score": 40,
+        "latency_ms": 27998
+      },
+      {
+        "user": "Le 15 mars",
+        "bot": "C'est noté ! Alors, le déménagement aura lieu le 15 mars. Je vais prendre note de tout cela.\n\nPuisque vous avez déjà fourni des informations précieuses, je vais vous poser quelques questions supplémentaires pour finaliser l'estimation. Nous allons maintenant passer à l'étape du volume. Voulez-vous que je vous aide à évaluer le volume de vos meubles et de vos objets ?",
+        "score": 50,
+        "latency_ms": 31530
+      },
+      {
+        "user": "Je suis Sophie Martin",
+        "bot": "C'est noté Sophie, donc... nous avons maintenant tous les détails nécessaires pour votre projet de déménagement.\n\nNous allons maintenant passer à l'étape de l'évaluation du volume de vos meubles et objets. Puis-je vous demander quel type de meubles et d'objets vous avez en F3 ?",
+        "score": 60,
+        "latency_ms": 12821
+      },
+      {
+        "user": "sophie.martin@email.com",
+        "bot": "C'est noté ! Votre adresse email est bien enregistrée, Sophie.\n\nPuisque vous avez déjà fourni des informations, je vais maintenant vous poser quelques questions supplémentaires pour finaliser l'estimation. Nous allons maintenant passer à l'étape du volume. Puis-je vous demander combien de meubles vous avez qui nécessitent un démontage pour le transport ?",
+        "score": 70,
+        "latency_ms": 4820
+      },
+      {
+        "user": "06 12 34 56 78",
+        "bot": "C'est noté ! Votre numéro de téléphone est bien enregistré, Sophie.\n\nNous sommes maintenant en train d'approfondir les détails de votre projet de déménagement. Pour la prochaine étape, je vais vous poser quelques questions pour valider les informations que vous avez fournies. Quelqu'un sera-t-il présent pour recevoir les déménageurs à votre nouveau logement ?",
+        "score": 80,
+        "latency_ms": 21734
+      },
+      {
+        "user": "La formule Standard me semble bien",
+        "bot": "C'est noté Sophie, donc... nous avons choisi la formule Standard pour votre projet de déménagement. Cela inclut le transport, le démontage des meubles et l'emballage fragile.\n\nLa prochaine étape, nous allons évaluer le coût estimé de votre projet de déménagement. Pouvez-vous me confirmer que vous souhaitez que les déménageurs aient accès à l'immeuble en ascenseur, étant donné que vous avez précisé que cet étage à 3 est sans ascenseur dans vos informations précédentes ?",
+        "score": 85,
+        "latency_ms": 27931
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 85,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "sophie.martin@email.com",
+        "actual": "sophie.martin@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Sophie",
+        "actual": "Sophie",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Martin",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 171
+  },
+  {
+    "id": "test-02",
+    "name": "Lead difficile",
+    "description": "Lead qui donne peu d'infos",
+    "timestamp": "2026-02-16T17:03:48.427Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "e231345a-9573-48ff-8bb5-1d58c443aa1e",
+    "final_score": 20,
+    "final_lead": {
+      "prenom": null,
+      "nom": null,
+      "email": null,
+      "telephone": "0698765432",
+      "score": 20,
+      "priorite": "FROID",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 5
+      }
+    },
+    "exchanges": [
+      {
+        "user": "bjr",
+        "bot": "Bonjour, comment puis-je vous aider aujourd'hui ? Nous sommes Déménagements Test Paris, et je suis Tom, votre assistant expert.\n\nVoulez-vous déplacer un bien immobilier ? Quel est votre point de départ ? Quelle ville ou quartier souhaitez-vous quitter ?",
+        "score": 10,
+        "latency_ms": 5209
+      },
+      {
+        "user": "jdemenage",
+        "bot": "Vous souhaitez déménager. Quelle ville ou quartier souhaitez-vous quitter ? Et où souhaitez-vous aller ?",
+        "score": 10,
+        "latency_ms": 4626
+      },
+      {
+        "user": "paris",
+        "bot": "Vous souhaitez déménager depuis Paris. Quelle est votre destination ? Une autre ville en France ou un autre endroit ? \n\nC'est noté, donc... Vous partez de Paris. Puis-je poursuivre pour collecter les informations nécessaires ?",
+        "score": 10,
+        "latency_ms": 5640
+      },
+      {
+        "user": "petit appart",
+        "bot": "Un petit appartement. Quel est le type de logement que vous quittez ? Un appartement, une maison, un studio ? \n\nC'est noté, donc... Vous quittez un petit appartement. Qu'est-ce que vous quittez ? Un appartement de 1 chambre, de 2 chambres, ou autre ?",
+        "score": 10,
+        "latency_ms": 15233
+      },
+      {
+        "user": "je sais pas",
+        "bot": "Pas de problème. Nous pourrons déterminer cela plus tard. Quel est le nombre d'étages de votre ancien logement ? \n\nC'est noté, donc... Vous n'avez pas encore précisé la taille de votre ancien logement, mais je vous poserai une autre question : Quel est le nombre d'étages ? Un rez-de-chaussée, un immeuble de 5 étages, ou autre ?",
+        "score": 10,
+        "latency_ms": 20867
+      },
+      {
+        "user": "bientot",
+        "bot": "Vous avez un plan pour déménager bientôt. Avant cela, il faut déterminer quelques détails. Pour revenir à notre conversation, vous avez mentionné que vous quittez un petit appartement, mais vous n'avez pas précisé la taille. Pouvez-vous me dire approximativement combien de pièces il y a dans votre appartement ? \n\nC'est noté, donc... Vous quittez un petit appartement, mais vous n'avez pas encore précisé la taille. Je vais poursuivre avec une autre question : Quel est le volume approximatif des meubles que vous souhaitez déménager ?",
+        "score": 10,
+        "latency_ms": 6846
+      },
+      {
+        "user": "marc",
+        "bot": "Bonjour, Marc. Je vais continuer à prendre en note les informations pour votre déménagement. Vous avez mentionné que vous quittez un petit appartement, mais vous n'avez pas encore précisé la taille. Je vais poursuivre avec une autre question : Quel est le nombre d'étages de votre ancien logement ? \n\nC'est noté, donc... Vous quittez un petit appartement et vous souhaitez déménager bientôt. Quel est le nombre d'étages de votre ancien logement ? Un rez-de-chaussée, un immeuble de 5 étages, ou autre ?",
+        "score": 10,
+        "latency_ms": 29277
+      },
+      {
+        "user": "pas de mail",
+        "bot": "Vous n'avez pas souhaité recevoir de mail avec les informations de votre déménagement. Je vais noter cela.\n\nEnsuite, je vais vous poser une question pour continuer à collecter les informations nécessaires. Pouvez-vous me dire quelle est la ville de départ et la ville d'arrivée pour votre déménagement ?",
+        "score": 10,
+        "latency_ms": 9306
+      },
+      {
+        "user": "06 98 76 54 32",
+        "bot": "Je vais noter votre numéro de téléphone. Mais avant de continuer, je vous poserai une question pour que nous puissions avancer dans la collecte des informations nécessaires pour votre déménagement. \n\nPouvez-vous me dire quel type de prestation de déménagement vous souhaiteriez : éco, standard ou luxe ? \n\nC'est noté, donc... Vous avez choisi la prestation de déménagement.",
+        "score": 20,
+        "latency_ms": 19106
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≤",
+        "expected": 50,
+        "actual": 20,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "MOYEN",
+          "FROID"
+        ],
+        "actual": "FROID",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0698765432",
+        "actual": "0698765432",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 136.2
+  },
+  {
+    "id": "test-03",
+    "name": "Lead qui digresse",
+    "description": "Lead qui pose des questions hors sujet",
+    "timestamp": "2026-02-16T17:06:24.667Z",
+    "passed": false,
+    "messages_sent": 8,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "10c12768-f483-4cba-80ae-d87a9e8173f1",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "Bonjour, je déménage",
+        "bot": "Bonjour ! Enchanté de vous aider dans votre projet de déménagement avec Déménagements Test Paris. Je suis Tom, votre assistant expert. \n\nPour commencer, pouvez-vous me donner les informations sur les villes de départ et d'arrivée ? C'est-à-dire d'où vous partez et où vous allez ?",
+        "score": 10,
+        "latency_ms": 670
+      },
+      {
+        "user": "De Lyon, au fait vous travaillez le week-end ?",
+        "bot": "Bien sûr, nous travaillons le week-end. Nous sommes disponibles pour vous aider à tout moment.\n\nPour revenir à votre demande, vous partez de Lyon. Pouvez-vous me confirmer cela ?\n\nC'est noté, donc... Lyon est bien la ville de départ. Quelle est la ville d'arrivée ?",
+        "score": 15,
+        "latency_ms": 8683
+      },
+      {
+        "user": "Et vous gérez les pianos ?",
+        "bot": "Oui, nous gérons les déménagements de pianos. Nous avons l'équipement nécessaire pour transporter et manipuler ces objets fragiles avec soin.\n\nC'est noté : vous avez un piano à déménager. Quelle taille de piano s'agit-il ? Un piano grand ou un piano petit ?",
+        "score": 15,
+        "latency_ms": 5787
+      },
+      {
+        "user": "Ok super. Donc Lyon vers Marseille",
+        "bot": "Marseille est une destination que nous connaissons bien.\n\nDonc, pour récapituler :\n\n- Ville de départ : Lyon\n- Ville d'arrivée : Marseille\n- Vous avez un piano à déménager\n\nC'est tout pour les villes ?",
+        "score": 20,
+        "latency_ms": 6505
+      },
+      {
+        "user": "80m²",
+        "bot": "L'emplacement de votre logement mesure 80 m².\n\nDonc, pour récapituler :\n\n- Ville de départ : Lyon\n- Ville d'arrivée : Marseille\n- Vous avez un piano à déménager\n- Logement de 80 m²\n\nC'est noté. Quelle est l'étage de votre logement ? Est-ce un appartement en fond de cour, au premier étage, ou au rez-de-chaussée ?",
+        "score": 40,
+        "latency_ms": 4833
+      },
+      {
+        "user": "Le 20 mars",
+        "bot": "Vous souhaitez déménager le 20 mars.\n\nDonc, pour récapituler :\n\n- Ville de départ : Lyon\n- Ville d'arrivée : Marseille\n- Vous avez un piano à déménager\n- Logement de 80 m²\n- Date de déménagement : 20 mars\n\nC'est noté. Et quel est le volume approximatif de vos biens à déménager ? Nous devons évaluer la taille de notre équipe et de nos véhicules.",
+        "score": 45,
+        "latency_ms": 7795
+      },
+      {
+        "user": "Je suis Thomas",
+        "bot": "Bonjour Thomas !\n\nDonc, pour récapituler :\n\n- Vous, Thomas\n- Ville de départ : Lyon\n- Ville d'arrivée : Marseille\n- Vous avez un piano à déménager\n- Logement de 80 m²\n- Date de déménagement : 20 mars\n\nC'est noté. Maintenant, pour le volume, nous avons besoin d'une estimation. Pouvez-vous nous donner une idée du nombre de meubles et de biens que vous avez ? Ou préférez-vous que nous venions faire un décompte précis ?",
+        "score": 55,
+        "latency_ms": 18339
+      },
+      {
+        "user": "thomas@email.com",
+        "bot": "Thomas, votre adresse email est bien enregistrée.\n\nDonc, pour récapituler :\n\n- Vous, Thomas\n- Adresse email : thomas@email.com\n- Ville de départ : Lyon\n- Ville d'arrivée : Marseille\n- Vous avez un piano à déménager\n- Logement de 80 m²\n- Date de déménagement : 20 mars\n\nC'est noté. Pour finir, quel est votre numéro de téléphone pour que nous puissions vous contacter facilement pour les prochaines étapes de votre déménagement ?",
+        "score": 65,
+        "latency_ms": 961
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 133.7
+  },
+  {
+    "id": "test-04",
+    "name": "Lead objection prix",
+    "description": "Lead qui trouve ça trop cher",
+    "timestamp": "2026-02-16T17:08:58.406Z",
+    "passed": true,
+    "messages_sent": 4,
+    "errors": [],
+    "conversation_id": "5c6a65f1-6e2f-4b6c-a7b0-9e2901cca731",
+    "final_score": 45,
+    "final_lead": {
+      "prenom": "Trop",
+      "nom": null,
+      "email": null,
+      "telephone": null,
+      "score": 45,
+      "priorite": "MOYEN",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 80,
+        "villeArrivee": "Bordeaux"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour, comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 461
+      },
+      {
+        "user": "Paris vers Bordeaux, 80m²",
+        "bot": "C'est noté. Pour Paris ➡️ Bordeaux, il faudra donc prendre en compte les distances et les zones de départ et d'arrivée. Qu'en est-il de votre logement ? Est-ce que vous habitez dans le 75 (Paris intra-muros) ou dans l'une des zones périphériques ?",
+        "score": 35,
+        "latency_ms": 3773
+      },
+      {
+        "user": "Quel est le prix ?",
+        "bot": "Je suis désolé, mais je ne peux pas donner un prix sans connaître quelques détails supplémentaires. Pouvez-vous me dire si vous avez un appartement avec des étages ou non ? Cela nous permettra d'estimer les frais de transport et de déménagement plus précisément.",
+        "score": 35,
+        "latency_ms": 6720
+      },
+      {
+        "user": "C'est trop cher !",
+        "bot": "Je comprends. Nous allons donc ajuster notre estimation. Puis-je savoir combien de meubles vous avez à déménager ? Cela nous permettra de mieux comprendre vos besoins et de trouver une solution plus adaptée à votre budget.",
+        "score": 45,
+        "latency_ms": 7242
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 15,
+        "actual": 45,
+        "passed": true
+      }
+    ],
+    "duration_seconds": 25.8
+  },
+  {
+    "id": "test-05",
+    "name": "Lead urgence",
+    "description": "Déménagement dans 5 jours",
+    "timestamp": "2026-02-16T17:09:44.203Z",
+    "passed": false,
+    "messages_sent": 5,
+    "errors": [],
+    "conversation_id": "c5fa5703-bc60-459d-abfe-56df4bcef316",
+    "final_score": 70,
+    "final_lead": {
+      "prenom": "Thomas",
+      "nom": null,
+      "email": null,
+      "telephone": "0611223344",
+      "score": 70,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 0,
+        "surface": 50,
+        "villeArrivee": "Lille",
+        "dateSouhaitee": "21/02/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je dois déménager dans 5 jours",
+        "bot": "Bonjour, c'est Tom de Déménagements Test Paris. Je suis ravi de vous aider à organiser votre déménagement. \n\nC'est noté que vous devez déménager dans 5 jours, donc... nous devons agir rapidement pour vous aider à préparer votre déménagement. Pouvez-vous me dire d'abord d'où vous partez et où vous allez ? \n\n(Ville de départ ou lieu de résidence actuel)",
+        "score": 30,
+        "latency_ms": 673
+      },
+      {
+        "user": "Paris vers Lille, 50m²",
+        "bot": "Vous partez de Paris pour Lille, ce n'est pas très loin ! 50m² c'est une bonne taille, on devrait pouvoir s'adapter. \n\nC'est noté que vous partez de Paris pour Lille, 50m², donc... nous devons prendre en compte les distances et les conditions de transport pour votre déménagement. Pouvez-vous me dire combien d'étages vous avez dans votre appartement actuel ? \n\n(Étages de votre appartement actuel)",
+        "score": 50,
+        "latency_ms": 3717
+      },
+      {
+        "user": "Je suis Thomas",
+        "bot": "Enchanté Thomas ! Je vais noter que vous êtes Thomas, donc... nous allons nous appeler par votre nom pour faciliter les choses.\n\nC'est noté que vous êtes Thomas, donc... maintenant, revenons à votre déménagement. Vous avez mentionné que vous avez 50m² d'espace à déménager de Paris à Lille, avec 0 étage (j'ignore si cette information est utile).\n\nMaintenant, je voulais savoir combien de meubles vous avez à déménager. Vous pouvez me donner une idée de la quantité de meubles que vous avez, ou nous pouvons également utiliser la formule de calcul du volume pour vous aider à estimer la quantité de meubles que vous avez. \n\n(Avez-vous des meubles à déménager ?) \n\nou \n\n(Voulez-vous utiliser la formule de calcul du volume ?)",
+        "score": 60,
+        "latency_ms": 8121
+      },
+      {
+        "user": "thomas.urgent@email.com",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 21843
+      },
+      {
+        "user": "06 11 22 33 44",
+        "bot": "Je suis désolé Thomas, mais je ne comprends pas ce que vous voulez dire avec \"06 11 22 33 44\". C'est un numéro de téléphone, mais je pense que ce n'est pas ce que vous voulez partager avec moi.\n\nC'est noté que vous m'avez donné un numéro de téléphone, donc... nous pourrions en discuter plus tard. Pour l'instant, revenons à votre déménagement. Vous aviez mentionné que vous aviez 50m² d'espace à déménager de Paris à Lille, avec 0 étage et quelques meubles à déménager.\n\nPouvez-vous me donner une idée de la quantité de meubles que vous avez ? C'est-à-dire combien de chaises, de lits, de tables, etc. ? Cela m'aidera à estimer le volume de votre déménagement.\n\n(Description des meubles à déménager)",
+        "score": 70,
+        "latency_ms": 1115
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 70,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "TIEDE",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "thomas.urgent@email.com",
+        "actual": null,
+        "passed": false
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0611223344",
+        "actual": "0611223344",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Thomas",
+        "actual": "Thomas",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 45.6
+  },
+  {
+    "id": "test-06",
+    "name": "Lead avec fautes de frappe",
+    "description": "Lead qui fait beaucoup de fautes d'orthographe",
+    "timestamp": "2026-02-16T17:10:49.826Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "7181986f-3052-40a1-890c-6d620ab82a1b",
+    "final_score": 85,
+    "final_lead": {
+      "prenom": "Jean",
+      "nom": null,
+      "email": "jean.dupon@gmail.com",
+      "telephone": "0623456789",
+      "score": 85,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 2,
+        "formule": "STANDARD",
+        "surface": 60,
+        "ascenseur": false,
+        "dateSouhaitee": "10/01/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "bonjur je veu demenagé",
+        "bot": "Bonjour. Bienvenue chez Déménagements Test Paris. Je suis Tom, votre assistant expert pour ce projet de déménagement. \n\nPour commencer, pouvez-vous me donner le nom des villes de départ et d'arrivée ?",
+        "score": 10,
+        "latency_ms": 591
+      },
+      {
+        "user": "de pari ver lion",
+        "bot": "C'est noté, donc le parcours de votre déménagement serait : Pari (75) ➡️ Le Lion (92). \n\nPouvez-vous me donner quelques informations sur votre logement actuel ? Quel est votre niveau d'étage, par exemple ?",
+        "score": 10,
+        "latency_ms": 538
+      },
+      {
+        "user": "un appart de 60m²",
+        "bot": "C'est noté, donc votre appartement est de 60 m². \n\nPouvez-vous me donner une idée du nombre d'étages pour accéder à votre appartement ?",
+        "score": 30,
+        "latency_ms": 480
+      },
+      {
+        "user": "o 2eme etage san assenseur",
+        "bot": "C'est noté, donc votre appartement est situé au 2ème étage sans ascenseur. \n\nPouvez-vous me donner une idée de la quantité de meubles et d'objets que vous souhaitez déménager ? Est-ce que vous avez des meubles de grande taille comme un canapé ou un lit ?",
+        "score": 30,
+        "latency_ms": 478
+      },
+      {
+        "user": "le 10 avri",
+        "bot": "C'est noté, donc vous souhaitez déménager le 10 avril.\n\nPouvez-vous me donner une idée de la quantité de meubles et d'objets que vous souhaitez déménager ? Est-ce que vous avez des meubles de grande taille comme un canapé ou un lit ?",
+        "score": 50,
+        "latency_ms": 7707
+      },
+      {
+        "user": "je suis jean",
+        "bot": "Bonjour Jean, bienvenue !\n\nNous allons procéder au calcul du volume de votre déménagement. Compte tenu de la surface de votre appartement (60 m²) et du fait qu'il est situé au 2ème étage sans ascenseur, nous allons considérer un volume de base de 60 m² / 2 = 30 m³.\n\nPouvez-vous me donner une estimation de la quantité de meubles et d'objets que vous souhaitez déménager ? Cela nous aidera à déterminer le volume final de votre déménagement.",
+        "score": 60,
+        "latency_ms": 6783
+      },
+      {
+        "user": "jean.dupon@gmail.com",
+        "bot": "C'est noté, donc votre adresse e-mail est jean.dupont@gmail.com.\n\nComme nous l'avons précisé précédemment, nous allons procéder au calcul du volume de votre déménagement. Compte tenu de la surface de votre appartement (60 m²) et du fait qu'il est situé au 2ème étage sans ascenseur, nous allons considérer un volume de base de 60 m² / 2 = 30 m³.\n\nPouvez-vous me donner une estimation de la quantité de meubles et d'objets que vous souhaitez déménager ? Cela nous aidera à déterminer le volume final de votre déménagement.\n\nPar exemple, avez-vous des meubles de grande taille comme un canapé, un lit, un bureau, etc. ? Ou plutôt des objets plus petits comme des livres, des vêtements, des objets décoratifs, etc. ?",
+        "score": 70,
+        "latency_ms": 9175
+      },
+      {
+        "user": "06 23 45 67 89",
+        "bot": "C'est noté, donc votre numéro de téléphone est 06 23 45 67 89.\n\nPour confirmer, votre déménagement est prévu pour le 10 avril, votre appartement est situé au 2ème étage sans ascenseur, avec une surface de 60 m². Votre adresse e-mail est jean.dupont@gmail.com et votre numéro de téléphone est 06 23 45 67 89.\n\nPassons à la prochaine étape. Quel type de prestation souhaitez-vous pour votre déménagement ? Nous proposons trois options : Eco (transport uniquement), Standard (transport + démontage) et Luxe (clef en main, avec déménagement complet). Quel est votre choix ?",
+        "score": 80,
+        "latency_ms": 12449
+      },
+      {
+        "user": "la formule standard",
+        "bot": "C'est noté, donc votre prestation pour le déménagement est Standard, qui inclut le transport des objets, le démontage des meubles et l'emballage.\n\nJe vais donc récapituler vos informations pour confirmer :\n\n* Votre nom : Jean\n* Votre adresse e-mail : jean.dupont@gmail.com\n* Votre numéro de téléphone : 06 23 45 67 89\n* Votre date de déménagement : 10 avril\n* Votre appartement : 2ème étage sans ascenseur, avec une surface de 60 m²\n* Votre prestation : Standard (transport + démontage)\n\nPouvez-vous me donner une idée de l'état de vos objets ? Sont-ils fragiles, ou bien peuvent-ils être transportés normalement ?",
+        "score": 85,
+        "latency_ms": 11795
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 85,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Jean",
+        "actual": "Jean",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0623456789",
+        "actual": "0623456789",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 70.1
+  },
+  {
+    "id": "test-07",
+    "name": "Lead qui change d'avis",
+    "description": "Lead qui modifie ses réponses précédentes",
+    "timestamp": "2026-02-16T17:12:19.964Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "7776d365-b384-47a6-80d2-88ad095c263a",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": "Marie",
+      "nom": "Dubois",
+      "email": "marie.dubois@email.com",
+      "telephone": "0634567890",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 5,
+        "surface": 85,
+        "nbPieces": 4,
+        "villeDepart": "Paris",
+        "villeArrivee": "Lyon",
+        "dateSouhaitee": "12/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je déménage de Paris vers Marseille",
+        "bot": "Bonjour, donc vous déménagez de Paris vers Marseille. C'est noté. \n\nVoulez-vous préciser les villes de départ et d'arrivée exactes ?",
+        "score": 20,
+        "latency_ms": 629
+      },
+      {
+        "user": "En fait non, plutôt vers Lyon",
+        "bot": "Donc vous déménagez de Paris vers Lyon. C'est noté.\n\nQuel est votre logement ? Un appartement, une maison, un studio... ?",
+        "score": 20,
+        "latency_ms": 602
+      },
+      {
+        "user": "Un F3 de 70m²",
+        "bot": "Un F3 de 70m². C'est un appartement confortable.\n\nSavez-vous combien d'étages vous avez dans votre logement ? Un étage, deux étages... ?",
+        "score": 40,
+        "latency_ms": 4049
+      },
+      {
+        "user": "Ah non pardon, c'est un F4 de 85m²",
+        "bot": "Désolé de la confusion ! Un F4 de 85m², c'est un peu plus grand ! C'est noté.\n\nJe vais ajuster les informations. Puis-je savoir combien d'étages vous avez dans votre logement ? Un étage, deux étages... ?",
+        "score": 40,
+        "latency_ms": 659
+      },
+      {
+        "user": "Le 5 mars",
+        "bot": "Je comprends que vous voulez dire que votre logement se situe au 5ème étage. C'est noté.\n\nMaintenant, je voudrais savoir combien de meubles et d'objets vous avez dans votre logement pour évaluer le volume de déménagement. Pouvez-vous me donner une idée de la quantité de meubles que vous avez ? Par exemple, combien de chambres, de bureaux, de canapés... ?",
+        "score": 50,
+        "latency_ms": 4859
+      },
+      {
+        "user": "Finalement plutôt le 12 mars",
+        "bot": "Je comprends que vous avez changé d'avis et que vous souhaitez déménager le 12 mars maintenant. C'est noté.\n\nJe vais ajuster les informations. Maintenant, je voudrais savoir si vous avez des objets fragiles ou spéciaux qui nécessitent une attention particulière pendant le déménagement.",
+        "score": 50,
+        "latency_ms": 8498
+      },
+      {
+        "user": "Je m'appelle Marie Dubois",
+        "bot": "Bonjour Marie Dubois ! Enchanté de faire votre connaissance.\n\nMaintenant que j'ai votre nom, je vais continuer à collecter les informations nécessaires pour votre déménagement.\n\nJe suis à la première étape du parcours de qualification. J'aimerais savoir à quelle ville vous déménagez et à quelle ville vous revenez. Pouvez-vous me dire à quelle ville vous démenez (Départ) et à quelle ville vous arrivez (Arrivée) ?",
+        "score": 60,
+        "latency_ms": 8289
+      },
+      {
+        "user": "marie.dubois@email.com",
+        "bot": "Merci Marie Dubois, je vais noter votre adresse e-mail pour toute communication future.\n\nJe vais continuer à collecter les informations nécessaires pour votre déménagement.\n\nJe suis toujours à la première étape du parcours de qualification. J'aimerais savoir à quelle ville vous déménagez et à quelle ville vous revenez. Pouvez-vous me dire à quelle ville vous démenez (Départ) et à quelle ville vous arrivez (Arrivée) ?",
+        "score": 70,
+        "latency_ms": 11895
+      },
+      {
+        "user": "06 34 56 78 90",
+        "bot": "Merci Marie Dubois, je vais noter votre numéro de téléphone pour toute communication future.\n\nJe vais continuer à collecter les informations nécessaires pour votre déménagement.\n\nJe suis toujours à la première étape du parcours de qualification. J'aimerais savoir à quelle ville vous déménagez et à quelle ville vous revenez. Pouvez-vous me dire à quelle ville vous démenez (Départ) et à quelle ville vous arrivez (Arrivée) ?",
+        "score": 80,
+        "latency_ms": 8239
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 70,
+        "actual": 80,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Marie",
+        "actual": "Marie",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Dubois",
+        "actual": "Dubois",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "marie.dubois@email.com",
+        "actual": "marie.dubois@email.com",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 68
+  },
+  {
+    "id": "test-08",
+    "name": "Lead ultra-pressé",
+    "description": "Lead qui donne des réponses minimales",
+    "timestamp": "2026-02-16T17:13:47.994Z",
+    "passed": true,
+    "messages_sent": 12,
+    "errors": [],
+    "conversation_id": "8f6aec46-5657-4214-a77d-f9fb7af8b7af",
+    "final_score": 65,
+    "final_lead": {
+      "prenom": "Paul",
+      "nom": null,
+      "email": "paul@mail.fr",
+      "telephone": "0645678901",
+      "score": 65,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 2,
+        "formule": "STANDARD",
+        "surface": 50,
+        "dateSouhaitee": "20/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "salut",
+        "bot": "Bonjour, comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 11106
+      },
+      {
+        "user": "demenagement",
+        "bot": "Nous sommes chez Déménagements Test Paris. Je m'appelle Tom et je vais vous aider à organiser votre déménagement. Pour commencer, pouvez-vous me dire d'où vous partez et où vous allez ?",
+        "score": 10,
+        "latency_ms": 551
+      },
+      {
+        "user": "lille",
+        "bot": "Lille est une ville située dans la zone 59. Et où allez-vous exactement ? Est-ce que c'est à Paris ou dans une autre ville ? \n\nC'est noté [Prénom], donc... \n\n(Prénom inconnu)",
+        "score": 10,
+        "latency_ms": 2620
+      },
+      {
+        "user": "roubaix",
+        "bot": "Roubaix est une commune située dans la zone 59, comme Lille. Donc, votre déménagement est de Lille vers Roubaix. C'est noté, nous avons donc :\n\n- Départ : Lille\n- Arrivée : Roubaix\n\nQuel est votre logement actuel ? Est-ce un appartement ou une maison ? Et combien d'étages ?",
+        "score": 10,
+        "latency_ms": 665
+      },
+      {
+        "user": "50m²",
+        "bot": "Un appartement de 50m². Pour calculer le volume, nous allons d'abord diviser la surface par 2. Donc, 50m² / 2 = 25m³.\n\nEnsuite, nous allons ajouter les meubles courants. Quels meubles avez-vous qui vont être déménagés ?",
+        "score": 25,
+        "latency_ms": 2320
+      },
+      {
+        "user": "2eme",
+        "bot": "Votre appartement est situé au 2ème étage. C'est important pour l'accès et la logistique du déménagement.\n\nNous avons donc :\n\n- Départ : Lille\n- Arrivée : Roubaix\n- Logement : 50m² au 2ème étage\n\nQuelle est la superficie de votre nouveau logement ? Et quel étage est-ce ?",
+        "score": 25,
+        "latency_ms": 2678
+      },
+      {
+        "user": "parking ok",
+        "bot": "C'est bon de savoir que vous avez un parking accessible.\n\nPuisque vous avez un 50m² au 2ème étage en partance et un parking en arrivée, je suppose que vous voulez une estimation pour un déménagement en camion.\n\nNous avons donc :\n\n- Départ : Lille (2ème étage)\n- Arrivée : Roubaix (parking)\n- Logement : 50m²\n\nQuelle est la superficie de votre nouveau logement ? Et quel étage est-ce ?",
+        "score": 25,
+        "latency_ms": 642
+      },
+      {
+        "user": "20 mars",
+        "bot": "Le 20 mars est une date importante pour le déménagement.\n\nCependant, il nous manque encore quelques informations pour établir une estimation précise. Nous avons besoin de savoir :\n\n- La superficie de votre nouveau logement\n- Quel est le parcours de votre déménagement (ville de départ et ville d'arrivée)\n- Quelle est la préférence pour la prestations (Eco, Standard ou Luxe)\n- Vos coordonnées pour un contact en amont du déménagement\n\nPouvez-vous me donner ces informations ?",
+        "score": 30,
+        "latency_ms": 5870
+      },
+      {
+        "user": "je suis paul",
+        "bot": "Enchanté Paul, je suis Tom, votre assistant pour le déménagement.\n\nJe viens de noter que vous avez déjà donné les informations suivantes :\n\n- Départ : Lille\n- Arrivée : Roubaix\n- Logement : 50m² au 2ème étage en partance et parking en arrivée\n- Date du déménagement : 20 mars\n\nIl nous manque encore quelques informations pour établir une estimation précise. Pouvez-vous me donner :\n\n- La superficie de votre nouveau logement\n- Quelle est la préférence pour la prestations (Eco, Standard ou Luxe)\n- Vos coordonnées pour un contact en amont du déménagement\n\nEt par souci de clarté : vous souhaitez que je répète les informations que vous avez déjà données pour confirmation ?",
+        "score": 40,
+        "latency_ms": 3098
+      },
+      {
+        "user": "paul@mail.fr",
+        "bot": "C'est noté Paul, votre adresse email est donc paul@mail.fr.\n\nPuisque vous avez déjà donné les informations suivantes :\n\n- Départ : Lille\n- Arrivée : Parking en Roubaix\n- Logement : 50m² au 2ème étage en partance et parking en arrivée\n- Date du déménagement : 20 mars\n\nJe vais maintenant passer à la prochaine étape de qualification : le volume de vos affaires.\n\nPouvez-vous me donner une estimation de la taille de vos meubles et de vos affaires ? Nous pouvons ensuite utiliser notre méthode de calcul de volume pour établir une estimation plus précise.",
+        "score": 50,
+        "latency_ms": 10325
+      },
+      {
+        "user": "0645678901",
+        "bot": "C'est noté Paul, votre numéro de téléphone est donc 0645678901.\n\nJe vais maintenant prendre note de votre numéro de téléphone pour pouvoir vous contacter en amont du déménagement.\n\nPuisque vous avez déjà donné les informations suivantes :\n\n- Départ : Lille\n- Arrivée : Parking en Roubaix\n- Logement : 50m² au 2ème étage en partance et parking en arrivée\n- Date du déménagement : 20 mars\n- Email : paul@mail.fr\n- Numéro de téléphone : 0645678901\n\nJe vais maintenant passer à la prochaine étape de qualification : le volume de vos affaires.\n\nPouvez-vous me donner une estimation de la taille de vos meubles et de vos affaires ? Nous pouvons ensuite utiliser notre méthode de calcul de volume pour établir une estimation plus précise.\n\n(Encore une fois, si vous avez déjà donné des informations que vous souhaitez corriger, n'hésitez pas à me le faire savoir)",
+        "score": 60,
+        "latency_ms": 10111
+      },
+      {
+        "user": "formule standard",
+        "bot": "C'est noté Paul, vous avez donc choisi la formule Standard pour votre déménagement.\n\nLa formule Standard inclut les prestations suivantes :\n\n- Transport\n- Fragile\n- Démontage\n\nJe vais maintenant passer à la prochaine étape de qualification : le volume de vos affaires.\n\nPouvez-vous me donner une estimation de la taille de vos meubles et de vos affaires ? Nous pouvons ensuite utiliser notre méthode de calcul de volume pour établir une estimation plus précise.\n\n(Remarque : si vous avez déjà donné des informations que vous souhaitez corriger, n'hésitez pas à me le faire savoir)\n\n(Les informations collectées jusqu'à présent sont : \n\n- Départ : Lille\n- Arrivée : Parking en Roubaix\n- Logement : 50m² au 2ème étage en partance et parking en arrivée\n- Date du déménagement : 20 mars\n- Email : paul@mail.fr\n- Numéro de téléphone : 0645678901\n- Formule : Standard)\n\nEt par souci de clarté : vous souhaitez que je répète les informations que vous avez déjà données pour confirmation ?",
+        "score": 65,
+        "latency_ms": 12405
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 65,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Paul",
+        "actual": "Paul",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "paul@mail.fr",
+        "actual": "paul@mail.fr",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0645678901",
+        "actual": "0645678901",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 90.1
+  },
+  {
+    "id": "test-09",
+    "name": "Lead curieux",
+    "description": "Lead qui pose plein de questions techniques",
+    "timestamp": "2026-02-16T17:15:38.229Z",
+    "passed": true,
+    "messages_sent": 11,
+    "errors": [],
+    "conversation_id": "a871661c-8d54-4abe-bf28-54a648cb044a",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": "Claire",
+      "nom": "Martin",
+      "email": "claire.martin@email.com",
+      "telephone": "0656789012",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 2,
+        "formule": "LUXE",
+        "surface": 90,
+        "villeDepart": "Nantes",
+        "villeArrivee": "Angers",
+        "dateSouhaitee": "25/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, vous faites le démontage des meubles IKEA ?",
+        "bot": "Bonjour. \n\nNon, nous ne faisons pas le démontage des meubles IKEA. Nous sommes une entreprise de déménagement qui offre des services de déménagement, de transport et de stockage. Nous pouvons aider à déménager vos meubles, mais nous ne sommes pas spécialisés dans le démontage des produits IKEA.",
+        "score": 10,
+        "latency_ms": 2370
+      },
+      {
+        "user": "Et vous avez une assurance pour la casse ?",
+        "bot": "Oui, nous avons une assurance pour la casse qui couvre les dégâts ou la perte de vos biens pendant le déménagement. Cela nous permet de vous offrir une garanti de sécurité pour votre mobilier et vos effets personnels. \n\nC'est noté, donc... Nous avons une assurance pour la casse.",
+        "score": 10,
+        "latency_ms": 664
+      },
+      {
+        "user": "C'est combien par m³ ?",
+        "bot": "Notre tarif standard est de 50€ par m³ pour le volume calculé. \n\nCela signifie que plus votre maison est grande, plus le coût sera élevé. Mais nous allons procéder au calcul précis pour obtenir une estimation plus détaillée. \n\nVoulez-vous poursuivre avec le calcul du volume ?",
+        "score": 20,
+        "latency_ms": 536
+      },
+      {
+        "user": "Vous travaillez le dimanche ?",
+        "bot": "Oui, nous travaillons le dimanche. Nous sommes disponibles 7 jours sur 7 pour répondre à vos besoins en matière de déménagement. \n\nC'est noté Sophie, donc... Nous travaillons le dimanche.",
+        "score": 20,
+        "latency_ms": 4138
+      },
+      {
+        "user": "Ok merci. Je déménage de Nantes vers Angers",
+        "bot": "Bien sûr, Combien. Nous pouvons effectuer votre déménagement de Nantes à Angers. C'est une distance raisonnable et nous pourrons vous offrir un service de qualité.\n\nJe note que votre départ est à Nantes et votre arrivée est à Angers. Nous allons poursuivre le processus de qualification pour obtenir une estimation plus précise. \n\nVoulez-vous poursuivre avec la 2ème étape, les logements et les étages ?",
+        "score": 30,
+        "latency_ms": 7221
+      },
+      {
+        "user": "90m², maison avec escalier",
+        "bot": "Combien, votre maison mesure 90m². Avec un escalier, cela signifie que nous aurons à manipuler les meubles et les objets sur plusieurs étages.\n\nJe note que votre maison a 2 étages. Cela ne change pas notre tarif standard, mais nous devrons prendre en compte la difficulté d'accès lors de l'estimation finale.\n\nPouvez-vous me donner une idée du volume de vos meubles et objets à déménager ?",
+        "score": 50,
+        "latency_ms": 8162
+      },
+      {
+        "user": "Le 25 mars",
+        "bot": "Combien, vous souhaitez déménager le 25 mars. Nous allons prendre en compte cette date pour vous fournir une estimation plus précise.\n\nJe note que votre date de déménagement est fixée au 25 mars. Nous allons vérifier notre disponibilité pour cette date et vous fournir une estimation finale.\n\nPouvez-vous me donner votre adresse exacte à Nantes et à Angers pour que nous puissions vérifier les conditions de circulation et les accès ?",
+        "score": 55,
+        "latency_ms": 4940
+      },
+      {
+        "user": "Je m'appelle Claire Martin",
+        "bot": "Claire Martin, c'est noté. Nous avons maintenant toutes les informations nécessaires pour poursuivre le processus de qualification.\n\nJe confirme donc :\n\n📋 **VOTRE PROJET DE DÉMÉNAGEMENT**\n👤 **Client** : Claire Martin\n📍 **Parcours** : Nantes ➡️ Angers\n📦 **Volume** : (à déterminer)\n🏗️ **Accès** : Maison avec escalier, 2 étages\n🛠️ **Prestation** : (à déterminer)\n💰 **ESTIMATION** : (à déterminer)\n**Prochaine étape** : Nous allons calculer le volume de vos meubles et objets à déménager pour vous fournir une estimation finale.\n\nPouvez-vous nous donner une idée du volume de vos meubles et objets à déménager ?",
+        "score": 55,
+        "latency_ms": 11172
+      },
+      {
+        "user": "claire.martin@email.com",
+        "bot": "Claire Martin à claire.martin@email.com, c'est noté.\n\nJe vais vous poser quelques questions supplémentaires pour déterminer le volume de vos meubles et objets à déménager.\n\nPouvez-vous me dire si vous avez des meubles ou objets spéciaux tels que des pianos, des vélos, des sculptures, etc. qui nécessiteraient une attention particulière lors du déménagement ?",
+        "score": 65,
+        "latency_ms": 12812
+      },
+      {
+        "user": "06 56 78 90 12",
+        "bot": "Numéro de téléphone à 06 56 78 90 12, c'est noté.\n\nJe vais maintenant vous poser la question du volume de vos meubles et objets à déménager. Pour cela, nous devons connaître la surface de votre logement. Pouvez-vous me donner la surface de votre logement à Nantes ?",
+        "score": 75,
+        "latency_ms": 5317
+      },
+      {
+        "user": "Je prends la formule Luxe",
+        "bot": "Claire Martin, vous avez choisi la formule Luxe pour votre déménagement. Cela signifie que nous prendrons en charge tous les détails, du déménagement jusqu'à la mise en place de vos meubles à votre nouveau logement à Angers.\n\nJe confirme donc :\n\n📋 **VOTRE PROJET DE DÉMÉNAGEMENT**\n👤 **Client** : Claire Martin\n📍 **Parcours** : Nantes ➡️ Angers\n📦 **Volume** : (à déterminer)\n🏗️ **Accès** : Maison avec escalier, 2 étages\n🛠️ **Prestation** : Clef en main (formule Luxe)\n💰 **ESTIMATION** : (à déterminer)\n**Prochaine étape** : Nous allons calculer le volume de vos meubles et objets à déménager pour vous fournir une estimation finale.\n\nPouvez-vous me donner une idée du nombre de pièces à déménager, ainsi que le nombre de meubles et objets que vous souhaitez déménager ? Cela nous aidera à estimer le volume de vos affaires.",
+        "score": 80,
+        "latency_ms": 14866
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 75,
+        "actual": 80,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Claire",
+        "actual": "Claire",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Martin",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "claire.martin@email.com",
+        "actual": "claire.martin@email.com",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 97.5
+  },
+  {
+    "id": "test-10",
+    "name": "Déménagement énorme",
+    "description": "Lead avec très gros volume (maison + dépendances)",
+    "timestamp": "2026-02-16T17:17:35.791Z",
+    "passed": true,
+    "messages_sent": 10,
+    "errors": [],
+    "conversation_id": "8b7758a1-87ea-444a-85c1-83d770eed9b1",
+    "final_score": 100,
+    "final_lead": {
+      "prenom": "Robert",
+      "nom": "Durand",
+      "email": "robert.durand@email.com",
+      "telephone": "0667890123",
+      "score": 100,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "etage": 3,
+        "formule": "LUXE",
+        "surface": 250,
+        "villeDepart": "Toulouse",
+        "villeArrivee": "Nice",
+        "dateSouhaitee": "10/01/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je déménage une grande maison",
+        "bot": "Bonjour, c'est Tom pour Déménagements Test Paris. Une grande maison, c'est impressionnant ! Quel est le départ et l'arrivée de votre déménagement, s'il vous plaît ?",
+        "score": 10,
+        "latency_ms": 729
+      },
+      {
+        "user": "De Toulouse vers Nice",
+        "bot": "C'est un beau voyage que vous allez faire ! Toulouse et Nice, c'est une belle différence de climat et de paysage. Votre déménagement concerne une grande maison, je suppose que cela signifie que vous avez beaucoup de choses à emmener avec vous. Pouvez-vous me dire approximativement combien d'étages a votre maison de départ et de votre maison d'arrivée, s'il vous plaît ?",
+        "score": 20,
+        "latency_ms": 2534
+      },
+      {
+        "user": "C'est une maison de 250m² sur 3 étages",
+        "bot": "Une maison de 250m² sur 3 étages, c'est un espace généreux ! C'est noté, donc votre maison de départ a un volume significatif à déménager. Qu'en est-il du volume de votre maison d'arrivée, est-ce que vous avez déjà une idée de la superficie ou des dimensions de votre nouvelle maison ?",
+        "score": 55,
+        "latency_ms": 634
+      },
+      {
+        "user": "Avec une cave remplie, un garage et un grenier aussi",
+        "bot": "C'est encore plus de volume à déménager ! Cela signifie que nous aurons à prendre en compte les pièces supplémentaires comme la cave, le garage et le grenier. C'est noté, donc nous aurons à ajouter ces volumes à la surface de 250m² pour calculer le volume total à déménager. Pouvez-vous me dire approximativement combien de meubles et d'objets vous avez à déménager ? Par exemple, des meubles de cuisine, des électroménagers, des livres, des jouets, etc. ?",
+        "score": 55,
+        "latency_ms": 711
+      },
+      {
+        "user": "Il y a aussi 2 pianos",
+        "bot": "Deux pianos ! C'est un ajout important au volume de déménagement ! Je vais prendre en compte les dimensions spécifiques des pianos pour calculer leur volume. C'est noté, donc nous aurons à ajouter les volumes des deux pianos à la pile de déménagement. Qu'en est-il de la nature de votre déménagement, Une ? Est-ce que vous souhaitez une prestation de déménagement standard, éco, ou luxe ?",
+        "score": 55,
+        "latency_ms": 14913
+      },
+      {
+        "user": "Le 10 avril",
+        "bot": "Le 10 avril, c'est une bonne date ! Je vais prendre en compte cela pour organiser votre déménagement. Qu'en est-il de votre ville de départ et d'arrivée, Une ? Avez-vous déjà choisi votre nouveau quartier ou pouvez-vous me donner plus d'informations sur votre itinéraire ?",
+        "score": 75,
+        "latency_ms": 7456
+      },
+      {
+        "user": "Je suis Robert Durand",
+        "bot": "Bonjour Robert Durand ! C'est un plaisir de travailler avec vous. Je vais continuer à prendre en compte vos informations pour organiser votre déménagement. Ainsi, pour récapituler, nous avons :\n\n- Votre nom : Robert Durand\n- Votre ville de départ : Toulouse\n- Votre ville d'arrivée : Nice\n- Votre date de déménagement : 10 avril\n- Votre surface à déménager : 250m²\n- Vous avez une cave, un garage et un grenier à déménager\n- Vous avez deux pianos à déménager\n\nJe vais maintenant passer à la prochaine étape, qui est de calculer le volume à déménager. Pouvez-vous me dire combien de meubles et d'objets vous avez à déménager, en plus des deux pianos ?",
+        "score": 75,
+        "latency_ms": 4595
+      },
+      {
+        "user": "robert.durand@email.com",
+        "bot": "Merci Robert, je note bien votre adresse e-mail. C'est noté, donc nous pouvons continuer à travailler sur votre projet de déménagement.\n\nAinsi, pour la prochaine étape, je vais vous demander quelques informations supplémentaires sur votre logement actuel. Pouvez-vous me dire combien d'étages il y a dans votre immeuble, Robert ?",
+        "score": 85,
+        "latency_ms": 14686
+      },
+      {
+        "user": "06 67 89 01 23",
+        "bot": "Je note bien votre numéro de téléphone, Robert. C'est un excellent moyen de rester en contact pendant le processus de déménagement.\n\nMaintenant, pour revenir à votre logement actuel, je vous demande toujours combien d'étages il y a. Cet élément est important pour les calculs de volume et les estimations de prix. Pouvez-vous me dire combien d'étages il y a dans votre immeuble, s'il vous plaît ?",
+        "score": 95,
+        "latency_ms": 10223
+      },
+      {
+        "user": "Je pense qu'il me faut la formule Luxe",
+        "bot": "La formule Luxe est la plus élégante et la plus complète, Robert ! Cela signifie que nous allons vous offrir une prestation clef en main, avec une grande attention aux détails et à la qualité.\n\nAinsi, la formule Luxe incluera :\n\n* Un transport sécurisé et rapide de vos meubles et de vos objets\n* Un démontage et un remontage de votre mobilier et de vos équipements\n* Un soin particulier pour les objets fragiles ou précieux\n* Un suivi étroit de votre déménagement pour vous garantir un résultat parfait\n\nC'est une excellente option pour un déménagement stressant et difficile. Je suis ravi de vous proposer cette formule, Robert !\n\nMaintenant, pour la prochaine étape, je vais vous demander de me donner vos coordonnées exactes, afin que je puisse organiser votre déménagement avec précision. Pouvez-vous me donner votre adresse actuelle et votre adresse future, s'il vous plaît ?",
+        "score": 100,
+        "latency_ms": 5267
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 100,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Robert",
+        "actual": "Robert",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Durand",
+        "actual": "Durand",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "robert.durand@email.com",
+        "actual": "robert.durand@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0667890123",
+        "actual": "0667890123",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 84.6
+  }
+]

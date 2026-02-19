@@ -1,7 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 /* ===================================================
-   CHAT4LEAD WIDGET — Design System (Light & Dark)
+   CHAT4LEAD WIDGET — Design System v2
+   Premium glassmorphism with refined typography
    =================================================== */
 
 :root {
@@ -17,49 +19,54 @@
   --c4l-bg-input: #f1f5f9;
   --c4l-border: #e2e8f0;
 
-  --c4l-text-primary: #0f172a;
-  /* Noir profond */
+  --c4l-text-primary: #1e293b;
   --c4l-text-secondary: #475569;
-  /* Gris soutenu */
   --c4l-text-tertiary: #94a3b8;
-  /* Gris neutre */
 
-  --c4l-bot-bubble: #f1f5f9;
-  /* Gris très clair */
-  --c4l-bot-text: #0f172a;
+  --c4l-bot-bubble: #f8fafc;
+  --c4l-bot-text: #1e293b;
 
-  --c4l-user-bubble: linear-gradient(135deg, #6366f1 0%, #7c3aed 100%);
+  --c4l-user-bubble: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   --c4l-user-text: #ffffff;
 
-  --c4l-font: 'Inter', system-ui, -apple-system, sans-serif;
+  --c4l-radius-lg: 24px;
+  --c4l-radius-md: 18px;
 
-  /* Ombres plus douces en Light */
-  --c4l-shadow-float: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 0 0 20px rgba(99, 102, 241, 0.1);
-  --c4l-shadow-msg: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --c4l-font: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Glassmorphism */
+  --c4l-glass-bg: rgba(255, 255, 255, 0.85);
+  --c4l-glass-border: rgba(0, 0, 0, 0.06);
+
+  /* Shadows */
+  --c4l-shadow-float: 0 20px 60px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(99, 102, 241, 0.06);
+  --c4l-shadow-msg: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* =========================================
-   DARK THEME (Activated via [data-theme="dark"])
+   DARK THEME
    ========================================= */
 [data-theme="dark"] {
-  --c4l-bg-main: #0b0e14;
-  /* Bleu nuit profond */
-  --c4l-bg-card: #151925;
-  --c4l-bg-input: #1f2433;
-  --c4l-border: #2a2f45;
+  --c4l-bg-main: #0d1117;
+  --c4l-bg-card: #161b22;
+  --c4l-bg-input: #0d1117;
+  --c4l-border: rgba(255, 255, 255, 0.06);
 
-  --c4l-text-primary: #ffffff;
-  --c4l-text-secondary: #cbd5e1;
-  --c4l-text-tertiary: #64748b;
+  --c4l-text-primary: #e6edf3;
+  --c4l-text-secondary: #8b949e;
+  --c4l-text-tertiary: #484f58;
 
-  --c4l-bot-bubble: #1f2937;
-  --c4l-bot-text: #f1f5f9;
+  --c4l-bot-bubble: rgba(255, 255, 255, 0.04);
+  --c4l-bot-text: #e6edf3;
 
-  --c4l-user-bubble: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --c4l-user-bubble: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   --c4l-user-text: #ffffff;
 
-  --c4l-shadow-float: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
-  --c4l-shadow-msg: 0 4px 6px rgba(0, 0, 0, 0.2);
+  --c4l-glass-bg: rgba(255, 255, 255, 0.03);
+  --c4l-glass-border: rgba(255, 255, 255, 0.06);
+
+  --c4l-shadow-float: 0 25px 80px -12px rgba(0, 0, 0, 0.85), 0 0 60px -20px rgba(99, 102, 241, 0.12);
+  --c4l-shadow-msg: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 *,
@@ -76,21 +83,100 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Page de démo standard */
+/* Page de démo */
 #root {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f3f4f6;
-  /* Fond neutre par défaut */
 }
 
-/* Animations */
+/* ─── Scrollbar ─── */
+.c4l-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.c4l-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.c4l-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 10px;
+}
+
+.c4l-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.3);
+}
+
+/* ─── Quick Action Hover ─── */
+.c4l-quick-action {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.c4l-quick-action:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.2) !important;
+  background: var(--c4l-bg-input) !important;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
+}
+
+.c4l-quick-action:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: none;
+}
+
+/* ─── Header Button Effects ─── */
+.c4l-header-btn {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.c4l-header-btn:hover {
+  background: rgba(99, 102, 241, 0.1) !important;
+  color: #818cf8 !important;
+  transform: scale(1.1);
+}
+
+.c4l-header-btn:active {
+  transform: scale(0.9);
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+.c4l-header-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #f87171 !important;
+}
+
+.c4l-header-btn--danger:active {
+  background: rgba(239, 68, 68, 0.2) !important;
+}
+
+/* ─── Input Button Effects ─── */
+.c4l-input-btn {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.c4l-input-btn:hover {
+  color: #818cf8 !important;
+  background: rgba(99, 102, 241, 0.08);
+  transform: scale(1.1);
+}
+
+.c4l-input-btn:active {
+  transform: scale(0.9);
+}
+
+/* ─── Animations ─── */
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.9) translateY(20px);
+    transform: scale(0.92) translateY(16px);
   }
 
   to {
@@ -102,7 +188,7 @@ body {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
 
   to {
@@ -146,7 +232,7 @@ body {
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: scaleIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .animate-fade-in {
@@ -157,4 +243,35 @@ body {
   animation: wave 2s infinite;
   display: inline-block;
   transform-origin: 70% 70%;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── End Modal input placeholder color ─── */
+[data-theme="dark"] input::placeholder {
+  color: #484f58 !important;
+}
+
+[data-theme="light"] input::placeholder {
+  color: #94a3b8 !important;
 }

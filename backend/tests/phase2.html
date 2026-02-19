@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat4Lead — Test Phase 2 · Proches</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0e0f14;
+            --surface: #161820;
+            --surface2: #1d1f2a;
+            --border: #2a2d3d;
+            --accent: #6c63ff;
+            --accent2: #ff6b6b;
+            --accent3: #63ffda;
+            --text: #e8eaf0;
+            --text-muted: #7a7d96;
+            --success: #4ade80;
+            --warning: #facc15;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 20% 10%, rgba(108, 99, 255, .18) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 80% 80%, rgba(99, 255, 218, .10) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .wrap {
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(22, 24, 32, .8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            letter-spacing: -.5px;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .badge-phase {
+            margin-left: auto;
+            background: linear-gradient(135deg, var(--accent), #9d97ff);
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 999px;
+        }
+
+        .hero {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 60px 24px 40px;
+            text-align: center;
+        }
+
+        .hero-emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -.03em;
+            margin-bottom: 18px;
+        }
+
+        h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--accent), var(--accent3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            max-width: 560px;
+            margin: 0 auto 36px;
+        }
+
+        .steps {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 36px 0;
+        }
+
+        .step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 22px;
+            text-align: left;
+            width: 200px;
+            transition: transform .2s, border-color .2s;
+        }
+
+        .step:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .step-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            opacity: .3;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .step h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .step p {
+            font-size: .8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Scenario box — libre */
+        .scenario-box {
+            background: linear-gradient(135deg, rgba(108, 99, 255, .12), rgba(99, 255, 218, .06));
+            border: 1px solid rgba(108, 99, 255, .35);
+            border-radius: 20px;
+            padding: 28px 32px;
+            max-width: 640px;
+            margin: 0 auto 36px;
+            text-align: left;
+        }
+
+        .scenario-box h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--accent3);
+            margin-bottom: 14px;
+        }
+
+        .scenario-box .scene {
+            font-size: 1.05rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .scenario-box .hint {
+            font-size: .85rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .scenario-box .example {
+            font-size: .82rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, .04);
+            border-radius: 10px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .privacy {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: .78rem;
+            color: var(--text-muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 999px;
+        }
+
+        .pill .dot {
+            color: var(--success);
+            font-size: .9rem;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent), #9d97ff);
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 16px 36px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+            box-shadow: 0 0 32px rgba(108, 99, 255, .35);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 48px rgba(108, 99, 255, .55);
+        }
+
+        /* Chat */
+        #chat-section {
+            display: none;
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        #chat-section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .chat-window {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .chat-header {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bot-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent3));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .bot-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: .9rem;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            margin-left: auto;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .4;
+            }
+        }
+
+        .timer {
+            font-family: 'Syne', sans-serif;
+            font-size: .8rem;
+            color: var(--text-muted);
+            text-align: right;
+            padding: 0 20px 10px;
+        }
+
+        .chat-body {
+            padding: 20px;
+            height: 380px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-body::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-body::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .msg {
+            max-width: 78%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: .9rem;
+            line-height: 1.55;
+            animation: msgIn .3s ease;
+        }
+
+        @keyframes msgIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .msg.bot {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+        }
+
+        .msg.user {
+            background: linear-gradient(135deg, var(--accent), #9d97ff);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+            align-self: flex-end;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 10px;
+            padding: 14px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--surface2);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent);
+        }
+
+        .send-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 18px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background .2s, transform .15s;
+        }
+
+        .send-btn:hover {
+            background: #9d97ff;
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        .end-chat-btn {
+            display: block;
+            margin: 0 auto;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .85rem;
+            padding: 10px 24px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: border-color .2s, color .2s;
+        }
+
+        .end-chat-btn:hover {
+            border-color: var(--accent3);
+            color: var(--accent3);
+        }
+
+        /* Typing */
+        .typing {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            border-bottom-left-radius: 4px;
+            align-self: flex-start;
+            width: fit-content;
+        }
+
+        .typing span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: bounce 1.2s infinite;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: .2s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: .4s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-6px);
+            }
+        }
+
+        /* Error */
+        .error-msg {
+            background: rgba(239, 68, 68, .1);
+            border: 1px solid rgba(239, 68, 68, .3);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: .85rem;
+            color: #ef4444;
+            align-self: center;
+            text-align: center;
+        }
+
+        /* Feedback */
+        #feedback-section {
+            display: none;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        .progress-bar {
+            margin-bottom: 24px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: .75rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 600;
+        }
+
+        .progress-track {
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent3));
+            border-radius: 2px;
+            transition: width .4s ease;
+        }
+
+        .feedback-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent3));
+        }
+
+        .feedback-card h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .feedback-card .subtitle {
+            color: var(--text-muted);
+            font-size: .9rem;
+            margin-bottom: 32px;
+        }
+
+        .q-block {
+            margin-bottom: 28px;
+        }
+
+        .q-label {
+            font-family: 'Syne', sans-serif;
+            font-size: .85rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .slider-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .slider-wrap input[type=range] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider-wrap input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(108, 99, 255, .5);
+            cursor: pointer;
+        }
+
+        .slider-val {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--accent);
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .radio-opt {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            font-size: .9rem;
+        }
+
+        .radio-opt:hover {
+            border-color: var(--accent);
+            background: rgba(108, 99, 255, .07);
+        }
+
+        .radio-opt.selected {
+            border-color: var(--accent);
+            background: rgba(108, 99, 255, .12);
+            color: var(--accent);
+        }
+
+        .radio-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: border-color .2s;
+        }
+
+        .radio-opt.selected .radio-dot {
+            border-color: var(--accent);
+        }
+
+        .radio-opt.selected .radio-dot::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .fb-textarea {
+            width: 100%;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: .9rem;
+            resize: vertical;
+            min-height: 90px;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .fb-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .fb-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent3));
+            color: #0e0f14;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s;
+            margin-top: 8px;
+            box-shadow: 0 0 28px rgba(99, 255, 218, .2);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 44px rgba(99, 255, 218, .35);
+        }
+
+        .submit-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Thanks */
+        #thanks-section {
+            display: none;
+            max-width: 480px;
+            margin: 60px auto;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        .thanks-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        #thanks-section h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        #thanks-section p {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .report-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: var(--accent3);
+            font-size: .9rem;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(99, 255, 218, .3);
+        }
+
+        @media (max-width: 600px) {
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .step {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            h1 {
+                font-size: 1.9rem;
+            }
+
+            .feedback-card {
+                padding: 24px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+
+        <!-- TOP BAR -->
+        <header class="top-bar">
+            <div class="logo">Chat<span>4</span>Lead</div>
+            <div class="badge-phase">Phase 2 · Proches</div>
+        </header>
+
+        <!-- ── INTRO ── -->
+        <section id="intro-section" class="hero">
+            <span class="hero-emoji">🚚</span>
+            <h1>Testez notre<br><em>assistant déménagement</em></h1>
+            <p>Aidez-nous à améliorer Tom, notre chatbot, en 10 minutes. Aucune compétence technique requise — juste
+                votre avis honnête !</p>
+
+            <div class="scenario-box">
+                <h2>🎯 Votre mission</h2>
+                <p class="scene">Imaginez que vous avez besoin d'un déménageur. Discutez avec Tom comme si vous le
+                    contactiez vraiment.</p>
+                <p class="hint">Utilisez votre propre situation, une situation passée, ou inventez-en une — c'est vous
+                    qui choisissez !</p>
+                <p class="example">💡 <strong>Exemple :</strong> Vous déménagez de Paris vers Lyon, appartement de 60
+                    m², dans un mois. Mais vous pouvez tout à fait utiliser votre propre scénario.</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">01</div>
+                    <h3>Discutez</h3>
+                    <p>Chattez avec Tom, notre assistant virtuel</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">02</div>
+                    <h3>Répondez</h3>
+                    <p>Naturellement, comme avec un vrai service</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">03</div>
+                    <h3>Notez</h3>
+                    <p>2 min de feedback pour améliorer le bot</p>
+                </div>
+            </div>
+
+            <div class="privacy">
+                <div class="pill"><span class="dot">●</span> Données jamais revendues</div>
+                <div class="pill"><span class="dot">●</span> Uniquement pour améliorer le chatbot</div>
+                <div class="pill"><span class="dot">●</span> Infos fictives acceptées</div>
+            </div>
+
+            <button class="cta-btn" onclick="startChat()">Commencer le test &rarr;</button>
+        </section>
+
+        <!-- ── CHAT ── -->
+        <section id="chat-section">
+            <h2>💬 Discutez avec Tom</h2>
+            <div class="chat-window">
+                <div class="chat-header">
+                    <div class="bot-avatar">🤖</div>
+                    <div>
+                        <div class="bot-name">Tom — Assistant Déménagement</div>
+                    </div>
+                    <div class="online-dot"></div>
+                </div>
+                <div class="timer" id="timer">00:00</div>
+                <div class="chat-body" id="chat-body"></div>
+                <div class="chat-input-row">
+                    <input type="text" class="chat-input" id="chat-input" placeholder="Votre message…"
+                        onkeydown="if(event.key==='Enter')sendMsg()">
+                    <button class="send-btn" id="send-btn" onclick="sendMsg()">&#10148;</button>
+                </div>
+            </div>
+            <button class="end-chat-btn" onclick="endChat()">Terminer la conversation &rarr;</button>
+        </section>
+
+        <!-- ── FEEDBACK ── -->
+        <section id="feedback-section">
+            <div class="progress-bar">
+                <div class="progress-label">
+                    <span>Votre avis</span>
+                    <span id="q-progress">Question 1 / 5</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width:20%"></div>
+                </div>
+            </div>
+            <div class="feedback-card">
+                <h2>⭐ Votre avis compte</h2>
+                <p class="subtitle">7 questions · ~3 minutes · Pas de bonne ou mauvaise réponse</p>
+
+                <!-- 1. NATURALITÉ -->
+                <div class="q-block">
+                    <label class="q-label">1. NATURALITÉ : La conversation t'a semblé...</label>
+                    <div class="radio-group" id="rg-naturalite">
+                        <label class="radio-opt"
+                            onclick="selectRadio('rg-naturalite',this,'Très naturelle, comme un vrai humain')"><span
+                                class="radio-dot"></span> Très naturelle, comme un vrai humain</label>
+                        <label class="radio-opt"
+                            onclick="selectRadio('rg-naturalite',this,'Naturelle, mais quelques maladresses')"><span
+                                class="radio-dot"></span> Naturelle, mais quelques maladresses</label>
+                        <label class="radio-opt"
+                            onclick="selectRadio('rg-naturalite',this,'Robotique par moments')"><span
+                                class="radio-dot"></span> Robotique par moments</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-naturalite',this,'Trop robotique')"><span
+                                class="radio-dot"></span> Trop robotique</label>
+                    </div>
+                </div>
+
+                <!-- 2. COMPRÉHENSION -->
+                <div class="q-block">
+                    <label class="q-label">2. COMPRÉHENSION : Le bot a bien compris ce que tu voulais dire ?</label>
+                    <div class="radio-group" id="rg-comprehension">
+                        <label class="radio-opt" onclick="selectRadio('rg-comprehension',this,'Oui, toujours')"><span
+                                class="radio-dot"></span> Oui, toujours</label>
+                        <label class="radio-opt"
+                            onclick="selectRadio('rg-comprehension',this,'Oui, la plupart du temps')"><span
+                                class="radio-dot"></span> Oui, la plupart du temps</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-comprehension',this,'Parfois raté')"><span
+                                class="radio-dot"></span> Parfois raté</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-comprehension',this,'Souvent à côté')"><span
+                                class="radio-dot"></span> Souvent à côté</label>
+                    </div>
+                    <input type="text" class="fb-textarea" style="height:44px; margin-top:10px;" id="fb-compr-detail"
+                        placeholder="Si raté : qu'est-ce qu'il n'a pas compris ?">
+                </div>
+
+                <!-- 3. RÉPÉTITIONS -->
+                <div class="q-block">
+                    <label class="q-label">3. RÉPÉTITIONS / IRRITANTS : Une question t'a semblé bizarre, répétitive ou
+                        inutile ?</label>
+                    <div class="radio-group" id="rg-repetitif">
+                        <label class="radio-opt"
+                            onclick="selectRadio('rg-repetitif',this,'Non, tout était logique')"><span
+                                class="radio-dot"></span> Non, tout était logique</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-repetitif',this,'Oui')"><span
+                                class="radio-dot"></span> Oui</label>
+                    </div>
+                    <input type="text" class="fb-textarea" style="height:44px; margin-top:10px;" id="fb-repet-detail"
+                        placeholder="Si oui → laquelle et pourquoi ?">
+                </div>
+
+                <!-- 4. CONFIANCE -->
+                <div class="q-block">
+                    <label class="q-label">4. CONFIANCE : Aurais-tu donné tes vraies coordonnées (email + téléphone)
+                        ?</label>
+                    <div class="radio-group" id="rg-confiance">
+                        <label class="radio-opt" onclick="selectRadio('rg-confiance',this,'Oui, sans hésiter')"><span
+                                class="radio-dot"></span> Oui, sans hésiter</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-confiance',this,'Oui, probablement')"><span
+                                class="radio-dot"></span> Oui, probablement</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-confiance',this,'Hésitation')"><span
+                                class="radio-dot"></span> Hésitation</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-confiance',this,'Non')"><span
+                                class="radio-dot"></span> Non</label>
+                    </div>
+                    <input type="text" class="fb-textarea" style="height:44px; margin-top:10px;" id="fb-conf-detail"
+                        placeholder="Pourquoi ?">
+                </div>
+
+                <!-- 5. INTENTION -->
+                <div class="q-block">
+                    <label class="q-label">5. INTENTION : Si un proche déménageait, tu lui enverrais ce chatbot
+                        ?</label>
+                    <div class="radio-group" id="rg-reco">
+                        <label class="radio-opt" onclick="selectRadio('rg-reco',this,'Oui, direct')"><span
+                                class="radio-dot"></span> Oui, direct</label>
+                        <label class="radio-opt"
+                            onclick="selectRadio('rg-reco',this,'Oui, après quelques améliorations')"><span
+                                class="radio-dot"></span> Oui, après améliorations</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-reco',this,'Probablement pas')"><span
+                                class="radio-dot"></span> Probablement pas</label>
+                        <label class="radio-opt" onclick="selectRadio('rg-reco',this,'Non')"><span
+                                class="radio-dot"></span> Non</label>
+                    </div>
+                    <input type="text" class="fb-textarea" style="height:44px; margin-top:10px;" id="fb-reco-detail"
+                        placeholder="Pourquoi ?">
+                </div>
+
+                <!-- 6. NOTE GLOBALE -->
+                <div class="q-block">
+                    <label class="q-label">6. NOTE GLOBALE : Note ton expérience</label>
+                    <div class="slider-wrap">
+                        <span style="font-size:.8rem;color:var(--text-muted)">Décevant</span>
+                        <input type="range" min="1" max="10" value="7" id="slider-note"
+                            oninput="document.getElementById('val-note').textContent=this.value">
+                        <span style="font-size:.8rem;color:var(--text-muted)">Génial</span>
+                        <div class="slider-val" id="val-note">7</div>
+                    </div>
+                </div>
+
+                <!-- 7. CE QUI T'A MARQUÉ -->
+                <div class="q-block">
+                    <label class="q-label">7. CE QUI T'A MARQUÉ</label>
+                    <input type="text" class="fb-textarea" style="height:44px; margin-top:10px;" id="fb-plu"
+                        placeholder="Un truc qui t'a vraiment plu ?">
+                    <input type="text" class="fb-textarea" style="height:44px; margin-top:10px;" id="fb-gene"
+                        placeholder="Un truc qui t'a gêné ?">
+                </div>
+
+                <button class="submit-btn" id="submit-btn" onclick="submitFeedback()">Envoyer mon avis ✓</button>
+            </div>
+        </section>
+
+        <!-- ── MERCI ── -->
+        <section id="thanks-section">
+            <div class="thanks-icon">🎉</div>
+            <h2>Merci beaucoup !</h2>
+            <p>Votre retour est précieux pour améliorer Tom avant son lancement. Vos réponses ont été enregistrées et un
+                rapport a été généré automatiquement.</p>
+            <br>
+            <p style="color:var(--accent3);font-size:.9rem;">Session ID : <strong id="report-id"></strong></p>
+            <a class="report-link" id="report-link" href="#" target="_blank" style="display:none;">Voir le rapport →</a>
+            <div style="margin-top:20px;">
+                <a href="./reports/dashboard-synthese.html" style="color:var(--text-muted); font-size: .85rem;">📊
+                    Accéder au Dashboard Global</a>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // ─── Config ───────────────────────────────────────────────────────────────────
+        const API_BASE = window.location.origin + '/api';
+        const API_KEY = '2b76dd8a-8206-4354-9ea6-cf4a8916c11e';
+
+        // ─── State ────────────────────────────────────────────────────────────────────
+        const state = {
+            conversationId: null,
+            sessionId: null,
+            startTime: null,
+            timerInterval: null,
+            radioValues: {},
+            sending: false,
+        };
+
+        // ─── API helpers ──────────────────────────────────────────────────────────────
+        async function apiCall(method, path, body) {
+            const res = await fetch(API_BASE + path, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+                body: body ? JSON.stringify(body) : undefined,
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+        }
+
+        // ─── Chat ─────────────────────────────────────────────────────────────────────
+        async function startChat() {
+            document.getElementById('intro-section').style.display = 'none';
+            document.getElementById('chat-section').style.display = 'block';
+            state.startTime = new Date();
+            startTimer();
+
+            try {
+                // 1. Init conversation
+                const init = await apiCall('POST', '/conversation/init', {});
+                state.conversationId = init.conversationId;
+
+                // 2. Start test session
+                const sess = await fetch(API_BASE.replace('/api', '') + '/api/test-session/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phase: 'phase2', conversationId: state.conversationId }),
+                }).then(r => r.json());
+                state.sessionId = sess.sessionId;
+
+                // 3. Get first bot message
+                showTyping();
+                const first = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: '__init__' });
+                hideTyping();
+                addBotMsg(first.reply || 'Bonjour ! Je suis Tom, votre assistant déménagement. Comment puis-je vous aider ?');
+            } catch (e) {
+                hideTyping();
+                addErrorMsg('Impossible de démarrer la conversation. Vérifiez que le serveur est lancé.');
+                console.error(e);
+            }
+        }
+
+        function startTimer() {
+            state.timerInterval = setInterval(() => {
+                const s = Math.floor((new Date() - state.startTime) / 1000);
+                const m = Math.floor(s / 60);
+                document.getElementById('timer').textContent =
+                    String(m).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
+            }, 1000);
+        }
+
+        let typingEl = null;
+        function showTyping() {
+            const body = document.getElementById('chat-body');
+            typingEl = document.createElement('div');
+            typingEl.className = 'typing';
+            typingEl.innerHTML = '<span></span><span></span><span></span>';
+            body.appendChild(typingEl);
+            body.scrollTop = body.scrollHeight;
+        }
+        function hideTyping() {
+            if (typingEl && typingEl.parentNode) typingEl.parentNode.removeChild(typingEl);
+            typingEl = null;
+        }
+
+        function addBotMsg(text) {
+            const body = document.getElementById('chat-body');
+            const m = document.createElement('div');
+            m.className = 'msg bot';
+            m.textContent = text;
+            body.appendChild(m);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function addUserMsg(text) {
+            const body = document.getElementById('chat-body');
+            const m = document.createElement('div');
+            m.className = 'msg user';
+            m.textContent = text;
+            body.appendChild(m);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        function addErrorMsg(text) {
+            const body = document.getElementById('chat-body');
+            const m = document.createElement('div');
+            m.className = 'error-msg';
+            m.textContent = '⚠️ ' + text;
+            body.appendChild(m);
+            body.scrollTop = body.scrollHeight;
+        }
+
+        async function sendMsg() {
+            if (state.sending) return;
+            const inp = document.getElementById('chat-input');
+            const text = inp.value.trim();
+            if (!text || !state.conversationId) return;
+
+            inp.value = '';
+            state.sending = true;
+            document.getElementById('send-btn').disabled = true;
+
+            addUserMsg(text);
+            showTyping();
+
+            try {
+                const res = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: text });
+                hideTyping();
+                addBotMsg(res.reply || '…');
+            } catch (e) {
+                hideTyping();
+                addErrorMsg('Erreur de connexion. Réessayez.');
+                console.error(e);
+            } finally {
+                state.sending = false;
+                document.getElementById('send-btn').disabled = false;
+                inp.focus();
+            }
+        }
+
+        function endChat() {
+            clearInterval(state.timerInterval);
+            document.getElementById('chat-section').style.display = 'none';
+            document.getElementById('feedback-section').style.display = 'block';
+        }
+
+        // ─── Feedback ─────────────────────────────────────────────────────────────────
+        function selectRadio(groupId, el, value) {
+            document.querySelectorAll('#' + groupId + ' .radio-opt').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            state.radioValues[groupId] = value;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(state.radioValues).length;
+            const pct = 15 + answered * 12;
+            document.getElementById('progress-fill').style.width = Math.min(pct, 100) + '%';
+            document.getElementById('q-progress').textContent = 'Question ' + (Math.min(answered + 1, 7)) + ' / 7';
+        }
+
+        async function submitFeedback() {
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true;
+            btn.textContent = 'Envoi en cours…';
+
+            const feedback = {
+                naturalite: state.radioValues['rg-naturalite'] || 'Non renseigné',
+                comprehension: state.radioValues['rg-comprehension'] || 'Non renseigné',
+                comprehensionDetail: document.getElementById('fb-compr-detail').value,
+                repetition: state.radioValues['rg-repetitif'] || 'Non renseigné',
+                repetitionDetail: document.getElementById('fb-repet-detail').value,
+                confiance: state.radioValues['rg-confiance'] || 'Non renseigné',
+                confianceDetail: document.getElementById('fb-conf-detail').value,
+                recommandation: state.radioValues['rg-reco'] || 'Non renseigné',
+                recommandationDetail: document.getElementById('fb-reco-detail').value,
+                note: parseInt(document.getElementById('slider-note').value),
+                plu: document.getElementById('fb-plu').value,
+                gene: document.getElementById('fb-gene').value,
+            };
+
+            try {
+                const res = await fetch(API_BASE.replace('/api', '') + `/api/test-session/${state.sessionId}/feedback`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ feedback, conversationId: state.conversationId }),
+                }).then(r => r.json());
+
+                document.getElementById('feedback-section').style.display = 'none';
+                document.getElementById('thanks-section').style.display = 'block';
+                document.getElementById('report-id').textContent = state.sessionId;
+
+                if (res.reportUrl) {
+                    const link = document.getElementById('report-link');
+                    link.href = res.reportUrl;
+                    link.style.display = 'inline-block';
+                }
+            } catch (e) {
+                btn.disabled = false;
+                btn.textContent = 'Envoyer mon avis ✓';
+                alert('Erreur lors de l\'envoi. Vérifiez la connexion au serveur.');
+                console.error(e);
+            }
+        }
+    </script>
+</body>
+
+</html>

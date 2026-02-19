@@ -1,0 +1,2034 @@
+[
+  {
+    "id": "test-01",
+    "name": "Lead parfait",
+    "description": "Lead qui donne toutes les infos facilement",
+    "timestamp": "2026-02-16T20:03:40.338Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "9ea9a9e5-0559-4432-9b6f-bc5ddfcf8d42",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": "Sophie",
+      "nom": "Martin",
+      "email": "sophie.martin@email.com",
+      "telephone": "0612345678",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 70,
+        "nbPieces": 3,
+        "villeDepart": "Paris",
+        "villeArrivee": "Versailles",
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je voudrais déménager",
+        "bot": "Bonjour ! Je suis Tom, votre assistant pour Déménagements Test Paris. Je suis ravi de vous aider à organiser votre déménagement. Pouvez-vous me dire d'abord de quelle ville ou quartier vous partez ?",
+        "score": 10,
+        "latency_ms": 22452
+      },
+      {
+        "user": "De Paris 15ème vers Versailles",
+        "bot": "C'est noté, pour le parcours. Vous partez donc du 15ème arrondissement de Paris et vous allez vers Versailles. Quel type de logement vous quittez-vous, et sur combien d'étages ?",
+        "score": 20,
+        "latency_ms": 467
+      },
+      {
+        "user": "Un appartement F3 de 70m² au 3ème étage sans ascenseur",
+        "bot": "C'est bien noté. Votre appartement est donc un F3 de 70m², situé au 3ème étage sans ascenseur. Quelle est la superficie totale de vos biens que nous devrons transporter ? Avez-vous des meubles, des objets personnels, ou est-ce un déménagement vide ?",
+        "score": 40,
+        "latency_ms": 566
+      },
+      {
+        "user": "Oui il y a un parking en bas",
+        "bot": "C'est un bon point pour la manutention. Nous aurons accès au parking en bas, ce qui facilitera la prise en charge de vos biens. Quel type de déménagement recherchez-vous ? Un service complet, avec démontage, montage, etc. ? \n\n Et pour le volume, je suppose que vous voulez que je vous propose une estimation de volume basée sur la surface de votre appartement ?",
+        "score": 40,
+        "latency_ms": 650
+      },
+      {
+        "user": "Le 15 mars",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 100703
+      },
+      {
+        "user": "Je suis Sophie Martin",
+        "bot": "Bonjour Sophie ! En tant que propriétaire d'un appartement F3 de 70m² situé au 3ème étage sans ascenseur, avec un parking en bas, vous souhaitez déménager le 15 mars. \n\nPour commencer, je vous poserai quelques questions pour déterminer la prétention exacte de votre projet.",
+        "score": 60,
+        "latency_ms": 624
+      },
+      {
+        "user": "sophie.martin@email.com",
+        "bot": "C'est noté, Sophie. Pour la prochaine étape, je vais vous demander quelques informations sur vos meubles et objets à déménager. Cela nous aidera à estimer le volume de votre mueble.",
+        "score": 70,
+        "latency_ms": 479
+      },
+      {
+        "user": "06 12 34 56 78",
+        "bot": "C'est noté, Sophie. Je vais maintenant vous poser quelques questions sur votre logement actuel. Quels sont les meubles et objets que vous souhaitez déménager ?",
+        "score": 80,
+        "latency_ms": 463
+      },
+      {
+        "user": "La formule Standard me semble bien",
+        "bot": "La formule Standard inclut le transport, le déménagement et la manipulation de votre mobilier, ainsi que la préparation et le déballage des biens fragiles. \n\nPour la prochaine étape, j'aimerais savoir, est-ce que vous disposez d'un ascenseur dans votre nouvel appartement ?",
+        "score": 80,
+        "latency_ms": 539
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 80,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "sophie.martin@email.com",
+        "actual": "sophie.martin@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Sophie",
+        "actual": "Sophie",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Martin",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 147.1
+  },
+  {
+    "id": "test-02",
+    "name": "Lead difficile",
+    "description": "Lead qui donne peu d'infos",
+    "timestamp": "2026-02-16T20:06:27.476Z",
+    "passed": false,
+    "messages_sent": 5,
+    "errors": [
+      "fetch failed"
+    ],
+    "conversation_id": "94526212-e9d4-4f60-bfe1-79096ea0185c",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "bjr",
+        "bot": "Bonjour ! Je m'appelle Tom, je suis votre assistant pour les déménagements avec Déménagements Test Paris. Comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 615
+      },
+      {
+        "user": "jdemenage",
+        "bot": "Bonjour Jdemenage ! Comment puis-je vous aider aujourd'hui ? Vous préparez-vous à déménager ou avez-vous besoin d'une estimation pour votre prochain déménagement ?",
+        "score": 20,
+        "latency_ms": 525
+      },
+      {
+        "user": "paris",
+        "bot": "Bonjour Paris ! Comment puis-je vous aider aujourd'hui ? Vous avez besoin d'aide pour votre déménagement ?",
+        "score": 20,
+        "latency_ms": 5643
+      },
+      {
+        "user": "petit appart",
+        "bot": "Bonjour Petit Appart ! Déménagements Test Paris est à votre service. Qu'est-ce que je peux faire pour vous aujourd'hui ?",
+        "score": 20,
+        "latency_ms": 6592
+      },
+      {
+        "user": "je sais pas",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 49816
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 76
+  },
+  {
+    "id": "test-03",
+    "name": "Lead qui digresse",
+    "description": "Lead qui pose des questions hors sujet",
+    "timestamp": "2026-02-16T20:08:03.496Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "f2d4acc7-f8c7-4a83-8357-6eec5fffaf66",
+    "final_score": 75,
+    "final_lead": {
+      "prenom": "Thomas",
+      "nom": null,
+      "email": "thomas@email.com",
+      "telephone": "0611223344",
+      "score": 75,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 80,
+        "villeDepart": "Lyon",
+        "villeArrivee": "Marseille",
+        "volumeEstime": 40,
+        "dateSouhaitee": "20/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je déménage",
+        "bot": "Enchanté, comment puis-je vous aider pour votre déménagement ?",
+        "score": 10,
+        "latency_ms": 637
+      },
+      {
+        "user": "De Lyon, au fait vous travaillez le week-end ?",
+        "bot": "Oui, nous travaillons le week-end. Pour la ville de départ, Lyon, c'est noté. Quelle est la destination pour votre déménagement ?",
+        "score": 15,
+        "latency_ms": 1249
+      },
+      {
+        "user": "Et vous gérez les pianos ?",
+        "bot": "Oui, nous gérons les pianos, ils sont considérés comme des objets fragiles, donc ils seront pris en charge avec soin pour la déménagement. Est-ce que vous avez un piano à déménager ?",
+        "score": 15,
+        "latency_ms": 493
+      },
+      {
+        "user": "Ok super. Donc Lyon vers Marseille",
+        "bot": "C'est noté, pour la destination. Lyon ➡️ Marseille, c'est bien. Quel est le volume approximatif de votre déménagement ?",
+        "score": 20,
+        "latency_ms": 760
+      },
+      {
+        "user": "80m²",
+        "bot": "L'espace de 80m² peut correspondre à un volume de déménagement de 40m³ (80/2). Mais pour obtenir une estimation plus précise, il faudrait connaître les objets à déménager. Est-ce que vous disposez d'objets spécifiques à déménager comme des meubles, du mobilier, des vélos, etc. ?",
+        "score": 40,
+        "latency_ms": 4659
+      },
+      {
+        "user": "Le 20 mars",
+        "bot": "La date souhaitée pour le déménagement est le 20 mars 2026. Je note. Quels sont vos besoins en matière de prestations pour ce déménagement ? Nous offrons des options Eco, Standard et Luxe. Quelle option vous intéresse ?",
+        "score": 45,
+        "latency_ms": 30970
+      },
+      {
+        "user": "Je suis Thomas",
+        "bot": "Enchanté, Thomas ! Je note. Nous avons déjà discuté de ton déménagement de Lyon à Marseille. Je récapitule : tu habites une surface de 80m², et tu souhaites déménager le 20 mars 2026. Qu'est-ce que tu penses de notre offre standard, qui inclut le transport, la manipulation fragile et le démontage des meubles ?",
+        "score": 55,
+        "latency_ms": 534
+      },
+      {
+        "user": "thomas@email.com",
+        "bot": "C'est noté, pour les coordonnées.",
+        "score": 65,
+        "latency_ms": 3599
+      },
+      {
+        "user": "06 11 22 33 44",
+        "bot": "C'est noté, pour le numéro de téléphone. Qu'est-ce que tu veux dire par \"Le 20 mars\" ? Tu veux préciser que le 20 mars est la date de départ ou d'arrivée ?",
+        "score": 75,
+        "latency_ms": 30130
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 70,
+        "actual": 75,
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "thomas@email.com",
+        "actual": "thomas@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0611223344",
+        "actual": "0611223344",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Thomas",
+        "actual": "Thomas",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 93.4
+  },
+  {
+    "id": "test-04",
+    "name": "Lead objection prix",
+    "description": "Lead qui trouve ça trop cher",
+    "timestamp": "2026-02-16T20:09:56.867Z",
+    "passed": true,
+    "messages_sent": 4,
+    "errors": [],
+    "conversation_id": "78931115-a09c-4ea6-82d9-27e4ead82303",
+    "final_score": 50,
+    "final_lead": {
+      "prenom": "Trop",
+      "nom": null,
+      "email": null,
+      "telephone": null,
+      "score": 50,
+      "priorite": "MOYEN",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 80,
+        "villeDepart": "Paris",
+        "villeArrivee": "Bordeaux"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 44127
+      },
+      {
+        "user": "Paris vers Bordeaux, 80m²",
+        "bot": "C'est noté, pour le parcours. Nous allons donc déplacer un espace de 80m² de Paris vers Bordeaux. Qu'est-ce que vous souhaitez savoir ensuite ?",
+        "score": 40,
+        "latency_ms": 410
+      },
+      {
+        "user": "Quel est le prix ?",
+        "bot": "Je suis désolé, mais je n'ai pas encore suffisamment d'informations pour donner une estimation précise. Nous devons d'abord discuter de votre logement actuel, des étages, du volume de vos meubles et de la prestation que vous souhaitez.\n\nVoulez-vous passer à la question 2, Logement & Étages ?",
+        "score": 40,
+        "latency_ms": 458
+      },
+      {
+        "user": "C'est trop cher !",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 49496
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 15,
+        "actual": 50,
+        "passed": true
+      }
+    ],
+    "duration_seconds": 102.1
+  },
+  {
+    "id": "test-05",
+    "name": "Lead urgence",
+    "description": "Déménagement dans 5 jours",
+    "timestamp": "2026-02-16T20:11:58.939Z",
+    "passed": true,
+    "messages_sent": 5,
+    "errors": [],
+    "conversation_id": "77299ea5-d94c-40ea-8e19-40575ca0646d",
+    "final_score": 85,
+    "final_lead": {
+      "prenom": "Thomas",
+      "nom": null,
+      "email": "thomas.urgent@email.com",
+      "telephone": "0611223344",
+      "score": 85,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 50,
+        "villeDepart": "Paris",
+        "villeArrivee": "Paris",
+        "dateSouhaitee": "21/02/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je doit déménager dans 5 jours",
+        "bot": "C'est un déménagement rapide ! Pour mieux comprendre votre situation, pouvez-vous me dire d'abord d'où vous déménagez et où vous allez vous rendre ?",
+        "score": 30,
+        "latency_ms": 6600
+      },
+      {
+        "user": "Paris vers Lille, 50m²",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 34644
+      },
+      {
+        "user": "Je suis Thomas",
+        "bot": "Bonjour Thomas. Très bien, je comprends. Vous déménagez de Paris vers Lille, et votre surface totale est de 50 m². C'est noté, pour la surface... Qu'est-ce que vous avez à me dire au sujet de votre logement actuel ? Est-ce un appartement, une maison, un étage en particulier ?",
+        "score": 65,
+        "latency_ms": 6853
+      },
+      {
+        "user": "thomas.urgent@email.com",
+        "bot": "Je note votre adresse email. Cependant, comme nous avons déjà cela enregistré, je ne la mentionnerai pas à nouveau. Nous allons poursuivre la conversation. Vous aviez mentionné que vous déménagez d'un appartement de 50 m² à Paris vers Lille. Pouvez-vous me dire quels étages vous occupez actuellement ?",
+        "score": 75,
+        "latency_ms": 7760
+      },
+      {
+        "user": "06 11 22 33 44",
+        "bot": "Je ne peux pas utiliser ces informations. Si vous avez des coordonnées à me partager, n'hésitez pas à les communiquer, je vais les enregistrer pour le projet.",
+        "score": 85,
+        "latency_ms": 8772
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 85,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "thomas.urgent@email.com",
+        "actual": "thomas.urgent@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0611223344",
+        "actual": "0611223344",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Thomas",
+        "actual": "Thomas",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 74.7
+  },
+  {
+    "id": "test-06",
+    "name": "Lead avec fautes de frappe",
+    "description": "Lead qui fait beaucoup de fautes d'orthographe",
+    "timestamp": "2026-02-16T20:13:33.691Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "716807d1-7ff7-4e31-b76b-d4c997e35e88",
+    "final_score": 90,
+    "final_lead": {
+      "prenom": "Jean",
+      "nom": null,
+      "email": "jean.dupon@gmail.com",
+      "telephone": "0623456789",
+      "score": 90,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 60,
+        "villeDepart": "Paris",
+        "villeArrivee": "Lyon",
+        "dateSouhaitee": "10/01/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "bonjur je veu demenagé",
+        "bot": "Bonjour ! Je m'appelle Tom, je suis à votre service pour aider à organiser votre déménagement. Pouvez-vous me dire où vous souhaitez déménager, c'est-à-dire votre ville de départ et votre ville d'arrivée, s'il vous plaît ?",
+        "score": 10,
+        "latency_ms": 44601
+      },
+      {
+        "user": "de pari ver lion",
+        "bot": "Vous souhaitez déménager de Paris (75) à Lyon (69). C'est noté, pour la ville. Quels sont vos logements actuels et futurs ? Est-ce un appartement, une maison ou autre ? Et combien d'étages ?",
+        "score": 20,
+        "latency_ms": 513
+      },
+      {
+        "user": "un appart de 60m²",
+        "bot": "Un appartement de 60 m², c'est noté. Quel est le volume approximatif de vos meubles et de vos affaires que vous souhaitez déménager ? Cela nous aidera à estimer l'équipement nécessaire.",
+        "score": 40,
+        "latency_ms": 472
+      },
+      {
+        "user": "o 2eme etage san assenseur",
+        "bot": "Votre appartement est situé au 2ème étage sans ascenseur. Cela nous sera utile pour préparer l'équipement. Quel est votre niveau de confort pour le déménagement ? Avez-vous besoin d'une prestation \"Eco\" (transport seulement), \"Standard\" (équipement complet) ou \"Luxe\" (déménagement complet avec prise en charge des détails) ?",
+        "score": 40,
+        "latency_ms": 550
+      },
+      {
+        "user": "le 10 avri",
+        "bot": "Vous souhaitez déménager le 10 avril. C'est noté, pour la date de déménagement. Quels sont vos coordonnées pour nous contacter ? (nous nous limiterons à l'email ou au téléphone, comme convenu)",
+        "score": 60,
+        "latency_ms": 711
+      },
+      {
+        "user": "je suis jean",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 70,
+        "latency_ms": 60168
+      },
+      {
+        "user": "jean.dupon@gmail.com",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 80,
+        "latency_ms": 65501
+      },
+      {
+        "user": "06 23 45 67 89",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 90,
+        "latency_ms": 65327
+      },
+      {
+        "user": "la formule standard",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 90,
+        "latency_ms": 51823
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 90,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Jean",
+        "actual": "Jean",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0623456789",
+        "actual": "0623456789",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 309.8
+  },
+  {
+    "id": "test-07",
+    "name": "Lead qui change d'avis",
+    "description": "Lead qui modifie ses réponses précédentes",
+    "timestamp": "2026-02-16T20:19:03.480Z",
+    "passed": true,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "6c96f9aa-44fd-4c03-880b-8bb20f74271d",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": "Marie",
+      "nom": "Dubois",
+      "email": "marie.dubois@email.com",
+      "telephone": "0634567890",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 85,
+        "nbPieces": 4,
+        "villeDepart": "Paris",
+        "villeArrivee": "Lyon",
+        "dateSouhaitee": "12/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je déménage de Paris vers Marseille",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 37861
+      },
+      {
+        "user": "En fait non, plutôt vers Lyon",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1392
+      },
+      {
+        "user": "Un F3 de 70m²",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 1458
+      },
+      {
+        "user": "Ah non pardon, c'est un F4 de 85m²",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 17462
+      },
+      {
+        "user": "Le 5 mars",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 1469
+      },
+      {
+        "user": "Finalement plutôt le 12 mars",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 25087
+      },
+      {
+        "user": "Je m'appelle Marie Dubois",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 1390
+      },
+      {
+        "user": "marie.dubois@email.com",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 70,
+        "latency_ms": 1327
+      },
+      {
+        "user": "06 34 56 78 90",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 80,
+        "latency_ms": 1679
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 70,
+        "actual": 80,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Marie",
+        "actual": "Marie",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Dubois",
+        "actual": "Dubois",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "marie.dubois@email.com",
+        "actual": "marie.dubois@email.com",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 109.3
+  },
+  {
+    "id": "test-08",
+    "name": "Lead ultra-pressé",
+    "description": "Lead qui donne des réponses minimales",
+    "timestamp": "2026-02-16T20:21:12.827Z",
+    "passed": false,
+    "messages_sent": 12,
+    "errors": [],
+    "conversation_id": "3f499ac2-549d-47ef-adef-34a8817e9c30",
+    "final_score": 60,
+    "final_lead": {
+      "prenom": "Formule",
+      "nom": "Standard",
+      "email": "paul@mail.fr",
+      "telephone": "0645678901",
+      "score": 60,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 50,
+        "dateSouhaitee": "20/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "salut",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 9316
+      },
+      {
+        "user": "demenagement",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1337
+      },
+      {
+        "user": "lille",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1313
+      },
+      {
+        "user": "roubaix",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1420
+      },
+      {
+        "user": "50m²",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 35,
+        "latency_ms": 1478
+      },
+      {
+        "user": "2eme",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 35,
+        "latency_ms": 1481
+      },
+      {
+        "user": "parking ok",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 35,
+        "latency_ms": 1466
+      },
+      {
+        "user": "20 mars",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 1600
+      },
+      {
+        "user": "je suis paul",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 1442
+      },
+      {
+        "user": "paul@mail.fr",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 1510
+      },
+      {
+        "user": "0645678901",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 1422
+      },
+      {
+        "user": "formule standard",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 1490
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 60,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Paul",
+        "actual": "Formule",
+        "passed": false
+      },
+      {
+        "type": "field.email",
+        "expected": "paul@mail.fr",
+        "actual": "paul@mail.fr",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0645678901",
+        "actual": "0645678901",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 53
+  },
+  {
+    "id": "test-09",
+    "name": "Lead curieux",
+    "description": "Lead qui pose plein de questions techniques",
+    "timestamp": "2026-02-16T20:22:25.790Z",
+    "passed": true,
+    "messages_sent": 11,
+    "errors": [],
+    "conversation_id": "b93aa3b4-e5d0-4093-89fa-c247e2cefe6e",
+    "final_score": 75,
+    "final_lead": {
+      "prenom": "Claire",
+      "nom": "Martin",
+      "email": "claire.martin@email.com",
+      "telephone": "0656789012",
+      "score": 75,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 90,
+        "villeDepart": "Nantes",
+        "villeArrivee": "Angers",
+        "dateSouhaitee": "25/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, vous faites le démontage des meubles IKEA ?",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1428
+      },
+      {
+        "user": "Et vous avez une assurance pour la casse ?",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1539
+      },
+      {
+        "user": "C'est combien par m³ ?",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1408
+      },
+      {
+        "user": "Vous travaillez le dimanche ?",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1542
+      },
+      {
+        "user": "Ok merci. Je déménage de Nantes vers Angers",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 30,
+        "latency_ms": 1333
+      },
+      {
+        "user": "90m², maison avec escalier",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 1358
+      },
+      {
+        "user": "Le 25 mars",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 55,
+        "latency_ms": 1375
+      },
+      {
+        "user": "Je m'appelle Claire Martin",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 55,
+        "latency_ms": 1405
+      },
+      {
+        "user": "claire.martin@email.com",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 65,
+        "latency_ms": 1456
+      },
+      {
+        "user": "06 56 78 90 12",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 75,
+        "latency_ms": 1325
+      },
+      {
+        "user": "Je prends la formule Luxe",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 75,
+        "latency_ms": 1486
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 75,
+        "actual": 75,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD",
+          "TIEDE"
+        ],
+        "actual": "TIEDE",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Claire",
+        "actual": "Claire",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Martin",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "claire.martin@email.com",
+        "actual": "claire.martin@email.com",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 40.8
+  },
+  {
+    "id": "test-10",
+    "name": "Déménagement énorme",
+    "description": "Lead avec très gros volume (maison + dépendances)",
+    "timestamp": "2026-02-16T20:23:26.592Z",
+    "passed": true,
+    "messages_sent": 10,
+    "errors": [],
+    "conversation_id": "a3b2f097-dffb-4e0b-b865-6c0bc1f5ec5e",
+    "final_score": 95,
+    "final_lead": {
+      "prenom": "Robert",
+      "nom": "Durand",
+      "email": "robert.durand@email.com",
+      "telephone": "0667890123",
+      "score": 95,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 250,
+        "villeDepart": "Toulouse",
+        "villeArrivee": "Nice",
+        "dateSouhaitee": "10/01/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour, je déménage une grande maison",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 7302
+      },
+      {
+        "user": "De Toulouse vers Nice",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1384
+      },
+      {
+        "user": "C'est une maison de 250m² sur 3 étages",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 55,
+        "latency_ms": 1388
+      },
+      {
+        "user": "Avec une cave remplie, un garage et un grenier aussi",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 55,
+        "latency_ms": 1332
+      },
+      {
+        "user": "Il y a aussi 2 pianos",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 55,
+        "latency_ms": 2938
+      },
+      {
+        "user": "Le 10 avril",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 75,
+        "latency_ms": 8787
+      },
+      {
+        "user": "Je suis Robert Durand",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 75,
+        "latency_ms": 1538
+      },
+      {
+        "user": "robert.durand@email.com",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 85,
+        "latency_ms": 1899
+      },
+      {
+        "user": "06 67 89 01 23",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 95,
+        "latency_ms": 1602
+      },
+      {
+        "user": "Je pense qu'il me faut la formule Luxe",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 95,
+        "latency_ms": 1432
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 95,
+        "passed": true
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Robert",
+        "actual": "Robert",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Durand",
+        "actual": "Durand",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "robert.durand@email.com",
+        "actual": "robert.durand@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0667890123",
+        "actual": "0667890123",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 52.3
+  },
+  {
+    "id": "test-11",
+    "name": "Lead avec emojis",
+    "description": "Messages avec emojis et caractères spéciaux",
+    "timestamp": "2026-02-16T20:24:38.877Z",
+    "passed": false,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "2d46d4e5-74d4-47ef-b638-8f15ea7da109",
+    "final_score": 60,
+    "final_lead": {
+      "prenom": null,
+      "nom": null,
+      "email": "sophie@mail.com",
+      "telephone": "0612345678",
+      "score": 60,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 70,
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour 👋",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 13086
+      },
+      {
+        "user": "Je déménage 🏠➡️🏡",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1468
+      },
+      {
+        "user": "Paris → Lyon",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1319
+      },
+      {
+        "user": "70m² 📦",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 30,
+        "latency_ms": 1441
+      },
+      {
+        "user": "15/03/2026 📅",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 1445
+      },
+      {
+        "user": "Sophie 😊",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 13545
+      },
+      {
+        "user": "sophie@mail.com 📧",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 1514
+      },
+      {
+        "user": "06.12.34.56.78 📱",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 1531
+      },
+      {
+        "user": "Formule Standard ✅",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 2752
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 80,
+        "actual": 60,
+        "passed": false
+      },
+      {
+        "type": "field.email",
+        "expected": "sophie@mail.com",
+        "actual": "sophie@mail.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 58.2
+  },
+  {
+    "id": "test-12",
+    "name": "Lead en MAJUSCULES",
+    "description": "Tout en caps lock",
+    "timestamp": "2026-02-16T20:25:57.112Z",
+    "passed": false,
+    "messages_sent": 8,
+    "errors": [],
+    "conversation_id": "2d4a249e-07bc-49a6-83fa-a10720040e2b",
+    "final_score": 70,
+    "final_lead": {
+      "prenom": "Jean",
+      "nom": "Martin",
+      "email": "jean.martin@email.com",
+      "telephone": "0623456789",
+      "score": 70,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 80,
+        "villeArrivee": "MARSEILLE",
+        "dateSouhaitee": "20/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "BONJOUR",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1476
+      },
+      {
+        "user": "JE DEMENAGE",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 5159
+      },
+      {
+        "user": "PARIS VERS MARSEILLE",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 15,
+        "latency_ms": 1516
+      },
+      {
+        "user": "80M2",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 35,
+        "latency_ms": 12362
+      },
+      {
+        "user": "LE 20 MARS",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 1324
+      },
+      {
+        "user": "JEAN MARTIN",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 50,
+        "latency_ms": 1464
+      },
+      {
+        "user": "JEAN.MARTIN@EMAIL.COM",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 1240
+      },
+      {
+        "user": "0623456789",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 70,
+        "latency_ms": 7534
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 75,
+        "actual": 70,
+        "passed": false
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Jean",
+        "actual": "Jean",
+        "passed": true
+      },
+      {
+        "type": "field.email",
+        "expected": "jean.martin@email.com",
+        "actual": "jean.martin@email.com",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 49.7
+  },
+  {
+    "id": "test-13",
+    "name": "Lead avec accents",
+    "description": "Noms avec accents français",
+    "timestamp": "2026-02-16T20:27:06.805Z",
+    "passed": true,
+    "messages_sent": 7,
+    "errors": [],
+    "conversation_id": "5055c330-ff47-40dd-abf7-c503ca426505",
+    "final_score": 90,
+    "final_lead": {
+      "prenom": "François",
+      "nom": "Müller",
+      "email": "ller@email.fr",
+      "telephone": "0645678901",
+      "score": 90,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 65,
+        "villeDepart": "Cœur-Défense",
+        "villeArrivee": "Aix-en-Provence",
+        "dateSouhaitee": "18/02/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 1527
+      },
+      {
+        "user": "Je déménage de Cœur-Défense vers Aix-en-Provence",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1475
+      },
+      {
+        "user": "Appartement 65m²",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 1477
+      },
+      {
+        "user": "Le 18 février",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 60,
+        "latency_ms": 1490
+      },
+      {
+        "user": "François Müller",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 70,
+        "latency_ms": 1521
+      },
+      {
+        "user": "françois.müller@email.fr",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 80,
+        "latency_ms": 1289
+      },
+      {
+        "user": "06 45 67 89 01",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 90,
+        "latency_ms": 1306
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 75,
+        "actual": 90,
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "François",
+        "actual": "François",
+        "passed": true
+      },
+      {
+        "type": "field.nom",
+        "expected": "Müller",
+        "actual": "Müller",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 25.2
+  },
+  {
+    "id": "test-14",
+    "name": "Lead SMS style",
+    "description": "Langage SMS très abrégé",
+    "timestamp": "2026-02-16T20:27:51.997Z",
+    "passed": false,
+    "messages_sent": 9,
+    "errors": [],
+    "conversation_id": "bbdd659e-db0b-45b8-8b82-03d1911c79e7",
+    "final_score": 40,
+    "final_lead": {
+      "prenom": "Alex",
+      "nom": null,
+      "email": "alex.dub@gml.cm",
+      "telephone": "0698765432",
+      "score": 40,
+      "priorite": "MOYEN",
+      "statut": "NOUVEAU",
+      "projetData": {}
+    },
+    "exchanges": [
+      {
+        "user": "slt",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 9179
+      },
+      {
+        "user": "chui intéréssé pr 1 demenagmt",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1328
+      },
+      {
+        "user": "2 pari ver bord",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1537
+      },
+      {
+        "user": "appart 2 piec",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1487
+      },
+      {
+        "user": "jsé pa lvolum",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 1397
+      },
+      {
+        "user": "ds 15j",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 6970
+      },
+      {
+        "user": "alex",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 13435
+      },
+      {
+        "user": "alex.dub@gml.cm",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 30,
+        "latency_ms": 1538
+      },
+      {
+        "user": "0698765432",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 13442
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 60,
+        "actual": 40,
+        "passed": false
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Alex",
+        "actual": "Alex",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0698765432",
+        "actual": "0698765432",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 70.4
+  },
+  {
+    "id": "test-15",
+    "name": "Lead messages longs",
+    "description": "Messages de plusieurs lignes",
+    "timestamp": "2026-02-16T20:29:22.456Z",
+    "passed": false,
+    "messages_sent": 5,
+    "errors": [],
+    "conversation_id": "df09dd1a-e87e-41d9-8bda-f18e6a7746d9",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": null,
+      "nom": "Sophie",
+      "email": "sophie.martin@email.com",
+      "telephone": "0612345678",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 70,
+        "villeDepart": "Paris",
+        "villeArrivee": "Versailles",
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour,\n\nJe souhaite déménager de Paris (15ème arrondissement) vers Versailles.\n\nCordialement",
+        "bot": "Bonjour [non connu], bienvenue chez Déménagements Test Paris. Je m'appelle Tom, je serai votre assistant pour votre déménagement. Pouvez-vous me dire de quelle rue ou quartier vous partez exactement à Paris 15ème ? Nous allons commencer par déterminer le parcours de votre déménagement.",
+        "score": 20,
+        "latency_ms": 6437
+      },
+      {
+        "user": "C'est un appartement de 3 pièces (environ 70m²) situé au 3ème étage sans ascenseur. Il y a un parking en bas de l'immeuble.",
+        "bot": "C'est noté, pour le logement. Vous avez un appartement de 3 pièces, environ 70m², au 3ème étage sans ascenseur, mais avec un parking en bas de l'immeuble. Qu'en est-il du volume de meubles que vous souhaitez déménager ? Avez-vous des meubles importants ou volumineux que nous devrions prendre en compte ?",
+        "score": 40,
+        "latency_ms": 1632
+      },
+      {
+        "user": "Je souhaite déménager le 15 mars si possible.",
+        "bot": "C'est noté, pour la date souhaitée. Vous souhaitez déménager le 15 mars, nous allons essayer de vous trouver une date qui convienne à votre projet. Pour le 15 mars, nous devons vérifier la disponibilité de nos équipages et les conditions météorologiques. Je vais vérifier les disponibilités pour vous. Qu'en est-il de la préparation de votre déménagement ? Avez-vous déjà commencé à faire la liste de vos meubles et de vos effets personnels ?",
+        "score": 50,
+        "latency_ms": 908
+      },
+      {
+        "user": "Mon nom est Sophie Martin.\nEmail : sophie.martin@email.com\nTéléphone : 06 12 34 56 78",
+        "bot": "C'est un plaisir de travailler avec vous, Sophie. J'ai noté vos coordonnées. Nous allons continuer à préparer votre projet de déménagement. Pour le volume des meubles, nous avons besoin de connaître l'estimation pour déterminer le type de prestations nécessaires. Avez-vous des meubles encombrants comme un piano, une télévision ou des meubles de cuisine ?",
+        "score": 80,
+        "latency_ms": 78387
+      },
+      {
+        "user": "Je pense que la formule Standard sera adaptée.",
+        "bot": "C'est noté, Sophie. Nous allons donc vous proposer la formule Standard, qui inclut les prestations de transport, de fragilités et de démontage. Avec la formule Standard, nous prendrons soin de vos meubles de manière professionnelle et nous nous assurerons qu'ils soient déplacés en toute sécurité. Qu'est-ce que vous pensez de la prochaine étape : je vais vous établir une estimation détaillée de votre projet de déménagement et vous enverrai un résumé par mail.",
+        "score": 80,
+        "latency_ms": 87494
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 85,
+        "actual": 80,
+        "passed": false
+      },
+      {
+        "type": "priorite",
+        "expected": [
+          "CHAUD"
+        ],
+        "actual": "CHAUD",
+        "passed": true
+      },
+      {
+        "type": "field.prenom",
+        "expected": "Sophie",
+        "actual": null,
+        "passed": false
+      },
+      {
+        "type": "field.nom",
+        "expected": "Martin",
+        "actual": "Sophie",
+        "passed": false
+      },
+      {
+        "type": "field.email",
+        "expected": "sophie.martin@email.com",
+        "actual": "sophie.martin@email.com",
+        "passed": true
+      },
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 185
+  },
+  {
+    "id": "test-16",
+    "name": "Téléphones formats variés",
+    "description": "Différents formats de numéros",
+    "timestamp": "2026-02-16T20:32:47.485Z",
+    "passed": true,
+    "messages_sent": 6,
+    "errors": [],
+    "conversation_id": "25783e63-accb-493e-bfab-29038c5390e7",
+    "final_score": 80,
+    "final_lead": {
+      "prenom": "Marc",
+      "nom": "Dubois",
+      "email": "marc@mail.com",
+      "telephone": "0612345678",
+      "score": 80,
+      "priorite": "CHAUD",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 60,
+        "villeDepart": "Paris",
+        "villeArrivee": "Lyon",
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 6543
+      },
+      {
+        "user": "Paris vers Lyon, 60m²",
+        "bot": "C'est noté pour le parcours. Vous déménagez de Paris vers Lyon, soit une distance de départ/arrivée en ville. Qu'en est-il de votre logement actuel ? Est-ce que vous avez un appartement ou une maison ? Et combien d'étages ?",
+        "score": 40,
+        "latency_ms": 5886
+      },
+      {
+        "user": "15 mars",
+        "bot": "La date souhaitée pour le déménagement est le 15 mars. C'est noté, pour le volume... Combien d'étages et quels sont les logements que vous avez à déménager ?",
+        "score": 50,
+        "latency_ms": 13244
+      },
+      {
+        "user": "Marc Dubois",
+        "bot": "Bonjour Marc, je m'appelle Tom, et je suis votre assistant pour ce projet de déménagement. Je note que nous avons déjà discuté de certains détails, mais pour être sûr, je vais le résumer avec vous. Vous déménagez de Paris vers Lyon, pour une surface de 60m², le 15 mars. Quels sont vos meubles à déménager, ou avez-vous déjà une idée de volume approximatif ?",
+        "score": 60,
+        "latency_ms": 782
+      },
+      {
+        "user": "marc@mail.com",
+        "bot": "C'est noté, pour les coordonnées. Je n'ai pas besoin de les rappeler, car je les ai déjà enregistrées. Passons au volume de vos meubles, Marc. Vous avez déjà une idée de la quantité de choses à déménager ? Quels types de meubles ont besoin d'être transportés ?",
+        "score": 70,
+        "latency_ms": 31695
+      },
+      {
+        "user": "+33 6 12 34 56 78",
+        "bot": "C'est noté, je n'ai pas besoin de ces coordonnées, car je les ai déjà enregistrées. Passons au volume de vos meubles, Marc. Quels types de meubles avez-vous à déménager, et combien d'étages devez-je prendre en compte ?",
+        "score": 80,
+        "latency_ms": 897
+      }
+    ],
+    "assertions": [
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 71.8
+  },
+  {
+    "id": "test-16b",
+    "name": "Téléphone avec tirets",
+    "description": "Format avec tirets",
+    "timestamp": "2026-02-16T20:34:19.249Z",
+    "passed": true,
+    "messages_sent": 5,
+    "errors": [],
+    "conversation_id": "d391a748-705d-49a9-8a22-233533b9616e",
+    "final_score": 40,
+    "final_lead": {
+      "prenom": "Paul",
+      "nom": null,
+      "email": "paul@mail.fr",
+      "telephone": "0612345678",
+      "score": 40,
+      "priorite": "MOYEN",
+      "statut": "NOUVEAU",
+      "projetData": {}
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ? Vous avez un projet de déménagement en vue ?",
+        "score": 10,
+        "latency_ms": 434
+      },
+      {
+        "user": "Déménagement urgent",
+        "bot": "Un déménagement urgent, nous allons faire de notre mieux pour vous aider. Pouvez-vous me donner quelques informations pour commencer ? Quelles villes départ et arrivée prévues ?",
+        "score": 10,
+        "latency_ms": 407
+      },
+      {
+        "user": "Paul",
+        "bot": "Bonjour Paul. Pourriez-vous confirmer les villes de votre départ et d'arrivée, s'il vous plaît ?",
+        "score": 20,
+        "latency_ms": 510
+      },
+      {
+        "user": "paul@mail.fr",
+        "bot": "C'est noté, pour les coordonnées. Nous allons continuer avec le processus de qualification. Nous avons terminé l'étape 1 : villes (départ/arrivée). Nous allons passer à l'étape 2 : logement & étages. Quel est votre type de logement et combien d'étages ?",
+        "score": 30,
+        "latency_ms": 4704
+      },
+      {
+        "user": "06-12-34-56-78",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 40,
+        "latency_ms": 32318
+      }
+    ],
+    "assertions": [
+      {
+        "type": "field.telephone",
+        "expected": "0612345678",
+        "actual": "0612345678",
+        "passed": true
+      }
+    ],
+    "duration_seconds": 48.6
+  },
+  {
+    "id": "test-17",
+    "name": "Dates formats variés",
+    "description": "Différents formats de dates",
+    "timestamp": "2026-02-16T20:35:27.857Z",
+    "passed": false,
+    "messages_sent": 6,
+    "errors": [],
+    "conversation_id": "15416320-e997-47c8-a184-ebc142089d3d",
+    "final_score": 70,
+    "final_lead": {
+      "prenom": "Claire",
+      "nom": null,
+      "email": "claire@mail.com",
+      "telephone": "0645678901",
+      "score": 70,
+      "priorite": "TIEDE",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "surface": 55,
+        "villeDepart": "Paris",
+        "villeArrivee": "Nice",
+        "volumeEstime": 5,
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ? Nous sommes Déménagements Test Paris.",
+        "score": 10,
+        "latency_ms": 8198
+      },
+      {
+        "user": "Paris vers Nice, 55m²",
+        "bot": "C'est noté, pour la ville d'origine et la surface. Nous déménagerons de Paris vers Nice, et le volume de votre logement est de 55m². Qu'est-ce qui se passe avec les étages ?",
+        "score": 35,
+        "latency_ms": 1083
+      },
+      {
+        "user": "Je veux déménager le 15/03/2026",
+        "bot": "C'est noté, pour la date souhaitée. Votre date de déménagement est donc fixée au 15/03/2026. Passons à la prochaine étape : quels meubles allez-vous déménager ? Avez-vous des meubles de base à déménager ou bien des objets de valeur ou fragiles ?",
+        "score": 45,
+        "latency_ms": 650
+      },
+      {
+        "user": "Claire",
+        "bot": "Bien sûr ! Nous avons déjà enregistré votre prénom : Claire. Pour le volume, nous avons calculé 55m² / 2 = 27,5m³ de volume de base. Quels meubles spécifiques allez-vous déménager ?",
+        "score": 50,
+        "latency_ms": 606
+      },
+      {
+        "user": "claire@mail.com",
+        "bot": "C'est noté, votre adresse email est enregistrée. Nous avons déjà cela enregistré dans les informations collectées. Maintenant, parlons de la capacité de transport. Quel volume d'objets allez-vous transporter ? Est-ce un volume standard ou plus important ?",
+        "score": 60,
+        "latency_ms": 761
+      },
+      {
+        "user": "0645678901",
+        "bot": "C'est noté, votre numéro de téléphone est enregistré. Nous avons déjà cela enregistré dans les informations collectées. Passons à la prochaine étape : quelle est votre ville de départ et votre ville d'arrivée ?",
+        "score": 70,
+        "latency_ms": 2394
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 75,
+        "actual": 70,
+        "passed": false
+      }
+    ],
+    "duration_seconds": 26.5
+  },
+  {
+    "id": "test-17b",
+    "name": "Date textuelle",
+    "description": "Date en texte",
+    "timestamp": "2026-02-16T20:36:14.753Z",
+    "passed": false,
+    "messages_sent": 6,
+    "errors": [],
+    "conversation_id": "0dbaeb18-9015-4743-a81e-6b020a064bf5",
+    "final_score": 55,
+    "final_lead": {
+      "prenom": "Thomas",
+      "nom": null,
+      "email": "thomas@mail.com",
+      "telephone": "0656789012",
+      "score": 55,
+      "priorite": "MOYEN",
+      "statut": "NOUVEAU",
+      "projetData": {
+        "villeArrivee": "Marseille",
+        "dateSouhaitee": "15/03/2026"
+      }
+    },
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 3033
+      },
+      {
+        "user": "Lyon vers Marseille",
+        "bot": "C'est noté, pour le parcours. Nous allons donc déménager depuis Lyon jusqu'à Marseille. Qu'est-ce que vous souhaitez savoir en premier ?",
+        "score": 15,
+        "latency_ms": 3817
+      },
+      {
+        "user": "Le quinze mars deux mille vingt-six",
+        "bot": "Noté, pour la date du déménagement. Le 15 mars 2026, nous aurons donc tout préparé pour votre arrivée à Marseille. Qu'est-ce que vous souhaitez savoir maintenant ?",
+        "score": 25,
+        "latency_ms": 2933
+      },
+      {
+        "user": "Thomas",
+        "bot": "Enchanté, Thomas ! Vous êtes prêt à continuer avec le questionnaire ?",
+        "score": 35,
+        "latency_ms": 6841
+      },
+      {
+        "user": "thomas@mail.com",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 45,
+        "latency_ms": 48667
+      },
+      {
+        "user": "0656789012",
+        "bot": "C'est noté, Thomas. Votre numéro de téléphone est enregistré.",
+        "score": 55,
+        "latency_ms": 113090
+      }
+    ],
+    "assertions": [
+      {
+        "type": "score ≥",
+        "expected": 70,
+        "actual": 55,
+        "passed": false
+      }
+    ],
+    "duration_seconds": 192.1
+  },
+  {
+    "id": "test-18",
+    "name": "Emails complexes",
+    "description": "Formats d'email variés",
+    "timestamp": "2026-02-16T20:39:46.941Z",
+    "passed": false,
+    "messages_sent": 1,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "c06e27a0-6234-4f14-bed8-e66de6275481",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 105291
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 228.2
+  },
+  {
+    "id": "test-19",
+    "name": "Lead qui spam",
+    "description": "Envoie plusieurs messages sans attendre",
+    "timestamp": "2026-02-16T20:43:55.141Z",
+    "passed": false,
+    "messages_sent": 1,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "f727d9b8-9082-4d4f-b493-960f7ef385ec",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "bonjour",
+        "bot": "Bonjour, comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 40693
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 163.4
+  },
+  {
+    "id": "test-20",
+    "name": "Abandon et retour",
+    "description": "Lead qui part puis revient",
+    "timestamp": "2026-02-16T20:46:58.518Z",
+    "passed": false,
+    "messages_sent": 3,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "8d816224-c589-441c-b71a-5f542026a4db",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "Bonjour",
+        "bot": "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+        "score": 10,
+        "latency_ms": 59802
+      },
+      {
+        "user": "Je déménage",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 117324
+      },
+      {
+        "user": "Laissez tomber",
+        "bot": "Enchanté Laissez ! Vous déménagez donc, c'est bien ça ? Nous sommes Déménagements Test Paris, prêts à vous aider. Quelles villes prévoyez-vous pour votre déménagement ?",
+        "score": 20,
+        "latency_ms": 39889
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 344.7
+  },
+  {
+    "id": "test-21",
+    "name": "Lead qui teste",
+    "description": "Pose des questions sur le bot",
+    "timestamp": "2026-02-16T20:53:03.225Z",
+    "passed": false,
+    "messages_sent": 2,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "335c6cf4-65d6-4e4d-a3e5-d65d0d55e3d3",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "Tu es un robot ?",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 10,
+        "latency_ms": 65388
+      },
+      {
+        "user": "C'est une vraie personne ou un bot ?",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 86843
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 277.4
+  },
+  {
+    "id": "test-22",
+    "name": "Lead confus",
+    "description": "Donne plusieurs infos en vrac",
+    "timestamp": "2026-02-16T20:58:00.611Z",
+    "passed": false,
+    "messages_sent": 0,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "15d0c38f-c90a-4ca9-930e-51021bc7da8f",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [],
+    "assertions": [],
+    "duration_seconds": 120.1
+  },
+  {
+    "id": "test-23",
+    "name": "Lead super organisé",
+    "description": "Donne toutes les infos structurées",
+    "timestamp": "2026-02-16T21:00:20.720Z",
+    "passed": false,
+    "messages_sent": 0,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "095f8200-38be-4522-a1cd-b4f82ef39248",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [],
+    "assertions": [],
+    "duration_seconds": 120.1
+  },
+  {
+    "id": "test-24",
+    "name": "Hors zone",
+    "description": "Demande de déménagement hors zone d'intervention",
+    "timestamp": "2026-02-16T21:02:40.839Z",
+    "passed": false,
+    "messages_sent": 2,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "97a088df-3130-4d88-8853-a7ec0a96a412",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "Bonjour, je veux déménager de Paris vers Sydney en Australie",
+        "bot": "Bonjour, pour déménager de Paris vers Sydney, nous devons prendre en compte les formalités et les coûts liés à ce type de déménagement international. Pouvez-vous me dire si vous avez déjà un logement réservé à Sydney ?",
+        "score": 20,
+        "latency_ms": 91660
+      },
+      {
+        "user": "Oui je sais c'est loin",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 30,
+        "latency_ms": 90082
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 306.9
+  },
+  {
+    "id": "test-25",
+    "name": "Petit budget",
+    "description": "Client avec un budget irréaliste (100€)",
+    "timestamp": "2026-02-16T21:08:07.743Z",
+    "passed": false,
+    "messages_sent": 0,
+    "errors": [
+      "fetch failed"
+    ],
+    "conversation_id": null,
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [],
+    "assertions": [],
+    "duration_seconds": 0
+  },
+  {
+    "id": "test-26",
+    "name": "Demande partenariat",
+    "description": "Autre entreprise qui propose un partenariat",
+    "timestamp": "2026-02-16T21:08:27.796Z",
+    "passed": false,
+    "messages_sent": 2,
+    "errors": [
+      "This operation was aborted"
+    ],
+    "conversation_id": "46765f36-82b5-4a21-9068-f4c0c2b1c2e9",
+    "final_score": null,
+    "final_lead": null,
+    "exchanges": [
+      {
+        "user": "Bonjour, je suis de la société AlloDéménagement",
+        "bot": "Bonjour. Je suis Tom, assistante experte pour Déménagements Test Paris. Quel est l'objectif de votre appel ?",
+        "score": 20,
+        "latency_ms": 10079
+      },
+      {
+        "user": "Nous cherchons des partenaires sur Paris",
+        "bot": "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?",
+        "score": 20,
+        "latency_ms": 52162
+      }
+    ],
+    "assertions": [],
+    "duration_seconds": 187.4
+  }
+]

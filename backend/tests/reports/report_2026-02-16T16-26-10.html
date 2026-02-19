@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Tests Chat4Lead — 16/02/2026 17:26:10</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);margin-bottom:32px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.stat-value{font-size:36px;font-weight:700}
+.stat-label{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.test{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.test-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .15s}
+.test-header:hover{background:rgba(99,102,241,.06)}
+.test-name{font-weight:600;font-size:16px}
+.test-desc{color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.badge.pass{background:rgba(16,185,129,.15);color:var(--green)}
+.badge.fail{background:rgba(239,68,68,.15);color:var(--red)}
+.test-body{padding:0 24px 24px;display:none}
+.test.open .test-body{display:block}
+.exchange{margin:8px 0}
+.msg{padding:10px 14px;border-radius:10px;margin:4px 0;max-width:85%;font-size:14px;word-wrap:break-word}
+.msg.user{background:var(--accent);color:#fff;margin-left:auto;text-align:right}
+.msg.bot{background:#334155}
+.msg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.assertion{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin:4px 0;font-size:14px}
+.assertion.pass{background:rgba(16,185,129,.08)}
+.assertion.fail{background:rgba(239,68,68,.08)}
+.assertion-icon{font-size:16px}
+.lead-table{width:100%;border-collapse:collapse;margin:12px 0}
+.lead-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+.lead-table td:first-child{color:var(--muted);width:140px}
+.section-title{font-size:14px;font-weight:600;color:var(--accent);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.verdict{font-size:18px;font-weight:700;padding:16px 24px;border-radius:12px;margin-top:32px;text-align:center}
+.verdict.good{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.verdict.warn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.verdict.bad{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Rapport Tests Chat4Lead</h1>
+<p class="subtitle">Généré le 16/02/2026 17:26:10 — Durée totale : 396s</p>
+
+<div class="summary">
+  <div class="stat"><div class="stat-value">10</div><div class="stat-label">Tests exécutés</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--green)">1</div><div class="stat-label">Réussis</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--red)">9</div><div class="stat-label">Échoués</div></div>
+  <div class="stat"><div class="stat-value" style="color:#ef4444">10%</div><div class="stat-label">Taux de succès</div></div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead parfait <span style="color:var(--muted);font-weight:400;font-size:13px">test-01</span></div>
+      <div class="test-desc">Lead qui donne toutes les infos facilement</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>50/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>STANDARD</td></tr>
+      <tr><td>Durée</td><td>97.3s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/6)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 80, obtenu 50</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie.martin@email.com&quot;, obtenu &quot;sophie.martin@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu &quot;Martin&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je voudrais déménager</div>
+      <div class="msg bot">Bonjour ! Je me présente, je suis Tom de Déménagements Test Paris. Je suis là pour vous accompagner dans votre projet de déménagement et vous proposer la meilleure solution adaptée à vos besoins. 😊<br><br>Pour commencer, pouvez-vous me dire quelles sont les villes de départ et d'arrivée pour votre déménagement ?</div>
+      <div class="msg-meta">1149ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Paris 15ème vers Versailles</div>
+      <div class="msg bot">C'est noté, donc nous partons du 15ème arrondissement de Paris pour rejoindre Versailles, c'est bien cela ? <br><br>Pour mieux comprendre votre projet, pouvez-vous me dire quel type de logement vous occupez actuellement à Paris et quel type de logement vous allez occuper à Versailles ? Est-ce des appartements, des maisons, et à quel étage ?</div>
+      <div class="msg-meta">1019ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Un appartement F3 de 70m² au 3ème étage sans ascenseur</div>
+      <div class="msg bot">C'est noté, un F3 de 70m² au 3ème étage sans ascenseur à Paris, cela peut nécessiter un peu d'organisation pour le déménagement, surtout sans ascenseur.<br><br>Et à Versailles, quel type de logement allez-vous occuper ? Un appartement similaire, ou peut-être une maison ? Et à quel étage ?</div>
+      <div class="msg-meta">1171ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Oui il y a un parking en bas</div>
+      <div class="msg bot">Donc, à Versailles, vous allez occuper un appartement avec un parking en bas, ce qui facilitera certainement les choses pour le déchargement des meubles et des cartons.<br><br>Maintenant, pour estimer le volume de votre déménagement, je vais utiliser une règle simple : on peut estimer que pour un appartement de 70m², le volume est d'environ 35-40m³, en fonction de la quantité de meubles et d'objets que vous avez. Mais pour être plus précis, pouvez-vous me dire si vous avez beaucoup de meubles encombrants, comme un canapé, un lit king-size, ou des armoires grandes ?</div>
+      <div class="msg-meta">1163ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 15 mars</div>
+      <div class="msg bot">C'est noté, vous souhaitez déménager le 15 mars. C'est une date précise, je vais prendre note de cela.<br><br>Pour confirmer, je récapitule : vous déménagez d'un F3 de 70m² au 3ème étage sans ascenseur dans le 15ème arrondissement de Paris, pour aller à un appartement à Versailles avec un parking en bas, le 15 mars. Est-ce correct ?<br><br>Et maintenant, pour parler des prestations de déménagement, nous proposons trois formules : la formule Eco, la formule Standard et la formule Luxe. Laquelle de ces formules vous intéresse le plus ? Ou souhaitez-vous que je vous explique les différences entre ces formules ?</div>
+      <div class="msg-meta">4016ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Sophie Martin</div>
+      <div class="msg bot">Enchanté Sophie ! Je suis ravi de travailler avec vous pour organiser votre déménagement.<br><br>Je vais récapituler les informations que nous avons collectées jusqu'à présent :<br><br>* Vous déménagez d'un F3 de 70m² au 3ème étage sans ascenseur dans le 15ème arrondissement de Paris<br>* Vous allez à un appartement à Versailles avec un parking en bas<br>* La date de déménagement est fixée au 15 mars<br>* Nous devons estimer le volume de votre déménagement, qui pourrait être d'environ 35-40m³<br><br>Maintenant, pour parler des coûts, nous allons devoir définir quelle formule de déménagement vous convient le mieux. Nous proposons trois formules : la formule Eco, la formule Standard et la formule Luxe.<br><br>Pouvez-vous me dire, Sophie, si vous avez une idée de ce que vous recherchez en termes de service de déménagement ? Vous souhaitez quelque chose de simple et économique, ou quelque chose de plus complet et personnalisé ?</div>
+      <div class="msg-meta">17194ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">sophie.martin@email.com</div>
+      <div class="msg bot">Merci de me donner votre adresse e-mail, Sophie ! Je vais prendre note de cela pour nos échanges futurs.<br><br>Je vais maintenant vous envoyer un récapitulatif de notre conversation et une estimation de vos coûts de déménagement. Vous recevrez un e-mail à l'adresse sophie.martin@email.com avec tous les détails.<br><br>Si vous avez des questions ou des préoccupations, n'hésitez pas à me les faire savoir. Je serai ravi de vous aider.<br><br>Voici un aperçu de ce que vous pouvez attendre :<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br><br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris 15ème ➡️ Versailles<br>📦 **Volume** : 35-40m³<br>🏗️ **Accès** : 3ème étage sans ascenseur (départ) et parking en bas (arrivée)<br>🛠️ **Prestation** : À définir (formule Eco, Standard ou Luxe)<br><br>💰 **ESTIMATION** : À définir<br><br>**Prochaine étape** : Nous allons discuter des détails de votre projet et définir la formule de déménagement qui vous convient le mieux.<br><br>Merci de votre confiance, Sophie ! Je suis impatient de travailler avec vous pour rendre votre déménagement le plus fluide possible.</div>
+      <div class="msg-meta">17841ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 12 34 56 78</div>
+      <div class="msg bot">Merci de me donner votre numéro de téléphone, Sophie ! Je vais prendre note de cela pour nos échanges futurs.<br><br>Je pense que nous avons maintenant toutes les informations nécessaires pour finaliser votre projet de déménagement. Je vais vous envoyer un récapitulatif complet de notre conversation et une estimation détaillée de vos coûts de déménagement.<br><br>Voici le récapitulatif :<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br><br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris 15ème ➡️ Versailles<br>📦 **Volume** : 35-40m³<br>🏗️ **Accès** : 3ème étage sans ascenseur (départ) et parking en bas (arrivée)<br>🛠️ **Prestation** : À définir (formule Eco, Standard ou Luxe)<br>📞 **Téléphone** : 06 12 34 56 78<br>📧 **E-mail** : sophie.martin@email.com<br><br>💰 **ESTIMATION** : Nous allons vous fournir une estimation détaillée de vos coûts de déménagement dans les prochaines 24 heures.<br><br>**Prochaine étape** : Nous allons vous contacter dans les prochaines 24 heures pour discuter des détails de votre projet et définir la formule de déménagement qui vous convient le mieux.<br><br>Merci de votre confiance, Sophie ! Nous sommes impatients de travailler avec vous pour rendre votre déménagement le plus fluide possible.</div>
+      <div class="msg-meta">20830ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">La formule Standard me semble bien</div>
+      <div class="msg bot">Excellente choix, Sophie ! La formule Standard est notre formule la plus populaire, car elle offre un équilibre parfait entre qualité et prix. Avec cette formule, nous nous occupons de tout, desde l'emballage de vos objets fragiles jusqu'au démontage et remontage de vos meubles.<br><br>Voici ce que comprend la formule Standard :<br><br>* Emmenagement de vos meubles et objets<br>* Emballage de vos objets fragiles<br>* Démontage et remontage de vos meubles<br>* Transport de vos biens dans un camion équipé pour protéger vos meubles<br>* Déchargement et installation de vos meubles dans votre nouvelle maison<br><br>Nous allons vous fournir une estimation détaillée de vos coûts de déménagement, mais pour vous donner une idée, notre formule Standard commence à environ 800€ pour un déménagement d'un appartement de 70m² comme le vôtre.<br><br>Je vais vous envoyer un e-mail avec toutes les informations et l'estimation détaillée. Si vous avez des questions ou des préoccupations, n'hésitez pas à me les faire savoir.<br><br>Voici le récapitulatif final :<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br><br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris 15ème ➡️ Versailles<br>📦 **Volume** : 35-40m³<br>🏗️ **Accès** : 3ème étage sans ascenseur (départ) et parking en bas (arrivée)<br>🛠️ **Prestation** : Formule Standard<br>📞 **Téléphone** : 06 12 34 56 78<br>📧 **E-mail** : sophie.martin@email.com<br>💰 **ESTIMATION** : Environ 800€<br><br>**Prochaine étape** : Nous allons vous contacter dans les prochaines 24 heures pour confirmer les détails de votre projet et fixer une date pour le déménagement.<br><br>Merci de votre confiance, Sophie ! Nous sommes impatients de travailler avec vous pour rendre votre déménagement le plus fluide possible.</div>
+      <div class="msg-meta">20787ms · score=50</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead difficile <span style="color:var(--muted);font-weight:400;font-size:13px">test-02</span></div>
+      <div class="test-desc">Lead qui donne peu d'infos</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>20/100</strong></td></tr>
+      <tr><td>Priorité</td><td>FROID</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>0698765432</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>137.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≤</strong>: attendu 50, obtenu 20</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;MOYEN&quot;,&quot;FROID&quot;], obtenu &quot;FROID&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0698765432&quot;, obtenu &quot;0698765432&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">bjr</div>
+      <div class="msg bot">Bonjour ! Je me présente, je suis Tom de Déménagements Test Paris. Je suis là pour vous accompagner dans votre projet de déménagement et vous proposer la meilleure solution adaptée à vos besoins. 😊 Pouvez-vous me dire d'où et vers où vous souhaitez déménager ?</div>
+      <div class="msg-meta">14692ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">jdemenage</div>
+      <div class="msg bot">Très bien ! Vous allez déménager. Pour mieux comprendre votre projet, pouvez-vous me dire de quelle ville ou quartier vous partez et dans quelle ville ou quartier vous allez vous installer ?</div>
+      <div class="msg-meta">11982ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">paris</div>
+      <div class="msg bot">Vous partez de Paris ou vous allez vous installer à Paris ? Pour être plus précis, pouvez-vous me dire si Paris est votre ville de départ ou votre ville d'arrivée ?</div>
+      <div class="msg-meta">14076ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">petit appart</div>
+      <div class="msg bot">Vous avez un petit appartement à Paris. Pouvez-vous me dire approximativement de quelle taille est cet appartement ? Est-ce un studio, un 1 pièce, un 2 pièces, etc. ? Cela m'aidera à mieux comprendre le volume de déménagement.</div>
+      <div class="msg-meta">13029ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je sais pas</div>
+      <div class="msg bot">Pas de souci ! Pour estimer le volume de déménagement, je peux utiliser une règle simple. Si vous me dites combien de pièces il y a dans votre appartement, je peux essayer de donner une estimation approximative. Par exemple, un studio est généralement autour de 20-30 m², un 1 pièce autour de 30-40 m², etc. Pouvez-vous me dire combien de pièces il y a dans votre appartement ?</div>
+      <div class="msg-meta">12620ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">bientot</div>
+      <div class="msg bot">Vous allez déménager bientôt ! C'est excitant, mais aussi un peu stressant, je suppose. Pour que nous puissions vous aider au mieux, pouvez-vous me dire approximativement quand vous avez prévu de déménager ? Est-ce dans les prochaines semaines ou dans les prochains mois ?</div>
+      <div class="msg-meta">13081ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">marc</div>
+      <div class="msg bot">Enchanté Marc ! Maintenant que nous avons un peu discuté de votre déménagement, je voudrais récapituler les informations que nous avons pour l'instant. Vous avez un petit appartement à Paris, vous allez déménager bientôt, mais vous n'avez pas encore fixé de date précise. Est-ce que c'est correct, Marc ?</div>
+      <div class="msg-meta">15794ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">pas de mail</div>
+      <div class="msg bot">Pas de problème, Marc ! Nous n'avons pas besoin de votre adresse e-mail pour l'instant. Nous pouvons continuer à discuter ici. Maintenant que nous avons commencé à parler de votre déménagement, je voudrais vous proposer une estimation de notre prestation. Mais avant, je besoin de savoir si vous avez déjà une idée de la quantité de biens que vous allez déménager. Avez-vous beaucoup de meubles, de cartons, de vélos, etc. ?</div>
+      <div class="msg-meta">13017ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 98 76 54 32</div>
+      <div class="msg bot">Merci de me donner votre numéro de téléphone, Marc ! Je vais noter cela pour que nous puissions vous contacter plus tard pour discuter des détails de votre déménagement. Maintenant que nous avons tous les éléments en main, je voudrais vous faire une estimation de notre prestation. Nous allons vous proposer une solution personnalisée pour votre déménagement, avec une équipe de professionnels expérimentés et des équipements de qualité. Pouvez-vous me confirmer que vous êtes intéressé par une estimation détaillée de notre part ?</div>
+      <div class="msg-meta">16986ms · score=20</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead qui digresse <span style="color:var(--muted);font-weight:400;font-size:13px">test-03</span></div>
+      <div class="test-desc">Lead qui pose des questions hors sujet</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>10/100</strong></td></tr>
+      <tr><td>Priorité</td><td>FROID</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>69.1s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/4)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 70, obtenu 10</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.email</strong>: attendu &quot;thomas@email.com&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.telephone</strong>: attendu &quot;0611223344&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je déménage</div>
+      <div class="msg bot">Bonjour ! Je me présente, je suis Tom de Déménagements Test Paris. Je suis là pour vous accompagner dans votre projet de déménagement et vous proposer la meilleure solution adaptée à vos besoins. 😊<br><br>Pour commencer, pouvez-vous me dire où vous déménagez ? Quelle est la ville de départ et la ville d'arrivée ?</div>
+      <div class="msg-meta">13398ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Lyon, au fait vous travaillez le week-end ?</div>
+      <div class="msg bot">Pour répondre à votre question, nous effectuons les déménagements principalement du lundi au samedi. Le dimanche est réservé au repos de nos équipes, sauf cas exceptionnel.<br><br>Mais revenons à votre projet ! Vous déménagez de Lyon, c'est noté. Et où allez-vous exactement ? Quelle est la ville d'arrivée ?</div>
+      <div class="msg-meta">13586ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Et vous gérez les pianos ?</div>
+      <div class="msg bot">Oui, nous avons une expertise particulière pour le déplacement de pianos ! Nous avons les outils et les compétences nécessaires pour manipuler ces instruments délicats avec soin. Nous savons que les pianos sont souvent des objets de grande valeur, tant émotionnelle que financière, et nous prenons toutes les précautions nécessaires pour les transporter en toute sécurité.<br><br>Maintenant, pour revenir à votre projet, vous déménagez de Lyon, mais je n'ai pas encore la ville d'arrivée. Pouvez-vous me la communiquer ? Est-ce que vous restez en région ou allez-vous plus loin ?</div>
+      <div class="msg-meta">27459ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ok super. Donc Lyon vers Marseille</div>
+      <div class="msg bot">C'est noté ! Vous déménagez de Lyon à Marseille, c'est un beau projet ! Je suppose que vous aurez besoin d'une équipe expérimentée pour vous aider à transporter vos affaires sur cette distance.<br><br>Pouvez-vous me dire un peu plus sur le type de logement que vous quittez et celui que vous allez occuper à Marseille ? Est-ce que c'est un appartement, une maison, et combien d'étages ? Cela m'aidera à mieux comprendre vos besoins.</div>
+      <div class="msg-meta">1208ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">80m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">380ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 20 mars</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">245ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Thomas</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">304ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas@email.com</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">166ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 11 22 33 44</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">247ms · score=10</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead objection prix <span style="color:var(--muted);font-weight:400;font-size:13px">test-04</span></div>
+      <div class="test-desc">Lead qui trouve ça trop cher</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>4</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>5.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/1)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 15, obtenu 0</div>
+
+    <div class="section-title">💬 Conversation (4 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">323ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Bordeaux, 80m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">142ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Quel est le prix ?</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">172ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est trop cher !</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">211ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead urgence <span style="color:var(--muted);font-weight:400;font-size:13px">test-05</span></div>
+      <div class="test-desc">Déménagement dans 5 jours</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>5</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>7.8s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/5)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 60, obtenu 0</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.email</strong>: attendu &quot;thomas.urgent@email.com&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.telephone</strong>: attendu &quot;0611223344&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (5 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je dois déménager dans 5 jours</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">183ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lille, 50m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">215ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Thomas</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">189ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas.urgent@email.com</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">420ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 11 22 33 44</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">669ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead avec fautes de frappe <span style="color:var(--muted);font-weight:400;font-size:13px">test-06</span></div>
+      <div class="test-desc">Lead qui fait beaucoup de fautes d'orthographe</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>14.1s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/4)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 60, obtenu 0</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Jean&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.telephone</strong>: attendu &quot;0623456789&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">bonjur je veu demenagé</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">154ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">de pari ver lion</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">165ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">un appart de 60m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">162ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">o 2eme etage san assenseur</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">160ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">le 10 avri</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">167ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je suis jean</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">176ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">jean.dupon@gmail.com</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">603ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 23 45 67 89</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">182ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">la formule standard</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">183ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead qui change d'avis <span style="color:var(--muted);font-weight:400;font-size:13px">test-07</span></div>
+      <div class="test-desc">Lead qui modifie ses réponses précédentes</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>13.7s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/4)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 70, obtenu 0</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Marie&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.nom</strong>: attendu &quot;Dubois&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.email</strong>: attendu &quot;marie.dubois@email.com&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je déménage de Paris vers Marseille</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">192ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">En fait non, plutôt vers Lyon</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">219ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Un F3 de 70m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">166ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ah non pardon, c'est un F4 de 85m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">149ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 5 mars</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">190ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Finalement plutôt le 12 mars</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">168ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Marie Dubois</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">152ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">marie.dubois@email.com</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">145ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 34 56 78 90</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">165ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead ultra-pressé <span style="color:var(--muted);font-weight:400;font-size:13px">test-08</span></div>
+      <div class="test-desc">Lead qui donne des réponses minimales</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>12</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>19s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/4)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 60, obtenu 0</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Paul&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.email</strong>: attendu &quot;paul@mail.fr&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.telephone</strong>: attendu &quot;0645678901&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (12 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">salut</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">189ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">demenagement</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">142ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">lille</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">206ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">roubaix</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">173ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">50m²</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">164ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">2eme</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">250ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">parking ok</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">168ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">20 mars</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">347ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je suis paul</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">166ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">paul@mail.fr</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">157ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0645678901</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">203ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">formule standard</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">180ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead curieux <span style="color:var(--muted);font-weight:400;font-size:13px">test-09</span></div>
+      <div class="test-desc">Lead qui pose plein de questions techniques</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>11</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>17s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/5)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 75, obtenu 0</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Claire&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.email</strong>: attendu &quot;claire.martin@email.com&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (11 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, vous faites le démontage des meubles IKEA ?</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">188ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Et vous avez une assurance pour la casse ?</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">178ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est combien par m³ ?</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">151ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Vous travaillez le dimanche ?</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">153ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ok merci. Je déménage de Nantes vers Angers</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">195ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">90m², maison avec escalier</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">195ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 25 mars</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">164ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Claire Martin</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">174ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">claire.martin@email.com</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">147ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 56 78 90 12</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">149ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je prends la formule Luxe</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">157ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Déménagement énorme <span style="color:var(--muted);font-weight:400;font-size:13px">test-10</span></div>
+      <div class="test-desc">Lead avec très gros volume (maison + dépendances)</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>10</td></tr>
+      <tr><td>Score final</td><td><strong>0/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>15.7s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (0/6)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 80, obtenu 0</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Robert&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.nom</strong>: attendu &quot;Durand&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.email</strong>: attendu &quot;robert.durand@email.com&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.telephone</strong>: attendu &quot;0667890123&quot;, obtenu null</div>
+
+    <div class="section-title">💬 Conversation (10 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je déménage une grande maison</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">193ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Toulouse vers Nice</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">170ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est une maison de 250m² sur 3 étages</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">189ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Avec une cave remplie, un garage et un grenier aussi</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">167ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Il y a aussi 2 pianos</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">194ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 10 avril</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">190ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Robert Durand</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">193ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">robert.durand@email.com</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">210ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 67 89 01 23</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">246ms · score=—</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je pense qu'il me faut la formule Luxe</div>
+      <div class="msg bot">Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?</div>
+      <div class="msg-meta">268ms · score=—</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict bad">❌ Optimisation prompt nécessaire — 10% de réussite</div>
+</div>
+</body>
+</html>

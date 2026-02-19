@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import type { KeyboardEvent } from 'react';
-import { Send } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Paperclip, Mic, ArrowUp } from 'lucide-react';
 
 interface InputBoxProps {
     onSendMessage: (message: string) => void;
@@ -12,65 +11,163 @@ export const InputBox: React.FC<InputBoxProps> = ({
     disabled = false,
 }) => {
     const [message, setMessage] = useState('');
+    const [isRecording, setIsRecording] = useState(false);
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 100)}px`;
+        }
+    }, [message]);
 
     const handleSend = () => {
         const trimmed = message.trim();
         if (!trimmed || disabled) return;
         onSendMessage(trimmed);
         setMessage('');
+        if (textareaRef.current) {
+            textareaRef.current.style.height = 'auto';
+        }
     };
 
-    const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             handleSend();
         }
     };
 
-    const inputStyle = {
-        backgroundColor: 'var(--c4l-bg-input)',
-        color: 'var(--c4l-text-primary)',
-        borderColor: 'var(--c4l-border)',
+    const triggerFileSelect = () => {
+        fileInputRef.current?.click();
     };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            onSendMessage(`[Fichier joint: ${file.name}]`);
+        }
+    };
+
+    const toggleRecording = () => {
+        if (disabled) return;
+        setIsRecording(!isRecording);
+        if (!isRecording) {
+            console.log('Recording started...');
+        } else {
+            onSendMessage('[Message vocal simulé]');
+        }
+    };
+
+    const hasText = message.trim().length > 0;
 
     return (
         <div
-            className="px-4 py-4 pt-2 border-t"
+            className="px-4 pt-3 pb-5"
             style={{
-                backgroundColor: 'var(--c4l-bg-main)',
-                borderColor: 'var(--c4l-border)'
+                borderTop: '1px solid var(--c4l-glass-border)',
+                background: 'var(--c4l-bg-main)',
             }}
         >
-            <div className="relative flex items-center">
-                <input
-                    type="text"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder={disabled ? 'Reconnexion...' : 'Écrivez votre message...'}
-                    disabled={disabled}
-                    className="w-full text-[15px] rounded-full pl-5 pr-14 py-3.5 border focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all shadow-sm placeholder-gray-400 font-medium"
-                    style={inputStyle}
-                />
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+            />
 
-                <button
-                    onClick={handleSend}
-                    disabled={disabled || !message.trim()}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed shadow-md"
-                    style={{
-                        background: disabled ? '#9ca3af' : 'var(--c4l-primary-gradient)',
-                    }}
-                    aria-label="Envoyer"
-                    title="Envoyer le message"
-                >
-                    <Send size={18} className="text-white translate-x-0.5 translate-y-[1px]" />
-                </button>
+            {/* Input Container — Glassmorphism card */}
+            <div
+                className="rounded-2xl overflow-hidden transition-all"
+                style={{
+                    background: 'var(--c4l-bg-input)',
+                    border: '1px solid var(--c4l-glass-border)',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                }}
+            >
+                {/* Textarea */}
+                <div className="relative">
+                    <textarea
+                        ref={textareaRef}
+                        rows={1}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder={
+                            disabled && !isRecording
+                                ? 'Reconnexion...'
+                                : isRecording
+                                    ? 'Enregistrement vocal...'
+                                    : 'Écrivez votre message...'
+                        }
+                        disabled={disabled && !isRecording}
+                        className="w-full text-[14px] px-4 pt-3.5 pb-2 bg-transparent resize-none focus:outline-none placeholder-[var(--c4l-text-tertiary)]"
+                        style={{
+                            color: 'var(--c4l-text-primary)',
+                            fontFamily: "'Outfit', 'Inter', system-ui, sans-serif",
+                            minHeight: '42px',
+                            maxHeight: '100px',
+                            lineHeight: '1.5',
+                        }}
+                    />
+                </div>
+
+                {/* Bottom Action Bar */}
+                <div className="flex items-center justify-between px-3 pb-2.5 pt-0.5">
+                    <div className="flex items-center gap-1">
+                        {/* Attach */}
+                        <button
+                            type="button"
+                            onClick={triggerFileSelect}
+                            disabled={disabled || isRecording}
+                            className="c4l-input-btn p-2 rounded-xl transition-all active:scale-90 disabled:opacity-40"
+                            style={{ color: 'var(--c4l-text-tertiary)' }}
+                            title="Joindre un fichier"
+                        >
+                            <Paperclip size={17} />
+                        </button>
+
+                        {/* Voice */}
+                        <button
+                            type="button"
+                            onClick={toggleRecording}
+                            disabled={disabled && !isRecording}
+                            className={`c4l-input-btn p-2 rounded-xl transition-all active:scale-90 ${isRecording ? 'text-red-500 animate-pulse' : ''}`}
+                            style={{
+                                color: isRecording ? '#ef4444' : 'var(--c4l-text-tertiary)',
+                            }}
+                            title={isRecording ? "Arrêter l'enregistrement" : 'Message vocal'}
+                        >
+                            <Mic size={17} />
+                        </button>
+                    </div>
+
+                    {/* Send */}
+                    <button
+                        onClick={handleSend}
+                        disabled={disabled || !hasText}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-white transition-all active:scale-90 disabled:opacity-30 disabled:cursor-not-allowed"
+                        style={{
+                            background: hasText && !disabled
+                                ? 'linear-gradient(135deg, #6366f1, #4f46e5)'
+                                : 'var(--c4l-glass-border)',
+                            boxShadow: hasText && !disabled ? '0 4px 12px rgba(99,102,241,0.35)' : 'none',
+                        }}
+                    >
+                        <ArrowUp size={18} strokeWidth={2.5} />
+                    </button>
+                </div>
             </div>
 
-            {/* Branding discret */}
-            <div className="text-center mt-2 opacity-60 hover:opacity-100 transition-opacity">
-                <a href="#" className="text-[10px] font-medium flex items-center justify-center gap-1" style={{ color: 'var(--c4l-text-tertiary)' }}>
-                    Powered by <span className="font-bold">Chat4Lead</span>
-                </a>
+            {/* Branding */}
+            <div className="text-center mt-3">
+                <p
+                    className="text-[9px] font-medium uppercase tracking-[0.2em]"
+                    style={{ color: 'var(--c4l-text-tertiary)', opacity: 0.4 }}
+                >
+                    Powered by Chat4Lead
+                </p>
             </div>
         </div>
     );

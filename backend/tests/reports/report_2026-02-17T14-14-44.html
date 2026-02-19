@@ -1,0 +1,2038 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Tests Chat4Lead — 17/02/2026 15:14:44</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);margin-bottom:32px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.stat-value{font-size:36px;font-weight:700}
+.stat-label{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.test{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.test-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .15s}
+.test-header:hover{background:rgba(99,102,241,.06)}
+.test-name{font-weight:600;font-size:16px}
+.test-desc{color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.badge.pass{background:rgba(16,185,129,.15);color:var(--green)}
+.badge.fail{background:rgba(239,68,68,.15);color:var(--red)}
+.test-body{padding:0 24px 24px;display:none}
+.test.open .test-body{display:block}
+.exchange{margin:8px 0}
+.msg{padding:10px 14px;border-radius:10px;margin:4px 0;max-width:85%;font-size:14px;word-wrap:break-word}
+.msg.user{background:var(--accent);color:#fff;margin-left:auto;text-align:right}
+.msg.bot{background:#334155}
+.msg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.assertion{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin:4px 0;font-size:14px}
+.assertion.pass{background:rgba(16,185,129,.08)}
+.assertion.fail{background:rgba(239,68,68,.08)}
+.assertion-icon{font-size:16px}
+.lead-table{width:100%;border-collapse:collapse;margin:12px 0}
+.lead-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+.lead-table td:first-child{color:var(--muted);width:140px}
+.section-title{font-size:14px;font-weight:600;color:var(--accent);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.verdict{font-size:18px;font-weight:700;padding:16px 24px;border-radius:12px;margin-top:32px;text-align:center}
+.verdict.good{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.verdict.warn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.verdict.bad{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Rapport Tests Chat4Lead</h1>
+<p class="subtitle">Généré le 17/02/2026 15:14:44 — Durée totale : 803s</p>
+
+<div class="summary">
+  <div class="stat"><div class="stat-value">29</div><div class="stat-label">Tests exécutés</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--green)">28</div><div class="stat-label">Réussis</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--red)">1</div><div class="stat-label">Échoués</div></div>
+  <div class="stat"><div class="stat-value" style="color:#10b981">97%</div><div class="stat-label">Taux de succès</div></div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead parfait <span style="color:var(--muted);font-weight:400;font-size:13px">test-01</span></div>
+      <div class="test-desc">Lead qui donne toutes les infos facilement</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>36.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (6/6)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 80, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie.martin@email.com&quot;, obtenu &quot;sophie.martin@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu &quot;Martin&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je voudrais déménager</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris. Je suis Tom, et je vais vous aider à qualifier votre projet.<br><br>**Commençons par les essentiels :**<br><br>D'où partez-vous et où souhaitez-vous aller ? (villes ou arrondissements)</div>
+      <div class="msg-meta">1968ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Paris 15ème vers Versailles</div>
+      <div class="msg bot">Parfait ! Paris 15ème vers Versailles, c'est noté. 📍<br><br>**Passons aux accès :**<br><br>Dans votre logement actuel à Paris 15ème :<br>- Rez-de-chaussée, étage, ou immeuble avec ascenseur ?<br><br>Et à Versailles, même question ?</div>
+      <div class="msg-meta">1756ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Un appartement F3 de 70m² au 3ème étage sans ascenseur</div>
+      <div class="msg bot">C'est noté : F3 de 70 m² au 3ème étage sans ascenseur à Paris 15ème. 📦<br><br>**Et à Versailles :**<br><br>Votre nouveau logement, c'est aussi un 3ème étage sans ascenseur, ou la situation est différente ?</div>
+      <div class="msg-meta">1311ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Oui il y a un parking en bas</div>
+      <div class="msg bot">Parfait ! Même configuration à Versailles (3ème étage sans ascenseur), mais avec parking en bas. ✅<br><br>**Passons au volume :**<br><br>Vous avez une idée du nombre de meubles ? Par exemple :<br>- Combien de chambres meublées (lits, armoires) ?<br>- Salon (canapé, table) ?<br>- Cuisine équipée ?<br><br>Ou je peux estimer : 70 m² = environ **35 m³** de base. Ça vous semble juste ?</div>
+      <div class="msg-meta">2060ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 15 mars</div>
+      <div class="msg bot">Noted : déménagement prévu le **15 mars 2026**. 📅<br><br>**Revenons au volume :**<br><br>Avez-vous une idée du nombre de meubles ? (lits, canapé, armoires, etc.)<br><br>Ou je peux partir sur l'estimation de base : **35 m³** pour votre F3 de 70 m² ?</div>
+      <div class="msg-meta">1965ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Sophie Martin</div>
+      <div class="msg bot">Merci Sophie ! 👋<br><br>**Récapitulatif avant la prestation :**<br>- F3 70 m² | Paris → Versailles<br>- 3ème étage sans ascenseur (les deux côtés)<br>- Parking en bas à Versailles<br>- Date : 15 mars 2026<br>- Volume estimé : **35 m³**<br><br>**Quelle prestation vous intéresse ?**<br>1. **Éco** : Transport seul<br>2. **Standard** : Transport + Fragile + Démontage<br>3. **Luxe** : Clef en main (tout inclus)</div>
+      <div class="msg-meta">2288ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">sophie.martin@email.com</div>
+      <div class="msg bot">Parfait, Sophie ! 📧<br><br>**Il me manque juste :**<br>- Votre **numéro de téléphone** pour que notre équipe vous contacte demain<br>- Et la **prestation** (Éco, Standard ou Luxe) ?</div>
+      <div class="msg-meta">1441ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 12 34 56 78</div>
+      <div class="msg bot">Merci Sophie ! ☑️<br><br>**Il me reste juste la prestation :**<br>1. **Éco** : Transport seul<br>2. **Standard** : Transport + Fragile + Démontage<br>3. **Luxe** : Clef en main (tout inclus)<br><br>Laquelle vous convient le mieux ?</div>
+      <div class="msg-meta">1232ms · score=80</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">La formule Standard me semble bien</div>
+      <div class="msg bot">Parfait ! ✅<br><br>📋 **VOTRE PROJET DE DÉMÉNAGEMENT**<br>👤 **Client** : Sophie Martin<br>📍 **Parcours** : Paris ➡️ Versailles<br>📦 **Volume** : 35 m³<br>🏗️ **Accès** : 3ème étage sans ascenseur (départ &amp; arrivée) | Parking Versailles<br>🛠️ **Prestation** : **Standard** (Transport + Fragile + Démontage)<br>💰 **ESTIMATION** : À confirmer à l'appel<br>**Prochaine étape** : Notre équipe vous contacte demain pour valider et vous proposer un devis précis.<br><br>À très bientôt ! 🚚</div>
+      <div class="msg-meta">1871ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead difficile <span style="color:var(--muted);font-weight:400;font-size:13px">test-02</span></div>
+      <div class="test-desc">Lead qui donne peu d'infos</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>45/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>Marc</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>0698765432</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>32.8s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≤</strong>: attendu 50, obtenu 45</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;MOYEN&quot;,&quot;FROID&quot;], obtenu &quot;MOYEN&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0698765432&quot;, obtenu &quot;0698765432&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">bjr</div>
+      <div class="msg bot">Bjr ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom ! <br><br>Je suis là pour comprendre votre projet de déménagement et vous faire une estimation rapide.<br><br>**Commençons par le basique : de quelle ville partez-vous, et vers quelle destination ?**</div>
+      <div class="msg-meta">1381ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">jdemenage</div>
+      <div class="msg bot">Ah, c'est noté ! 😊 **Jdemenage**, bienvenue.<br><br>**Alors, de quelle ville partez-vous, et où allez-vous ?**</div>
+      <div class="msg-meta">1060ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">paris</div>
+      <div class="msg bot">D'accord, vous partez de Paris. <br><br>**Et vers quelle ville/arrondissement allez-vous ?**</div>
+      <div class="msg-meta">1146ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">petit appart</div>
+      <div class="msg bot">Je comprends que c'est un petit appartement ! 😊<br><br>Mais avant de parler de la taille, **dites-moi : vers quelle ville ou quel arrondissement vous déménagez ?**</div>
+      <div class="msg-meta">1313ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je sais pas</div>
+      <div class="msg bot">Pas de souci, c'est encore en réflexion ! <br><br>**Dans ce cas, avez-vous au moins une région ou une zone en tête ?** (Île-de-France, province, étranger ?) Ça m'aidera à voir si on peut vous accompagner.</div>
+      <div class="msg-meta">1953ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">bientot</div>
+      <div class="msg bot">D'accord, ce sera bientôt ! 📅<br><br>En attendant que la destination se précise, **pouvez-vous me dire combien de pièces a votre petit appart à Paris ?** (Studio, T2, T3...) Ça me permettra d'estimer le volume à déménager.</div>
+      <div class="msg-meta">1464ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">marc</div>
+      <div class="msg bot">Ah, merci Marc ! 😊<br><br>Donc on a un petit appart à Paris en 2 pièces. **Concernant l'étage : vous êtes à quel niveau au départ, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1860ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">pas de mail</div>
+      <div class="msg bot">Pas de problème, Marc. On verra ça plus tard si besoin. 👍<br><br>**Revenons au logement : vous êtes à quel étage actuellement, et y a-t-il un ascenseur dans l'immeuble ?**</div>
+      <div class="msg-meta">1311ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 98 76 54 32</div>
+      <div class="msg bot">Noté, Marc. ✓<br><br>**Maintenant, à quel étage vous êtes actuellement, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1181ms · score=45</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead qui digresse <span style="color:var(--muted);font-weight:400;font-size:13px">test-03</span></div>
+      <div class="test-desc">Lead qui pose des questions hors sujet</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>75/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Thomas</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>thomas@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0611223344</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>33.6s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 70, obtenu 75</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;thomas@email.com&quot;, obtenu &quot;thomas@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0611223344&quot;, obtenu &quot;0611223344&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu &quot;Thomas&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je déménage</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom.<br><br>Je vais vous aider à qualifier votre projet rapidement.<br><br>**Commençons : d'où partez-vous et où allez-vous ?** (villes ou arrondissements)</div>
+      <div class="msg-meta">1483ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Lyon, au fait vous travaillez le week-end ?</div>
+      <div class="msg bot">Bonne question ! Oui, nous proposons des déménagements le week-end, selon les disponibilités.<br><br>On va d'abord qualifier votre projet pour voir ce qui est possible.<br><br>**Vous partez de Lyon : où allez-vous exactement ?** (ville ou arrondissement à Paris ?)</div>
+      <div class="msg-meta">1721ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Et vous gérez les pianos ?</div>
+      <div class="msg bot">Oui, nous gérons les pianos ! C'est une pièce que nous maîtrisons bien, avec un emballage et un démontage adaptés.<br><br>**Vous avez un piano à déménager avec vous de Lyon ?**</div>
+      <div class="msg-meta">1895ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ok super. Donc Lyon vers Marseille</div>
+      <div class="msg bot">Parfait, c'est noté : **Lyon ➡️ Marseille**.<br><br>Passons aux détails de votre logement.<br><br>**Quel type de logement quittez-vous à Lyon : appartement ou maison ? Et à combien d'étages ?**</div>
+      <div class="msg-meta">1389ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">80m²</div>
+      <div class="msg bot">D'accord, 80 m² à Lyon.<br><br>**C'est un appartement ou une maison ? Et à quel étage ?**</div>
+      <div class="msg-meta">1118ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 20 mars</div>
+      <div class="msg bot">Je note la date : **20 mars 2026**.<br><br>Mais avant, j'ai besoin de quelques infos sur votre logement à Lyon.<br><br>**C'est un appartement ou une maison ? Et à quel étage ?**</div>
+      <div class="msg-meta">1339ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Thomas</div>
+      <div class="msg bot">Merci Thomas ! 😊<br><br>Revenons à ton logement à Lyon : **c'est un appartement ou une maison ? Et à quel étage ?**</div>
+      <div class="msg-meta">1405ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas@email.com</div>
+      <div class="msg bot">Noté, Thomas ! <br><br>Maintenant, pour affiner le devis : **c'est un appartement ou une maison à Lyon ? Et à quel étage ?**</div>
+      <div class="msg-meta">1714ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 11 22 33 44</div>
+      <div class="msg bot">Parfait, Thomas ! 📞<br><br>Revenons à ton logement : **c'est un appartement ou une maison ? Et à quel étage ?**</div>
+      <div class="msg-meta">1398ms · score=75</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead objection prix <span style="color:var(--muted);font-weight:400;font-size:13px">test-04</span></div>
+      <div class="test-desc">Lead qui trouve ça trop cher</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>4</td></tr>
+      <tr><td>Score final</td><td><strong>35/100</strong></td></tr>
+      <tr><td>Priorité</td><td>FROID</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>17.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (1/1)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 15, obtenu 35</div>
+
+    <div class="section-title">💬 Conversation (4 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris. Je suis Tom, je vais vous aider à qualifier votre projet de déménagement.<br><br>Commençons : **Quelle est votre ville de départ ?**</div>
+      <div class="msg-meta">1177ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Bordeaux, 80m²</div>
+      <div class="msg bot">Parfait ! Paris vers Bordeaux, 80 m² — c'est noté. 📍<br><br>**Maintenant, parlons accès : combien d'étages à Paris et à Bordeaux ?** (avec ascenseur ou escalier ?)</div>
+      <div class="msg-meta">1772ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Quel est le prix ?</div>
+      <div class="msg bot">Je comprends ! 😊 Pour vous proposer un prix fiable, je dois d'abord affiner quelques détails — ça prend 2 minutes.<br><br>On en est à :<br>- **Trajet** : Paris → Bordeaux ✓<br>- **Surface** : 80 m² ✓<br><br>Il me manque :<br>1. **Les étages** (accès à Paris et Bordeaux)<br>2. **Le type de prestation** (Éco, Standard ou Luxe)<br><br>**Commençons : combien d'étages à Paris, avec ou sans ascenseur ?**</div>
+      <div class="msg-meta">3890ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est trop cher !</div>
+      <div class="msg bot">Je vous entends ! 😊 C'est justement pour trouver la **meilleure option prix** que je dois comprendre vos besoins.<br><br>Plus je qualifie précisément, plus le devis sera **juste et compétitif**.<br><br>Rapidement : **à Paris, c'est combien d'étages avec ou sans ascenseur ?**</div>
+      <div class="msg-meta">3001ms · score=35</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead urgence <span style="color:var(--muted);font-weight:400;font-size:13px">test-05</span></div>
+      <div class="test-desc">Déménagement dans 5 jours</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>5</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Thomas</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>thomas.urgent@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0611223344</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>18.6s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (5/5)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 60, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;thomas.urgent@email.com&quot;, obtenu &quot;thomas.urgent@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0611223344&quot;, obtenu &quot;0611223344&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu &quot;Thomas&quot;</div>
+
+    <div class="section-title">💬 Conversation (5 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je dois déménager dans 5 jours</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom.<br><br>5 jours, c'est serré ! Je vais vous aider à qualifier votre projet rapidement pour que notre équipe puisse vous proposer une solution adaptée.<br><br>**Commençons : d'où partez-vous et où allez-vous ?** (quartiers ou codes postaux si possible)</div>
+      <div class="msg-meta">2427ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lille, 50m²</div>
+      <div class="msg bot">Parfait ! Paris ➡️ Lille, 50 m².<br><br>Je dois vous signaler que **Lille est légèrement en dehors de nos zones principales** (75, 92, 93, 94), mais notre commercial étudiera votre demande — ne vous inquiétez pas. ✅<br><br>**Maintenant, deux questions rapides sur l'accès :**<br>- À quel étage êtes-vous à Paris ? Y a-t-il un ascenseur ?</div>
+      <div class="msg-meta">2571ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Thomas</div>
+      <div class="msg bot">Merci Thomas ! 👍<br><br>J'attends juste : **à quel étage êtes-vous à Paris et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1038ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas.urgent@email.com</div>
+      <div class="msg bot">Noté, Thomas. <br><br>**Revenons à l'accès : quel étage à Paris et ascenseur ou pas ?**</div>
+      <div class="msg-meta">1073ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 11 22 33 44</div>
+      <div class="msg bot">Parfait, Thomas. ✅<br><br>**Juste pour finir l'accès : quel étage à Paris et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1441ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead avec fautes de frappe <span style="color:var(--muted);font-weight:400;font-size:13px">test-06</span></div>
+      <div class="test-desc">Lead qui fait beaucoup de fautes d'orthographe</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>85/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Jean</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>jean.dupon@gmail.com</td></tr>
+      <tr><td>Téléphone</td><td>0623456789</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>37.7s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 75, obtenu 85</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Jean&quot;, obtenu &quot;Jean&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0623456789&quot;, obtenu &quot;0623456789&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">bonjur je veu demenagé</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom.<br><br>Je vais vous aider à estimer votre déménagement. Commençons par les bases :<br><br>**D'où partez-vous et où allez-vous ?** (villes ou codes postaux)</div>
+      <div class="msg-meta">2539ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">de pari ver lion</div>
+      <div class="msg bot">Parfait ! Paris vers Lyon.<br><br>⚠️ **Petite info** : Lyon est en dehors de nos zones principales (75, 92, 93, 94). Pas de souci, on continue quand même — notre équipe commerciale verra avec vous les possibilités.<br><br>Avant d'aller plus loin, quelques questions :<br><br>**Quel type de logement quittez-vous à Paris ?** (studio, T2, T3... ou surface approximative en m²)</div>
+      <div class="msg-meta">2415ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">un appart de 60m carré</div>
+      <div class="msg bot">Noté, 60 m² à Paris. 👍<br><br>**Combien d'étages** à votre départ et à votre arrivée ? (RDC, 1er étage, ascenseur... ?)</div>
+      <div class="msg-meta">1739ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">o 2eme etage san assenseur</div>
+      <div class="msg bot">D'accord, 2e étage sans ascenseur à Paris.<br><br>**Et à Lyon, c'est quel étage ?** (avec ou sans ascenseur ?)</div>
+      <div class="msg-meta">1400ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">le 10 avri</div>
+      <div class="msg bot">Je comprends — vous visez le **10 avril** pour le déménagement. 👍<br><br>Mais je dois d'abord savoir : **à Lyon, c'est quel étage ?** (et y a-t-il un ascenseur ?)</div>
+      <div class="msg-meta">1359ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je suis jean</div>
+      <div class="msg bot">Parfait, Jean ! 😊<br><br>Revenons à Lyon : **quel étage à l'arrivée, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">3525ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">jean.dupon@gmail.com</div>
+      <div class="msg bot">Noté, Jean. 👍<br><br>Avant de continuer, j'ai besoin de savoir : **à Lyon, c'est quel étage à l'arrivée, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1234ms · score=75</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 23 45 67 89</div>
+      <div class="msg bot">Parfait, Jean. ✓<br><br>Revenons à votre arrivée à **Lyon** : **quel étage et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1623ms · score=85</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">la formule standard</div>
+      <div class="msg bot">D'accord pour la **formule Standard** (Transport + Fragile + Démontage). 👍<br><br>Mais avant de finaliser, je dois confirmer l'accès à **Lyon** : **quel étage à l'arrivée, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1663ms · score=85</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead qui change d'avis <span style="color:var(--muted);font-weight:400;font-size:13px">test-07</span></div>
+      <div class="test-desc">Lead qui modifie ses réponses précédentes</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Marie</td></tr>
+      <tr><td>Nom</td><td>Dubois</td></tr>
+      <tr><td>Email</td><td>marie.dubois@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0634567890</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>35.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 70, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Marie&quot;, obtenu &quot;Marie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Dubois&quot;, obtenu &quot;Dubois&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;marie.dubois@email.com&quot;, obtenu &quot;marie.dubois@email.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je déménage de Paris vers Marseille</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Parfait, j'ai noté : **Paris ➡️ Marseille**.<br><br>Je dois vous prévenir : Marseille est un peu hors de nos zones d'intervention habituelles (75, 92, 93, 94), mais ne vous inquiétez pas, on peut tout de même étudier votre projet avec notre équipe commerciale.<br><br>Maintenant, parlons de votre logement actuel : **combien de pièces à Paris ?** (Et quel étage ?)</div>
+      <div class="msg-meta">2384ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">En fait non, plutôt vers Lyon</div>
+      <div class="msg bot">Pas de souci ! 🔄<br><br>C'est noté : **Paris ➡️ Lyon**.<br><br>Même remarque : Lyon est également hors de nos zones habituelles, mais on pourra étudier ça avec l'équipe.<br><br>Dites-moi, à **Paris : combien de pièces ?** Et **à quel étage vous êtes ?**</div>
+      <div class="msg-meta">2024ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Un F3 de 70m²</div>
+      <div class="msg bot">Parfait ! 📝<br><br>Un F3 de 70 m² à Paris, c'est noté.<br><br>**À quel étage vous êtes actuellement ?** (Avec ou sans ascenseur ?)</div>
+      <div class="msg-meta">1722ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ah non pardon, c'est un F4 de 85m²</div>
+      <div class="msg bot">Pas de problème ! ✏️<br><br>C'est noté : **F4 de 85 m² à Paris**.<br><br>**À quel étage vous êtes ?** (Avec ascenseur ou pas ?)</div>
+      <div class="msg-meta">1187ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 5 mars</div>
+      <div class="msg bot">Je note la date : **5 mars 2026**. 👍<br><br>Avant ça, j'ai besoin de l'info sur l'**étage à Paris** — c'est important pour l'accès. **Vous êtes à quel étage, et il y a un ascenseur ?**</div>
+      <div class="msg-meta">2090ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Finalement plutôt le 12 mars</div>
+      <div class="msg bot">Compris, je change : **12 mars 2026**. 👍<br><br>Et pour l'**étage à Paris** — vous êtes à quel niveau, avec ou sans ascenseur ?</div>
+      <div class="msg-meta">1573ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Marie Dubois</div>
+      <div class="msg bot">Merci Marie. 👍<br><br>Revenons à l'**étage à Paris** — à quel niveau vous êtes, et il y a un ascenseur ?</div>
+      <div class="msg-meta">1019ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">marie.dubois@email.com</div>
+      <div class="msg bot">C'est noté, Marie. 👍<br><br>Avant de continuer, j'ai besoin de l'info sur l'**étage à Paris** — à quel niveau vous êtes, avec ou sans ascenseur ?</div>
+      <div class="msg-meta">1848ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 34 56 78 90</div>
+      <div class="msg bot">Parfait, Marie. 👍<br><br>Revenons à l'essentiel : à quel **étage vous êtes à Paris**, et il y a un **ascenseur** ?</div>
+      <div class="msg-meta">1287ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead ultra-pressé <span style="color:var(--muted);font-weight:400;font-size:13px">test-08</span></div>
+      <div class="test-desc">Lead qui donne des réponses minimales</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>12</td></tr>
+      <tr><td>Score final</td><td><strong>65/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Paul</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>paul@mail.fr</td></tr>
+      <tr><td>Téléphone</td><td>0645678901</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>46.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 60, obtenu 65</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Paul&quot;, obtenu &quot;Paul&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;paul@mail.fr&quot;, obtenu &quot;paul@mail.fr&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0645678901&quot;, obtenu &quot;0645678901&quot;</div>
+
+    <div class="section-title">💬 Conversation (12 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">salut</div>
+      <div class="msg bot"># 👋 Bienvenue !<br><br>Salut ! Je suis **Tom**, assistant Déménagements Test Paris. <br><br>Je vais t'aider à qualifier ton projet de déménagement en quelques questions simples. Ça te dit ? 🚚<br><br>**Commençons : d'où tu pars et où tu vas ?**</div>
+      <div class="msg-meta">1956ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">demenagement</div>
+      <div class="msg bot">Ah, je comprends ! 😊 Tu cherches à déménager.<br><br>**Dis-moi : tu pars de quelle ville et tu arrives où ?** (ex: Paris vers Lyon, ou 75 vers 92...)</div>
+      <div class="msg-meta">1443ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">lille</div>
+      <div class="msg bot">Parfait ! Tu arrives à **Lille**. <br><br>**Et d'où tu pars ?** Quelle est ta ville/zone actuelle ?</div>
+      <div class="msg-meta">1470ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">roubaix</div>
+      <div class="msg bot">C'est noté : **Roubaix ➡️ Lille**. <br><br>⚠️ Je te le signale : c'est un peu hors de nos zones principales (75, 92, 93, 94), mais on peut tout de même te faire un devis. Le commercial confirmera les possibilités.<br><br>**Passons à la suite : tu habites dans quel type de logement (studio, T2, maison...) et à quel étage ?**</div>
+      <div class="msg-meta">2123ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">50m2</div>
+      <div class="msg bot">D'accord, **50 m²**. <br><br>**C'est à quel étage (avec ou sans ascenseur) ?** Et c'est un studio, T1, T2... ?</div>
+      <div class="msg-meta">1455ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">2eme</div>
+      <div class="msg bot">Noté : **2e étage**. <br><br>**Y a-t-il un ascenseur ?** Et c'est combien de pièces au total (studio, T1, T2...) ?</div>
+      <div class="msg-meta">1558ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">parking ok</div>
+      <div class="msg bot">Parfait, parking ok à la destination. <br><br>**Mais j'ai besoin de savoir : c'est combien de pièces chez toi (studio, T1, T2...) ?** Et à Roubaix, il y a un ascenseur dans ton immeuble ?</div>
+      <div class="msg-meta">1418ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">20 mars</div>
+      <div class="msg bot">C'est noté : **20 mars 2026**.<br><br>**Avant de continuer : c'est un studio, T1, T2... ? Et ascenseur ou pas à Roubaix ?**</div>
+      <div class="msg-meta">1329ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je suis paul</div>
+      <div class="msg bot">Salut Paul ! 👋<br><br>**Juste pour finaliser : c'est combien de pièces chez toi, et il y a un ascenseur à Roubaix ?**</div>
+      <div class="msg-meta">1363ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">paul@mail.fr</div>
+      <div class="msg bot">Noté, Paul. <br><br>**Il me manque juste : combien de pièces (studio, T1, T2...) et ascenseur ou pas à Roubaix ?**</div>
+      <div class="msg-meta">1622ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0645678901</div>
+      <div class="msg bot">Parfait, Paul. <br><br>**Reste juste à confirmer : c'est combien de pièces chez toi, et ascenseur ou pas à Roubaix ?**</div>
+      <div class="msg-meta">1241ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">formule standard</div>
+      <div class="msg bot">Compris, Standard pour toi.<br><br>**Avant de finaliser : combien de pièces tu as, et il y a un ascenseur à Roubaix ?**</div>
+      <div class="msg-meta">1671ms · score=65</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead curieux <span style="color:var(--muted);font-weight:400;font-size:13px">test-09</span></div>
+      <div class="test-desc">Lead qui pose plein de questions techniques</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>11</td></tr>
+      <tr><td>Score final</td><td><strong>75/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Claire</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>claire.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0656789012</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>43.3s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (5/5)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 75, obtenu 75</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;TIEDE&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Claire&quot;, obtenu &quot;Claire&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu &quot;Martin&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;claire.martin@email.com&quot;, obtenu &quot;claire.martin@email.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (11 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, vous faites le démontage des meubles IKEA ?</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Oui, bien sûr ! Le démontage des meubles IKEA est inclus dans nos prestations **Standard** et **Luxe**. <br><br>Avant de détailler ça, j'aurais besoin de quelques infos pour bien qualifier votre projet. D'où partez-vous et où allez-vous ? 📍</div>
+      <div class="msg-meta">1838ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Et vous avez une assurance pour la casse ?</div>
+      <div class="msg bot">Excellente question ! 🛡️<br><br>Oui, nous avons une couverture assurance pour les biens transportés. Les détails précis (franchises, conditions, valeurs couvertes) seront confirmés lors de votre devis avec notre équipe commerciale.<br><br>Avant d'aller plus loin, parlez-moi un peu de votre déménagement : **d'où partez-vous et où allez-vous ?** 📍</div>
+      <div class="msg-meta">2040ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est combien par m³ ?</div>
+      <div class="msg bot">Bonne question ! 💰<br><br>Nos tarifs dépendent vraiment de votre projet complet (distance, étages, type de prestation, volume...). C'est pour ça qu'on fait d'abord un devis personnalisé.<br><br>Pour vous proposer une estimation, j'aurais besoin de quelques infos : **d'où partez-vous et où allez-vous ?** 📍</div>
+      <div class="msg-meta">1970ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Vous travaillez le dimanche ?</div>
+      <div class="msg bot">Bonne question ! 📅<br><br>Nos disponibilités et jours d'intervention (dont les dimanches) seront à confirmer avec notre équipe selon votre calendrier. Ça dépend aussi de nos agendas à ce moment-là.<br><br>En attendant, parlons de votre projet : **d'où partez-vous et où allez-vous ?** 📍</div>
+      <div class="msg-meta">1578ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ok merci. Je déménage de Nantes vers Angers</div>
+      <div class="msg bot">Parfait ! 🚚 Nantes → Angers, c'est noté.<br><br>Je dois te préciser : **Angers sort un peu de nos zones principales d'intervention** (75, 92, 93, 94). Mais on peut tout de même étudier votre demande — notre équipe commerciale décidera de la faisabilité.<br><br>Continuons : **quel type de logement quittez-vous à Nantes ?** (T2, maison, studio... et à quel étage ?)</div>
+      <div class="msg-meta">2288ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">90m², maison avec escalier</div>
+      <div class="msg bot">Compris ! 90 m², maison avec escalier à Nantes. 📦<br><br>Et à Angers, c'est aussi une maison avec escalier, ou un appartement ?</div>
+      <div class="msg-meta">1332ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 25 mars</div>
+      <div class="msg bot">Ah, noté : **25 mars 2026** pour le déménagement. ✓<br><br>Mais j'ai besoin de préciser d'abord : **à Angers, c'est une maison ou un appartement ?** Et s'il y a un escalier/étages ?</div>
+      <div class="msg-meta">1706ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Claire Martin</div>
+      <div class="msg bot">Merci Claire ! 👋<br><br>Revenons à Angers : **maison ou appartement ? Avec escalier ?**</div>
+      <div class="msg-meta">1051ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">claire.martin@email.com</div>
+      <div class="msg bot">C'est noté, Claire. 📧<br><br>Mais avant tes coordonnées complètes, je dois finir la qualification : **à Angers, c'est une maison ou un appartement ? Y a-t-il des escaliers ?**</div>
+      <div class="msg-meta">1274ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 56 78 90 12</div>
+      <div class="msg bot">Parfait, Claire. ✓<br><br>On y est presque ! Juste une question avant de finaliser : **à Angers, tu arrives dans une maison ou un appartement ? Y a-t-il des escaliers ?**</div>
+      <div class="msg-meta">1655ms · score=75</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je prends la formule Luxe</div>
+      <div class="msg bot">Super choix, Claire ! 🎯<br><br>Mais j'ai besoin d'une info avant : **à Angers, c'est une maison ou un appartement ? Y a-t-il des escaliers ?**<br><br>(C'est important pour affiner l'estimation Luxe.)</div>
+      <div class="msg-meta">1473ms · score=75</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Déménagement énorme <span style="color:var(--muted);font-weight:400;font-size:13px">test-10</span></div>
+      <div class="test-desc">Lead avec très gros volume (maison + dépendances)</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>10</td></tr>
+      <tr><td>Score final</td><td><strong>95/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Robert</td></tr>
+      <tr><td>Nom</td><td>Durand</td></tr>
+      <tr><td>Email</td><td>robert.durand@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0667890123</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>40.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (6/6)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 80, obtenu 95</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Robert&quot;, obtenu &quot;Robert&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Durand&quot;, obtenu &quot;Durand&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;robert.durand@email.com&quot;, obtenu &quot;robert.durand@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0667890123&quot;, obtenu &quot;0667890123&quot;</div>
+
+    <div class="section-title">💬 Conversation (10 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je déménage une grande maison</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Bienvenue chez Déménagements Test Paris, je m'appelle Tom. Je vais vous aider à qualifier votre projet rapidement.<br><br>**Commençons par les villes** : d'où déménagez-vous et où allez-vous ?</div>
+      <div class="msg-meta">1683ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Toulouse vers Nice</div>
+      <div class="msg bot">Parfait ! Toulouse vers Nice, c'est noté. 📍<br><br>Je dois vous signaler que nous intervenons principalement sur **l'Île-de-France (75, 92, 93, 94)**. Votre trajet est donc hors de nos zones habituelles. Cela dit, on continue — mon collègue commercial verra ce qui est possible.<br><br>**Passons au logement** : À Toulouse, c'est une maison — elle a combien d'étages ? Et à Nice, c'est aussi une maison ou un appartement ?</div>
+      <div class="msg-meta">2244ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est une maison de 250m² sur 3 étages</div>
+      <div class="msg bot">Compris ! Maison de 250 m² sur 3 étages à Toulouse. 🏠<br><br>Et à Nice, c'est aussi une maison sur plusieurs étages, ou un appartement ?</div>
+      <div class="msg-meta">1101ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Avec une cave remplie, un garage et un grenier aussi</div>
+      <div class="msg bot">D'accord, vous avez aussi une cave remplie, un garage et un grenier — ça représente un vrai volume ! 📦<br><br>**Avant de l'estimer précisément**, dites-moi : à Nice, c'est aussi une maison avec cave/garage/grenier ? Et sur combien d'étages ?</div>
+      <div class="msg-meta">2067ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Il y a aussi 2 pianos</div>
+      <div class="msg bot">2 pianos, c'est important à noter ! 🎹<br><br>Juste pour clarifier : ces 2 pianos sont à Toulouse (dans la maison actuelle), c'est ça ?<br><br>Et pour Nice — c'est une maison avec cave/garage aussi, ou un appartement ?</div>
+      <div class="msg-meta">2009ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 10 avril</div>
+      <div class="msg bot">Noté, déménagement prévu le **10 avril 2026**. ✓<br><br>Revenons à Nice : c'est une **maison** (avec cave/garage/grenier) ou un **appartement** ? Et sur combien d'étages ?</div>
+      <div class="msg-meta">2555ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Robert Durand</div>
+      <div class="msg bot">Parfait, Robert. C'est noté. 👍<br><br>Revenons à votre arrivée à Nice : c'est une **maison** (avec cave/garage/grenier) ou un **appartement** ? Et sur combien d'étages ?</div>
+      <div class="msg-meta">988ms · score=75</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">robert.durand@email.com</div>
+      <div class="msg bot">Merci, Robert. Email noté. 📧<br><br>Juste une question avant de finaliser : à Nice, c'est une **maison** ou un **appartement** ? Et sur combien d'étages ?</div>
+      <div class="msg-meta">1264ms · score=85</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 67 89 01 23</div>
+      <div class="msg bot">Parfait, Robert. Téléphone noté. ✓<br><br>Revenons à votre arrivée à Nice : c'est une **maison** ou un **appartement** ? Et sur combien d'étages ?</div>
+      <div class="msg-meta">1620ms · score=95</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je pense qu'il me faut la formule Luxe</div>
+      <div class="msg bot">Compris, la formule **Luxe** (clef en main). 👍<br><br>Avant de finaliser, j'ai encore besoin de deux infos pour affiner l'estimation :<br><br>1. À **Nice**, c'est une maison ou un appartement ?<br>2. Sur combien d'**étages** ?</div>
+      <div class="msg-meta">2218ms · score=95</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead avec emojis <span style="color:var(--muted);font-weight:400;font-size:13px">test-11</span></div>
+      <div class="test-desc">Messages avec emojis et caractères spéciaux</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>75/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>sophie@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>34.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 65, obtenu 75</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie@mail.com&quot;, obtenu &quot;sophie@mail.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour 👋</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom. <br><br>Je vais vous aider à préparer votre projet de déménagement. Par où on commence ?<br><br>**Où déménagez-vous ?** (Ville/arrondissement de départ et d'arrivée)</div>
+      <div class="msg-meta">1437ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je déménage 🏠</div>
+      <div class="msg bot">Parfait ! 😊 <br><br>Pour bien comprendre votre projet, j'aurais besoin de quelques infos.<br><br>**D'où partez-vous et où allez-vous ?** (Villes ou arrondissements)</div>
+      <div class="msg-meta">1105ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lyon</div>
+      <div class="msg bot">C'est noté : **Paris ➡️ Lyon**.<br><br>⚠️ Je vous signale que Lyon est **hors de nos zones principales d'intervention** (75, 92, 93, 94). Mais pas de souci, on continue — notre équipe commerciale verra les possibilités avec vous.<br><br>Maintenant, parlez-moi de votre logement à Paris :<br>- **Combien de pièces ?**<br>- **Rez-de-chaussée ou étage ?** (et quel étage ?)</div>
+      <div class="msg-meta">2774ms · score=15</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">70m² 📦</div>
+      <div class="msg bot">Compris, **70 m²** à Paris. <br><br>Juste pour affiner : <br>- **C'est combien de pièces ?** (T2, T3... ?)<br>- **À quel étage ?** (avec ascenseur ou pas ?)</div>
+      <div class="msg-meta">1444ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">15 mars 📅</div>
+      <div class="msg bot">Parfait, **15 mars 2026** c'est noté. <br><br>Mais j'ai besoin de revenir sur votre logement à Paris :<br>- **Combien de pièces ?** <br>- **À quel étage ?**<br><br>Ces infos m'aident à estimer le volume et l'accès. 😊</div>
+      <div class="msg-meta">1576ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis Sophie 😊</div>
+      <div class="msg bot">Enchantée, Sophie ! 😊<br><br>On y est presque. Juste deux infos sur votre 70 m² à Paris :<br>- **Combien de pièces ?** (T2, T3... ?)<br>- **À quel étage ?** (avec ascenseur ou pas ?)</div>
+      <div class="msg-meta">1553ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">sophie@mail.com 📧</div>
+      <div class="msg bot">Merci Sophie ! 📧<br><br>Avant de finaliser, il me manque juste :<br>- **Combien de pièces** dans votre 70 m² ?<br>- **À quel étage** (avec ascenseur ou pas) ?<br><br>Ces détails me permettront de calculer précisément votre volume. 👍</div>
+      <div class="msg-meta">1671ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 12 34 56 78 📱</div>
+      <div class="msg bot">Super, c'est noté ! 📱<br><br>Reste juste deux questions pour terminer :<br>- **Combien de pièces** dans votre 70 m² ?<br>- **À quel étage** (avec ascenseur ou pas) ?</div>
+      <div class="msg-meta">1438ms · score=75</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Formule Standard ✅</div>
+      <div class="msg bot">Parfait pour la formule Standard ! ✅<br><br>Mais avant de conclure, j'ai besoin de deux infos sur votre logement :<br>- **Combien de pièces** dans votre 70 m² ?<br>- **À quel étage** (avec ascenseur ou pas) ?<br><br>Ça me permettra de finaliser votre devis. 👍</div>
+      <div class="msg-meta">1362ms · score=75</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead en MAJUSCULES <span style="color:var(--muted);font-weight:400;font-size:13px">test-12</span></div>
+      <div class="test-desc">Tout en caps lock</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>8</td></tr>
+      <tr><td>Score final</td><td><strong>60/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>jean.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0623456789</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>29.6s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (1/3)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 70, obtenu 60</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Jean&quot;, obtenu null</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;jean.martin@email.com&quot;, obtenu &quot;jean.martin@email.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (8 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">BONJOUR</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Bienvenue chez **Déménagements Test Paris**. Je suis **Tom**, ton assistant pour préparer ton déménagement. <br><br>Pour te proposer une estimation adaptée, j'aurais besoin de quelques infos. On commence par les villes : **d'où partiras-tu et où arrives-tu ?**</div>
+      <div class="msg-meta">2588ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">JE DEMENAGE</div>
+      <div class="msg bot">Parfait ! 😊<br><br>Commençons par les essentiels : **de quelle ville à quelle ville tu déménages ?**</div>
+      <div class="msg-meta">1286ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">PARIS VERS MARSEILLE</div>
+      <div class="msg bot">Super ! **Paris vers Marseille**, c'est noté. 📍<br><br>Je précise : tu pars bien de **Paris (75)** ?</div>
+      <div class="msg-meta">1356ms · score=15</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">80M2</div>
+      <div class="msg bot">Gotcha ! **80 m²** à déménager.<br><br>Maintenant, dis-moi : **combien d'étages à Paris** (départ) et **combien à Marseille** (arrivée) ? Ascenseur ou escalier ?**</div>
+      <div class="msg-meta">1800ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">LE 20 MARS</div>
+      <div class="msg bot">Merci ! **20 mars**, c'est noté comme date souhaitée. 📅<br><br>Avant de continuer : **combien d'étages à Paris et à Marseille ? Ascenseur ou escalier ?**</div>
+      <div class="msg-meta">1600ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">JEAN MARTIN</div>
+      <div class="msg bot">Parfait, Jean ! 👋<br><br>Revenons à tes étages : **combien à Paris (départ) et combien à Marseille (arrivée) ? Y a un ascenseur ou c'est escalier ?**</div>
+      <div class="msg-meta">1251ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">JEAN.MARTIN@EMAIL.COM</div>
+      <div class="msg bot">C'est noté, Jean. 📧<br><br>Maintenant, les étages : **combien à Paris (départ) et à Marseille (arrivée) ? Ascenseur ou escalier ?**</div>
+      <div class="msg-meta">991ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0623456789</div>
+      <div class="msg bot">Parfait, j'ai ton numéro. ✅<br><br>Revenons aux étages : **combien à Paris (départ) et à Marseille (arrivée) ? Ascenseur ou escalier ?**</div>
+      <div class="msg-meta">1081ms · score=60</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead avec accents <span style="color:var(--muted);font-weight:400;font-size:13px">test-13</span></div>
+      <div class="test-desc">Noms avec accents français et lieux spéciaux</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>7</td></tr>
+      <tr><td>Score final</td><td><strong>90/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>François</td></tr>
+      <tr><td>Nom</td><td>Müller</td></tr>
+      <tr><td>Email</td><td>francois.muller@email.fr</td></tr>
+      <tr><td>Téléphone</td><td>0645678901</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>24.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 70, obtenu 90</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;François&quot;, obtenu &quot;François&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Müller&quot;, obtenu &quot;Müller&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;francois.muller@email.fr&quot;, obtenu &quot;francois.muller@email.fr&quot;</div>
+
+    <div class="section-title">💬 Conversation (7 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom. <br><br>Je vais vous aider à estimer votre projet de déménagement. Commençons : **de quelle ville partez-vous ?**</div>
+      <div class="msg-meta">1222ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je déménage de Cœur-Défense vers Aix-en-Provence</div>
+      <div class="msg bot">C'est noté : Cœur-Défense ➡️ Aix-en-Provence. <br><br>⚠️ **Petite info** : Aix-en-Provence est hors de nos zones principales (75, 92, 93, 94), mais pas de souci — on continue et notre équipe commercial vous recontactera pour les modalités.<br><br>Parlons de votre logement actuel à Cœur-Défense : **c'est un appartement ou une maison ? Et à quel étage ?**</div>
+      <div class="msg-meta">2259ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Appartement 65m²</div>
+      <div class="msg bot">Parfait, un 65 m² à Cœur-Défense. **À quel étage vous êtes, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1326ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 18 février</div>
+      <div class="msg bot">Merci pour la date, c'est noté pour le 18 février 2026. <br><br>Revenons à votre logement : **à quel étage êtes-vous à Cœur-Défense, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1258ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">François Müller</div>
+      <div class="msg bot">Merci, François. 😊<br><br>Pour continuer : **à quel étage êtes-vous à Cœur-Défense, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">964ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">francois.muller@email.fr</div>
+      <div class="msg bot">C'est noté, François. <br><br>Maintenant, pour affiner le devis : **à quel étage vous êtes à Cœur-Défense, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1193ms · score=80</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">06 45 67 89 01</div>
+      <div class="msg bot">Parfait, j'ai vos coordonnées.<br><br>Revenons à votre logement : **à quel étage vous êtes à Cœur-Défense, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1143ms · score=90</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead SMS style <span style="color:var(--muted);font-weight:400;font-size:13px">test-14</span></div>
+      <div class="test-desc">Langage SMS très abrégé</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>60/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Alex</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>alex.dub@gmail.com</td></tr>
+      <tr><td>Téléphone</td><td>0698765432</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>35.1s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 55, obtenu 60</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Alex&quot;, obtenu &quot;Alex&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0698765432&quot;, obtenu &quot;0698765432&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">slt</div>
+      <div class="msg bot">Salut ! 👋<br><br>Bienvenue chez **Déménagements Test Paris** ! Je suis **Tom**, et je vais t'aider à préparer ton déménagement.<br><br>Pour commencer, dis-moi : **d'où tu pars et où tu vas ?** (Les villes, c'est parfait pour démarrer)</div>
+      <div class="msg-meta">2285ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">chui intéréssé pr 1 demenagmt</div>
+      <div class="msg bot">Super ! 🚚<br><br>Je suis là pour ça. Alors, **de quelle ville tu pars et où tu vas ?** (juste les villes, ça suffit)</div>
+      <div class="msg-meta">1402ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">2 pari ver bord</div>
+      <div class="msg bot">Parfait ! Paris vers Bordeaux, c'est noté. 📍<br><br>Maintenant, dis-moi : **dans quel type de logement tu habites actuellement à Paris ?** (Studio, T2, maison... ?) **Et à combien d'étages ?**</div>
+      <div class="msg-meta">1937ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">appart 2 piec</div>
+      <div class="msg bot">Ok, appart 2 pièces à Paris. 👍<br><br>**C'est à quel étage ?** Et **à Bordeaux, tu sais déjà dans quel type de logement tu arrives ?** (étage aussi si possible)</div>
+      <div class="msg-meta">1993ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">jsé pa lvolum</div>
+      <div class="msg bot">Pas de souci, on va l'estimer ensemble. 😊<br><br>**Combien de m² fait ton appart à Paris ?** Ou si tu préfères, tu me décris ce que tu as (nombre de meubles : canapé, lit, table, armoires...) et je calcule pour toi.</div>
+      <div class="msg-meta">1658ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">ds 15j</div>
+      <div class="msg bot">D'accord, déménagement dans 15 jours, c'est noté ! ⏰<br><br>Revenons au volume : **tu as une idée de la surface de ton appart ?** Ou tu préfères me lister tes meubles principaux pour qu'on estime ensemble ?</div>
+      <div class="msg-meta">1492ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">alex</div>
+      <div class="msg bot">C'est bon, Alex ! 😊<br><br>Revenons au volume : **tu as une idée de la surface de ton appart ?** Ou tu préfères me lister tes meubles principaux pour qu'on estime ensemble ?</div>
+      <div class="msg-meta">946ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">alex.dub@gmail.com</div>
+      <div class="msg bot">Parfait, Alex, j'ai noté ton email ! 📧<br><br>Maintenant, **pour estimer le volume : tu connais la surface de ton appart en m² ?** Ou tu me décris tes meubles principaux (canapé, lit, armoires...) et je calcule pour toi.</div>
+      <div class="msg-meta">1206ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0698765432</div>
+      <div class="msg bot">Super, Alex ! ☑️<br><br>On a presque tout. Reste le volume : **tu connais la surface de ton appart en m² ?** Ou tu préfères me lister tes meubles (canapé, lit, armoires, etc.) ?</div>
+      <div class="msg-meta">2081ms · score=60</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead messages longs <span style="color:var(--muted);font-weight:400;font-size:13px">test-15</span></div>
+      <div class="test-desc">Tout en messages structurés multi-lignes</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>5</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie.martin@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>19.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (6/6)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 80, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Martin&quot;, obtenu &quot;Martin&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie.martin@email.com&quot;, obtenu &quot;sophie.martin@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (5 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour,<br><br>Je souhaite déménager de Paris (15ème arrondissement) vers Versailles.<br><br>Cordialement</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Merci de nous contacter. Je vais vous aider à qualifier votre projet rapidement.<br><br>Vous déménagez du **15ème arrondissement de Paris vers Versailles**, c'est noté. ✓<br><br>Passons à l'étape suivante : **pouvez-vous me décrire votre logement actuel ?** (T2, T3... ou nombre de pièces) et **combien d'étages à monter/descendre** (ascenseur, escalier) ?</div>
+      <div class="msg-meta">2129ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est un appartement de 3 pièces (environ 70m²) situé au 3ème étage sans ascenseur. Il y a un parking en bas de l'immeuble.</div>
+      <div class="msg bot">Parfait ! 📝 C'est noté : **3 pièces, 70 m², 3ème étage sans ascenseur, parking accessible**.<br><br>Maintenant, j'ai besoin de comprendre **le volume de vos affaires** pour affiner l'estimation.<br><br>Pouvez-vous me donner une **liste rapide de vos meubles principaux** ? (par ex: canapé, lit, table à manger, armoires, etc.)</div>
+      <div class="msg-meta">1837ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je souhaite déménager le 15 mars si possible.</div>
+      <div class="msg bot">C'est noté : **15 mars 2026** pour le déménagement. ✓<br><br>Revenons au volume : avez-vous une **liste de vos meubles principaux** ? (canapé, lits, armoires, table, etc.)<br><br>Cela me permettra de calculer précisément le volume et vous proposer une estimation.</div>
+      <div class="msg-meta">1964ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Mon nom est Sophie Martin.<br>Email : sophie.martin@email.com<br>Téléphone : 06 12 34 56 78</div>
+      <div class="msg bot">Merci Sophie ! 📌<br><br>J'ai bien noté vos coordonnées.<br><br>Maintenant, **pour finaliser le calcul du volume**, pourriez-vous me lister vos meubles principaux ? (par ex: canapé, lit 2 places, armoire 2 portes, table à manger, etc.)</div>
+      <div class="msg-meta">1433ms · score=80</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je pense que la formule Standard sera adaptée.</div>
+      <div class="msg bot">Bien noté : **formule Standard** (Transport + Fragile + Démontage). ✓<br><br>Mais avant de finaliser l'estimation, **j'ai vraiment besoin de connaître vos meubles principaux** pour calculer le volume exact.<br><br>Pouvez-vous me donner une liste rapide ? (ex: canapé 3 places, lit 2 places, 2 armoires, table à manger, etc.)</div>
+      <div class="msg-meta">2062ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Téléphone format international <span style="color:var(--muted);font-weight:400;font-size:13px">test-16</span></div>
+      <div class="test-desc">Numéro au format +33</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>6</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Marc</td></tr>
+      <tr><td>Nom</td><td>Dubois</td></tr>
+      <tr><td>Email</td><td>marc@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>22.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (2/2)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 65, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (6 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom.<br><br>Je vais vous aider à qualifier votre projet de déménagement en quelques questions simples.<br><br>**Par où commençons ?** D'où partez-vous et où allez-vous ? (villes ou arrondissements)</div>
+      <div class="msg-meta">1583ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lyon, 60m²</div>
+      <div class="msg bot">Parfait ! Paris vers Lyon, 60 m².<br><br>**Petite précision** : dans quel arrondissement ou zone de Paris partez-vous exactement ? (ex: 15e, Marais, etc.)</div>
+      <div class="msg-meta">1867ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">15 mars</div>
+      <div class="msg bot">Merci pour la date ! 📅 C'est noté pour le **15 mars 2026**.<br><br>Revenons à la localisation : **quel arrondissement ou zone de Paris exactement ?** (pour évaluer l'accès)</div>
+      <div class="msg-meta">1339ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Marc Dubois</div>
+      <div class="msg bot">Enchanté, Marc ! 😊<br><br>Avant de continuer, j'ai besoin de préciser votre point de départ : **quel arrondissement ou zone de Paris ?** (ex: 15e, Marais, etc.)</div>
+      <div class="msg-meta">1682ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">marc@mail.com</div>
+      <div class="msg bot">Noté, Marc. 📧<br><br>Pour affiner votre devis, il me reste une question : **quel arrondissement ou zone de Paris exactement ?** Cela m'aide à évaluer l'accès à votre logement.</div>
+      <div class="msg-meta">1310ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">+33 6 12 34 56 78</div>
+      <div class="msg bot">Parfait, Marc. ✓<br><br>Revenons à votre déménagement : **quel arrondissement ou zone de Paris** (départ) ? Cela m'aide à évaluer l'accès et les conditions logistiques.</div>
+      <div class="msg-meta">2094ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Date format DD/MM/YYYY <span style="color:var(--muted);font-weight:400;font-size:13px">test-17</span></div>
+      <div class="test-desc">Date au format numérique</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>7</td></tr>
+      <tr><td>Score final</td><td><strong>70/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Claire</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>claire@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0645678901</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>26.7s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 70, obtenu 70</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Claire&quot;, obtenu &quot;Claire&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;claire@mail.com&quot;, obtenu &quot;claire@mail.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (7 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Je suis Tom, assistant chez **Déménagements Test Paris**. Je suis là pour estimer votre déménagement et répondre à vos questions.<br><br>**Par où on commence ?** Quelle est votre ville de départ ?</div>
+      <div class="msg-meta">1357ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Nice, 55m²</div>
+      <div class="msg bot">Parfait ! Paris ➡️ Nice, 55 m².<br><br>Just pour info : Nice est un peu en dehors de nos zones principales (75, 92, 93, 94), mais on continue normalement — notre équipe verra les possibilités avec vous. 👍<br><br>**Maintenant, parlons logement** : Dans votre logement actuel à Paris, à quel étage êtes-vous ? Et à Nice, même question ?</div>
+      <div class="msg-meta">2021ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">2ème étage sans ascenseur</div>
+      <div class="msg bot">C'est noté, 2ème étage sans ascenseur à Paris.<br><br>Et à Nice, quel étage pour votre nouveau logement ? Avec ou sans ascenseur ?</div>
+      <div class="msg-meta">1327ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je veux déménager le 15/03/2026</div>
+      <div class="msg bot">Parfait, c'est noté pour le **15 mars 2026**. 📅<br><br>Revenons à Nice : à quel étage sera votre nouveau logement ? Avec ou sans ascenseur ?</div>
+      <div class="msg-meta">1324ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Claire</div>
+      <div class="msg bot">Merci Claire ! 😊<br><br>Revenons à ta nouvelle adresse à Nice : à quel étage sera ton logement ? Avec ou sans ascenseur ?</div>
+      <div class="msg-meta">2443ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">claire@mail.com</div>
+      <div class="msg bot">C'est noté, Claire. 📧<br><br>Avant de continuer, j'ai besoin de connaître l'étage de ton nouveau logement à Nice : avec ou sans ascenseur ?</div>
+      <div class="msg-meta">2003ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0645678901</div>
+      <div class="msg bot">Parfait, j'ai tes coordonnées. 📞<br><br>Revenons à ton déménagement : à quel étage sera ton nouveau logement à Nice ? Avec ou sans ascenseur ?</div>
+      <div class="msg-meta">1114ms · score=70</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Date textuelle <span style="color:var(--muted);font-weight:400;font-size:13px">test-17b</span></div>
+      <div class="test-desc">Date écrite en toutes lettres</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>7</td></tr>
+      <tr><td>Score final</td><td><strong>75/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Thomas</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>thomas@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0656789012</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>25.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 65, obtenu 75</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu &quot;Thomas&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;thomas@mail.com&quot;, obtenu &quot;thomas@mail.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (7 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris. Je suis Tom, je vais vous aider à estimer votre déménagement en quelques minutes.<br><br>Par où on commence ? **D'où partez-vous et où allez-vous ?** (Villes ou arrondissements)</div>
+      <div class="msg-meta">1852ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Lyon vers Marseille, 65m²</div>
+      <div class="msg bot">Parfait ! Lyon ➡️ Marseille, 65 m².<br><br>Juste une info : **Marseille est hors de nos zones d'intervention principales** (75, 92, 93, 94), mais on continue normalement — notre équipe commerciale étudiera votre dossier.<br><br>Maintenant, parlons de votre logement actuel à Lyon : **combien d'étages et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1806ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">3ème étage</div>
+      <div class="msg bot">Noté, 3ème étage à Lyon.<br><br>**Y a-t-il un ascenseur dans l'immeuble ?**</div>
+      <div class="msg-meta">2043ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le quinze mars deux mille vingt-six</div>
+      <div class="msg bot">Je note la date : 15 mars 2026. 👍<br><br>Revenons à votre logement : **y a-t-il un ascenseur au 3ème étage de votre immeuble à Lyon ?**</div>
+      <div class="msg-meta">1098ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Thomas</div>
+      <div class="msg bot">Merci Thomas ! <br><br>On y est presque. **Dites-moi : y a-t-il un ascenseur dans votre immeuble à Lyon ?**</div>
+      <div class="msg-meta">1557ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas@mail.com</div>
+      <div class="msg bot">C'est noté, Thomas.<br><br>Avant de finaliser : **y a-t-il un ascenseur au 3ème étage de votre immeuble à Lyon ?**</div>
+      <div class="msg-meta">1029ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0656789012</div>
+      <div class="msg bot">Parfait, Thomas.<br><br>**Un dernier point avant le récapitulatif : y a-t-il un ascenseur à Lyon ?**</div>
+      <div class="msg-meta">1048ms · score=75</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Email complexe <span style="color:var(--muted);font-weight:400;font-size:13px">test-18</span></div>
+      <div class="test-desc">Email avec tirets, plus et sous-domaine</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>6</td></tr>
+      <tr><td>Score final</td><td><strong>65/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Jean</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>jean-paul.martin+demenagement@mon-entreprise.co.uk</td></tr>
+      <tr><td>Téléphone</td><td>0667890123</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>22.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 65, obtenu 65</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;jean-paul.martin+demenagement@mon-entreprise.co.uk&quot;, obtenu &quot;jean-paul.martin+demenagement@mon-entreprise.co.uk&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0667890123&quot;, obtenu &quot;0667890123&quot;</div>
+
+    <div class="section-title">💬 Conversation (6 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris. Je suis Tom, votre assistant de qualification.<br><br>Pour vous proposer un devis adapté, j'aurais besoin de quelques infos. Commençons simple : **d'où partez-vous et où allez-vous ?** (villes ou arrondissements)</div>
+      <div class="msg-meta">2559ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lille, 50m²</div>
+      <div class="msg bot">Parfait ! Paris ➡️ Lille, 50 m².<br><br>⚠️ **Petite info** : Lille est en dehors de nos zones principales (75, 92, 93, 94). Pas de souci, on continue quand même — notre équipe commerciale validera avec vous.<br><br>Passons à l'étape suivante : **dans quel type de logement êtes-vous ?** (Studio, T2, T3... ?) et **combien d'étages** à chaque lieu ? (avec ou sans ascenseur)</div>
+      <div class="msg-meta">2415ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">20 mars</div>
+      <div class="msg bot">Noté pour le **20 mars 2026** ! 📅<br><br>Revenons au logement : **quel type de logement actuellement ?** (studio, T2, T3...) et **combien d'étages** à Paris et à Lille ? Y a-t-il des ascenseurs ?</div>
+      <div class="msg-meta">1476ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Jean</div>
+      <div class="msg bot">Merci Jean ! 😊<br><br>Revenons au logement : **quel type actuellement ?** (studio, T2, T3...) et **combien d'étages** à Paris et à Lille ? Y a-t-il des ascenseurs ?</div>
+      <div class="msg-meta">960ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">jean-paul.martin+demenagement@mon-entreprise.co.uk</div>
+      <div class="msg bot">C'est noté, Jean-Paul ! ✓<br><br>Revenons au logement : **quel type actuellement ?** (studio, T2, T3...) et **combien d'étages** à Paris et à Lille ? Y a-t-il des ascenseurs ?</div>
+      <div class="msg-meta">1558ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0667890123</div>
+      <div class="msg bot">Parfait, Jean-Paul ! ✓<br><br>Revenons au logement : **quel type actuellement ?** (studio, T2, T3...) et **combien d'étages** à Paris et à Lille ? Y a-t-il des ascenseurs ?</div>
+      <div class="msg-meta">953ms · score=65</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead qui spam <span style="color:var(--muted);font-weight:400;font-size:13px">test-19</span></div>
+      <div class="test-desc">Envoie plusieurs messages sans attendre</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>75/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>37.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 70, obtenu 75</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie@mail.com&quot;, obtenu &quot;sophie@mail.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Je suis Tom, assistant pour **Déménagements Test Paris**.<br><br>Je vais vous aider à qualifier votre projet en quelques questions rapides. C'est parti ! <br><br>**D'où partez-vous et où allez-vous ?** (ville ou arrondissement)</div>
+      <div class="msg-meta">1700ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">vous êtes là ?</div>
+      <div class="msg bot">Oui, je suis là ! 😊 <br><br>**D'où partez-vous et où allez-vous ?** (ville ou arrondissement)</div>
+      <div class="msg-meta">927ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">hello ?</div>
+      <div class="msg bot">Coucou ! 👋 Je suis bien là pour vous aider.<br><br>**Commençons : d'où partez-vous et où allez-vous ?**</div>
+      <div class="msg-meta">1824ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">je déménage de paris vers lyon</div>
+      <div class="msg bot">Parfait ! Paris ➡️ Lyon, c'est noté.<br><br>⚠️ **Petite info** : Lyon est en dehors de nos zones habituelles, mais on peut tout de même étudier votre projet.<br><br>**Maintenant, dites-moi : quel est votre type de logement à Paris ?** (T2, T3, maison, etc.) **Et combien d'étages ?**</div>
+      <div class="msg-meta">3415ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">70m2</div>
+      <div class="msg bot">C'est noté, 70 m². <br><br>**Et combien d'étages à Paris ?** (RDC, 1er étage, 3e étage, avec ascenseur ou pas ?)</div>
+      <div class="msg-meta">1222ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">le 15 mars</div>
+      <div class="msg bot">D'accord pour le **15 mars** ! 📅<br><br>Mais avant, je dois confirmer : **à quel étage vous êtes à Paris ?** Y a-t-il un ascenseur ?</div>
+      <div class="msg-meta">3611ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je suis sophie martin</div>
+      <div class="msg bot">Merci Sophie ! 😊<br><br>**Revenons à votre logement à Paris : à quel étage vous êtes, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1690ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">sophie@mail.com</div>
+      <div class="msg bot">Noté, Sophie. <br><br>**Avant de continuer, l'étage à Paris et l'ascenseur ?** C'est important pour évaluer l'accès. 🏢</div>
+      <div class="msg-meta">1782ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0612345678</div>
+      <div class="msg bot">Parfait, Sophie. ✓<br><br>**Revenons à votre déménagement : à quel étage vous êtes à Paris, et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1073ms · score=75</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Abandon et retour <span style="color:var(--muted);font-weight:400;font-size:13px">test-20</span></div>
+      <div class="test-desc">Lead qui part puis revient</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>9</td></tr>
+      <tr><td>Score final</td><td><strong>85/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Marc</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>marc@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0623456789</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>35.1s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 65, obtenu 85</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Marc&quot;, obtenu &quot;Marc&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;marc@mail.com&quot;, obtenu &quot;marc@mail.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (9 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Bienvenue chez **Déménagements Test Paris**. Je suis Tom, ton assistant de qualification.<br><br>Je vais t'aider à estimer ton déménagement en quelques questions rapides. C'est parti ! <br><br>**Quelle est ta ville de départ ?**</div>
+      <div class="msg-meta">1380ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je déménage</div>
+      <div class="msg bot">Oui, je comprends ! 😊<br><br>Commençons par les bases : **De quelle ville tu pars, et vers quelle ville tu vas ?**</div>
+      <div class="msg-meta">1533ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Laissez tomber</div>
+      <div class="msg bot">Pas de souci ! 👋<br><br>Si tu changes d'avis ou si tu as besoin d'une estimation plus tard, n'hésite pas à revenir nous voir.<br><br>Bonne journée ! 😊</div>
+      <div class="msg-meta">1514ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">En fait non, je suis intéressé</div>
+      <div class="msg bot">Super ! 😊<br><br>On y va alors. **De quelle ville tu pars, et vers quelle ville tu vas ?**</div>
+      <div class="msg-meta">1076ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Bordeaux, 80m²</div>
+      <div class="msg bot">Parfait ! Paris vers Bordeaux pour 80 m², c'est noté.<br><br>Juste une petite info : Bordeaux est en dehors de nos zones principales (75, 92, 93, 94), mais on peut tout de même étudier ton projet. 📍<br><br>Maintenant, parlons de ton logement : **combien d'étages à Paris, et combien à Bordeaux ?** (Rez-de-chaussée, étages, ascenseur... tout ça compte pour l'organisation.)</div>
+      <div class="msg-meta">1846ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 10 avril</div>
+      <div class="msg bot">Ah, je note la date : **10 avril** pour le déménagement. 📅<br><br>Mais avant ça, j'ai besoin de savoir : **combien d'étages à Paris, et combien à Bordeaux ?** (Avec ou sans ascenseur ?)</div>
+      <div class="msg-meta">4502ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Marc</div>
+      <div class="msg bot">Parfait, Marc ! 👍<br><br>Revenons à ton logement : **combien d'étages à Paris, et combien à Bordeaux ?** (Avec ou sans ascenseur ?)</div>
+      <div class="msg-meta">974ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">marc@mail.com</div>
+      <div class="msg bot">C'est noté, Marc. 📧<br><br>Maintenant, dis-moi : **combien d'étages à Paris, et combien à Bordeaux ?** (Avec ou sans ascenseur ?)</div>
+      <div class="msg-meta">1043ms · score=75</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0623456789</div>
+      <div class="msg bot">Parfait, je note ton numéro. ✅<br><br>Revenons à l'essentiel : **combien d'étages à Paris, et combien à Bordeaux ?** (Avec ou sans ascenseur ?)</div>
+      <div class="msg-meta">1106ms · score=85</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead qui teste le bot <span style="color:var(--muted);font-weight:400;font-size:13px">test-21</span></div>
+      <div class="test-desc">Pose des questions sur la nature du bot</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>8</td></tr>
+      <tr><td>Score final</td><td><strong>75/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Thomas</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>thomas@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0634567890</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>35.8s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 65, obtenu 75</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Thomas&quot;, obtenu &quot;Thomas&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;thomas@mail.com&quot;, obtenu &quot;thomas@mail.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (8 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Tu es un robot ?</div>
+      <div class="msg bot">Oui, je suis Tom, l'assistant de Déménagements Test Paris ! 🤖 <br><br>Je suis là pour comprendre ton projet de déménagement et te proposer une estimation rapidement. Ensuite, un vrai commercial t'appellera pour finaliser tout ça.<br><br>**Commençons !** D'où tu déménages et où tu vas ? 📍</div>
+      <div class="msg-meta">2326ms · score=15</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est une vraie personne ou un bot ?</div>
+      <div class="msg bot">Je suis un bot, Tom ! 😊 Je suis là pour recueillir les infos de ton déménagement et te donner une première estimation. Ensuite, un vrai commercial de Déménagements Test Paris te contactera pour discuter des détails et confirmer tout ça.<br><br>C'est un bon système : je gagne du temps pour toi, et tu parles à un humain quand c'est vraiment important.<br><br>**On y va ?** D'où déménages-tu et où vas-tu ? 📍</div>
+      <div class="msg-meta">2061ms · score=15</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ok. Je déménage de Lyon vers Marseille</div>
+      <div class="msg bot">Parfait ! 📍 Lyon ➡️ Marseille, c'est noté.<br><br>**Petite info** : on intervient principalement en Île-de-France (75, 92, 93, 94). Marseille est un peu hors de nos zones habituelles, mais on peut quand même étudier ton dossier. Le commercial te confirmera les possibilités.<br><br>Passons à la suite : **quel type de logement quittes-tu à Lyon ?** (Studio, T2, T3... ?) et **combien d'étages** à la montée et la descente ?</div>
+      <div class="msg-meta">2719ms · score=25</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">65m²</div>
+      <div class="msg bot">Got it, 65 m² à Lyon. 👍<br><br>**C'est un T2 ou T3 ?** Et **combien d'étages** à la montée et à la descente ? (Ascenseur ou escaliers ?)</div>
+      <div class="msg-meta">2210ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">25 mars</div>
+      <div class="msg bot">Ah, j'ai noté la date : **25 mars 2026**. 📅<br><br>Mais je dois d'abord finir les infos de base : **c'est un T2 ou T3** à Lyon ? Et **combien d'étages** (avec ascenseur ou escaliers) ?</div>
+      <div class="msg-meta">3309ms · score=45</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Thomas</div>
+      <div class="msg bot">Merci Thomas ! 👍<br><br>Revenons aux détails du logement : **c'est un T2 ou T3 à Lyon ?** Et **combien d'étages** à la montée et à la descente ?</div>
+      <div class="msg-meta">1084ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">thomas@mail.com</div>
+      <div class="msg bot">Noté, Thomas. 👍<br><br>Pour continuer : **c'est un T2 ou T3 à Lyon ?** Et **combien d'étages** (avec ou sans ascenseur) ?</div>
+      <div class="msg-meta">3116ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0634567890</div>
+      <div class="msg bot">Parfait, Thomas. 👍<br><br>Maintenant, les détails du logement : **c'est un T2 ou T3 à Lyon ?** Et **combien d'étages** à déménager ?</div>
+      <div class="msg-meta">1381ms · score=75</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead confus <span style="color:var(--muted);font-weight:400;font-size:13px">test-22</span></div>
+      <div class="test-desc">Donne plusieurs infos en vrac</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>4</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Et</td></tr>
+      <tr><td>Email</td><td>sophie@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>14.8s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (4/4)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 80, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Sophie&quot;, obtenu &quot;Sophie&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie@mail.com&quot;, obtenu &quot;sophie@mail.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (4 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour je m'appelle Sophie et je veux déménager</div>
+      <div class="msg bot">Bonjour Sophie ! 👋<br><br>Bienvenue chez Déménagements Test Paris. Je suis Tom, je vais vous aider à qualifier votre projet en quelques questions.<br><br>**Commençons par le trajet :** D'où déménagez-vous et où allez-vous ? (villes/codes postaux)</div>
+      <div class="msg-meta">1779ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">De Paris 15ème vers Versailles le 15 mars c'est 70m² au 3ème étage</div>
+      <div class="msg bot">Parfait ! C'est noté : **Paris 15e → Versailles, 15 mars, 70 m², 3e étage**.<br><br>Quelques précisions rapides :<br><br>**À Versailles, c'est quel étage d'arrivée ?** Et y a-t-il un **ascenseur dans les deux immeubles** ?</div>
+      <div class="msg-meta">1906ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Mon email c'est sophie@mail.com et mon tel 0612345678</div>
+      <div class="msg bot">Merci Sophie ! J'ai noté vos coordonnées.<br><br>Revenons aux étages : **À Versailles, c'est quel étage d'arrivée ?** Et **ascenseurs présents** dans les deux immeubles ?</div>
+      <div class="msg-meta">1857ms · score=80</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Formule Standard</div>
+      <div class="msg bot">Parfait, vous avez choisi la **formule Standard** (Transport + Fragile + Démontage).<br><br>Avant de finaliser, je dois vérifier l'accès aux deux logements :<br><br>**À Paris 15e, c'est le 3e étage — y a-t-il un ascenseur ?**<br>**Et à Versailles, quel étage d'arrivée, avec ascenseur ou pas ?**</div>
+      <div class="msg-meta">1674ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead super organisé <span style="color:var(--muted);font-weight:400;font-size:13px">test-23</span></div>
+      <div class="test-desc">Donne toutes les infos structurées en un seul message</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>1</td></tr>
+      <tr><td>Score final</td><td><strong>70/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>Sophie</td></tr>
+      <tr><td>Nom</td><td>Martin</td></tr>
+      <tr><td>Email</td><td>sophie@mail.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>2.9s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 70, obtenu 70</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;sophie@mail.com&quot;, obtenu &quot;sophie@mail.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (1 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, voici mes informations :<br>- Départ : Paris 15ème, 70m², F3, 3ème étage sans ascenseur<br>- Arrivée : Versailles<br>- Date : 15 mars 2026<br>- Contact : Sophie Martin, sophie@mail.com, 06 12 34 56 78<br>- Formule souhaitée : Standard</div>
+      <div class="msg bot">Bonjour Sophie ! 👋<br><br>Merci pour ces infos complètes. Juste une petite précision : **Versailles, c'est hors de nos zones principales** (75, 92, 93, 94), mais pas de souci — notre équipe commerciale peut tout à fait étudier votre dossier.<br><br>Passons au calcul de volume pour affiner l'estimation. **Avec vos 70m², on part sur ~35m³ de base.** <br><br>Pouvez-vous me confirmer : **avez-vous des gros meubles** (canapé, armoires, lit 2 places, etc.) ou c'est plutôt du mobilier standard ? Cela m'aidera à ajuster le volume exact. 📦</div>
+      <div class="msg-meta">2886ms · score=70</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Hors zone complète <span style="color:var(--muted);font-weight:400;font-size:13px">test-24</span></div>
+      <div class="test-desc">Déménagement international (Sydney)</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>3</td></tr>
+      <tr><td>Score final</td><td><strong>20/100</strong></td></tr>
+      <tr><td>Priorité</td><td>FROID</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>11s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (1/1)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≤</strong>: attendu 35, obtenu 20</div>
+
+    <div class="section-title">💬 Conversation (3 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je veux déménager de Paris vers Sydney en Australie</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Bienvenue chez Déménagements Test Paris. Je suis Tom, je vais vous aider à qualifier votre projet.<br><br>**Petite précision** : Sydney est hors de nos zones d'intervention habituelles (75, 92, 93, 94), mais pas de souci — je vais quand même collecter vos informations pour que notre équipe commerciale vous propose une solution. ✓<br><br>Commençons ! 🚚<br><br>**Première question** : Vous quittez Paris. Quel arrondissement ou commune précisément ?</div>
+      <div class="msg-meta">2421ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Oui je sais c'est loin</div>
+      <div class="msg bot">Ha oui, c'est une belle aventure ! 😄<br><br>Bon, revenons à vos détails : **quel arrondissement ou commune de Paris** exactement ?</div>
+      <div class="msg-meta">1271ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est possible ?</div>
+      <div class="msg bot">Bonne question ! 🤔<br><br>Honnêtement, c'est loin de nos zones habituelles, mais **oui, c'est possible** — notre équipe commerciale pourra étudier votre dossier et vous proposer une solution adaptée (transport maritime, partenaires spécialisés, etc.).<br><br>Mon rôle : bien qualifier votre projet pour qu'ils aient toutes les infos. 📋<br><br>Alors, **quel arrondissement ou commune de Paris** ?</div>
+      <div class="msg-meta">2175ms · score=20</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Petit budget <span style="color:var(--muted);font-weight:400;font-size:13px">test-25</span></div>
+      <div class="test-desc">Client avec un budget très serré (100€)</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>4</td></tr>
+      <tr><td>Score final</td><td><strong>35/100</strong></td></tr>
+      <tr><td>Priorité</td><td>FROID</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>16s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (1/1)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≤</strong>: attendu 40, obtenu 35</div>
+
+    <div class="section-title">💬 Conversation (4 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 Je suis Tom, assistant chez Déménagements Test Paris.<br><br>Pour bien comprendre votre projet et vous proposer une estimation, je vous pose quelques questions rapides. Commençons :<br><br>**D'où déménagez-vous et où allez-vous ?** (Quartier/Code postal suffit)</div>
+      <div class="msg-meta">2123ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Lyon, 80m²</div>
+      <div class="msg bot">Parfait ! Paris ➡️ Lyon, 80 m².<br><br>⚠️ Lyon est hors de nos zones principales (75, 92, 93, 94), mais pas de souci — je continue la qualification et on verra les possibilités avec notre équipe.<br><br>**Maintenant, parlez-moi de votre logement actuel à Paris :**<br>- Rez-de-chaussée, étage, avec ascenseur ?</div>
+      <div class="msg-meta">1723ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je n'ai que 100 euros de budget max</div>
+      <div class="msg bot">Je comprends la contrainte budgétaire. 😊<br><br>Avant d'en parler, je dois être honnête : un déménagement Paris-Lyon de 80 m² représente une distance importante (500 km). Même avec un budget serré, finissons la qualification pour voir ce qui est possible.<br><br>**Rapidement : à Paris, vous êtes à quel étage et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">2811ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Est-ce que ça passe ?</div>
+      <div class="msg bot">Honnêtement, 100€ pour Paris-Lyon, c'est très très serré. 😅 <br><br>Mais laissez-moi d'abord finir la qualification complète — parfois il y a des solutions selon votre situation (volume réel, accès facile, etc.).<br><br>**À Paris : rez-de-chaussée ou étage ? Ascenseur ?**</div>
+      <div class="msg-meta">1815ms · score=35</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Demande partenariat <span style="color:var(--muted);font-weight:400;font-size:13px">test-26</span></div>
+      <div class="test-desc">Autre entreprise qui propose un partenariat</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>3</td></tr>
+      <tr><td>Score final</td><td><strong>20/100</strong></td></tr>
+      <tr><td>Priorité</td><td>FROID</td></tr>
+      <tr><td>Prénom</td><td>De</td></tr>
+      <tr><td>Nom</td><td>La</td></tr>
+      <tr><td>Email</td><td>—</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>11.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (1/1)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≤</strong>: attendu 30, obtenu 20</div>
+
+    <div class="section-title">💬 Conversation (3 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je suis de la société AlloDéménagement</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Bienvenue chez **Déménagements Test Paris**. Je suis Tom, assistant de qualification.<br><br>Je vois que tu représentes AlloDéménagement — es-tu ici pour **un projet de déménagement personnel**, ou plutôt pour **explorer une collaboration/partenariat** ?</div>
+      <div class="msg-meta">2264ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Nous cherchons des partenaires sur Paris</div>
+      <div class="msg bot">Merci de ton intérêt ! 👍<br><br>Pour les **demandes commerciales ou partenariats**, je te recommande de contacter directement notre **équipe commerciale**. Je suis spécialisé dans la qualification de déménagements clients.<br><br>Souhaites-tu que je te **transmette tes coordonnées** à l'équipe adéquate, ou préfères-tu les **contacter directement** ? <br><br>(Si tu as besoin du numéro ou email du commercial, dis-le-moi.)</div>
+      <div class="msg-meta">2057ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Qui peut-on contacter ?</div>
+      <div class="msg bot">Bonne question ! 👍<br><br>Pour les **partenariats et opportunités commerciales**, je n'ai pas les coordonnées spécifiques de notre équipe business en accès direct.<br><br>Je te conseille de :<br>- **Appeler notre standard** pour être orienté vers le responsable commercial<br>- Ou me laisser **ton email + téléphone**, et je transmettrai ta demande à l'équipe compétente<br><br>Qu'est-ce qui te convient le mieux ?</div>
+      <div class="msg-meta">2017ms · score=20</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead volume précis <span style="color:var(--muted);font-weight:400;font-size:13px">test-27</span></div>
+      <div class="test-desc">Lead qui connaît déjà son volume exact</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>8</td></tr>
+      <tr><td>Score final</td><td><strong>85/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Nicolas</td></tr>
+      <tr><td>Nom</td><td>Petit</td></tr>
+      <tr><td>Email</td><td>nicolas.petit@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0689012345</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>28.8s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (5/5)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 75, obtenu 85</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;,&quot;TIEDE&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Nicolas&quot;, obtenu &quot;Nicolas&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Petit&quot;, obtenu &quot;Petit&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;nicolas.petit@email.com&quot;, obtenu &quot;nicolas.petit@email.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (8 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour</div>
+      <div class="msg bot">Bonjour ! 👋 <br><br>Bienvenue chez **Déménagements Test Paris**. Je suis Tom, je vais vous aider à estimer votre déménagement rapidement.<br><br>Pour commencer, **d'où et où prévoyez-vous de déménager ?**</div>
+      <div class="msg-meta">1508ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je connais déjà mon volume : 45m³</div>
+      <div class="msg bot">Parfait ! 45 m³, c'est noté. 📦<br><br>Maintenant, **d'où et où prévoyez-vous de déménager ?** (villes de départ et d'arrivée)</div>
+      <div class="msg-meta">1165ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">J'ai fait faire une estimation par un professionnel</div>
+      <div class="msg bot">Excellent, vous avez déjà une base solide ! 👍<br><br>Pour affiner notre devis et proposer la meilleure formule, j'aurais besoin de quelques infos complémentaires :<br><br>**D'où et où allez-vous déménager ?** (villes de départ et d'arrivée)</div>
+      <div class="msg-meta">1207ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Paris vers Strasbourg</div>
+      <div class="msg bot">Merci ! Paris ➡️ Strasbourg, c'est noté avec vos 45 m³.<br><br>Je dois vous signaler que **Strasbourg est en dehors de nos zones d'intervention habituelles** (75, 92, 93, 94), mais notre équipe commerciale pourra étudier votre projet.<br><br>Passons aux détails : **quel est votre logement actuel ?** (type : studio, T2, T3... et nombre d'étages ?)</div>
+      <div class="msg-meta">1908ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le 5 avril</div>
+      <div class="msg bot">Merci pour la date ! 📅 **5 avril 2026**, c'est noté.<br><br>Revenons aux caractéristiques de votre logement actuel à Paris : **c'est un studio, T2, T3...? Et combien d'étages** (avec ou sans ascenseur) ?</div>
+      <div class="msg-meta">1508ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Nicolas Petit</div>
+      <div class="msg bot">Merci Nicolas ! 👍<br><br>Revenons aux détails du logement : **c'est un studio, T2, T3...? Et combien d'étages** (avec ou sans ascenseur) ?</div>
+      <div class="msg-meta">1328ms · score=65</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">nicolas.petit@email.com</div>
+      <div class="msg bot">Parfait, Nicolas. Email noté : nicolas.petit@email.com<br><br>Avant de continuer, j'aurais besoin de vos **caractéristiques de logement** : c'est un studio, T2, T3...? Et **combien d'étages** (avec ou sans ascenseur) ?</div>
+      <div class="msg-meta">1551ms · score=75</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0689012345</div>
+      <div class="msg bot">Bien reçu, Nicolas. Téléphone noté : 0689012345<br><br>Revenons à votre logement actuel : **c'est un studio, T2, T3...? Et combien d'étages** (avec ou sans ascenseur) ?</div>
+      <div class="msg-meta">1023ms · score=85</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead en anglais <span style="color:var(--muted);font-weight:400;font-size:13px">test-28</span></div>
+      <div class="test-desc">Lead qui écrit en anglais</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>7</td></tr>
+      <tr><td>Score final</td><td><strong>80/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>John</td></tr>
+      <tr><td>Nom</td><td>Smith</td></tr>
+      <tr><td>Email</td><td>john.smith@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>27.4s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (3/3)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 55, obtenu 80</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;john.smith@email.com&quot;, obtenu &quot;john.smith@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (7 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Hello, I need to move</div>
+      <div class="msg bot">Bonjour ! 👋 Bienvenue chez Déménagements Test Paris, je suis Tom. <br><br>Je vais vous aider à estimer votre déménagement. Commençons simplement :<br><br>**D'où allez-vous déménager et vers où ?** (Villes et arrondissements si possible)</div>
+      <div class="msg-meta">2204ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">From Paris to London</div>
+      <div class="msg bot">Ah, déménagement international vers Londres ! 🌍<br><br>Je dois vous préciser : nous intervenons principalement en **Île-de-France** (75, 92, 93, 94). Un déménagement vers Londres sortirait de notre périmètre habituel, mais je continue quand même pour voir ce qu'on peut faire.<br><br>**Avant d'aller plus loin, pourriez-vous me donner :**<br>- **De quel arrondissement de Paris** partez-vous ?<br>- **Avez-vous une adresse précise à Londres ?**<br><br>On verra ensemble si c'est possible ! 😊</div>
+      <div class="msg-meta">2122ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">It's a 3 bedroom apartment, 80m²</div>
+      <div class="msg bot">Parfait ! 80 m² de 3 pièces, c'est noté. 📐<br><br>Maintenant, quelques détails pratiques :<br><br>**À Paris, à quel étage se trouve votre appartement ?** (avec ou sans ascenseur ?)<br>**Et à Londres, même question ?**<br><br>Cela m'aidera à évaluer les conditions d'accès.</div>
+      <div class="msg-meta">1813ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">March 15th</div>
+      <div class="msg bot">Je comprends, c'est pour le **15 mars** ! 📅<br><br>Mais avant la date, j'ai besoin de quelques infos essentielles :<br><br>**À Paris** : à quel étage habitez-vous ? (avec ascenseur ou escalier ?)<br>**À Londres** : même question pour l'arrivée ?<br><br>Ces détails sont importants pour le devis. 😊</div>
+      <div class="msg-meta">1861ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">John Smith</div>
+      <div class="msg bot">Merci John ! 👍<br><br>Maintenant, revenons aux étages :<br><br>**À Paris** : à quel étage se trouve votre appartement ? (avec ascenseur ou escalier ?)<br>**À Londres** : et à la destination, même question ?</div>
+      <div class="msg-meta">1152ms · score=60</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">john.smith@email.com</div>
+      <div class="msg bot">C'est noté, John. 📧<br><br>Avant de continuer, j'ai besoin des infos sur les **étages** pour affiner le devis :<br><br>**À Paris** : à quel étage ? (ascenseur ou escalier ?)<br>**À Londres** : même question pour l'arrivée ?</div>
+      <div class="msg-meta">1484ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0612345678</div>
+      <div class="msg bot">Parfait, John. ✓<br><br>On y est presque ! Juste les étages pour finaliser :<br><br>**À Paris** : à quel étage habitez-vous ? (ascenseur ou escalier ?)<br>**À Londres** : et à l'arrivée, quel étage ?</div>
+      <div class="msg-meta">1647ms · score=80</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict good">✅ Qualité validée — 97% de réussite</div>
+</div>
+</body>
+</html>

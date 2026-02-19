@@ -1,0 +1,4 @@
+Test,Score,Priorité,Infos Collectées,Qualité Réponse,Bugs,Notes
+1,85,CHAUD,"prenom,nom,email,tel,adresses",5/5,Aucun,Parfait
+2,42,MOYEN,"prenom,tel",3/5,Email mal extrait,À améliorer
+3,78,CHAUD,"prenom,email,tel,adresses",4/5,Aucun,Bon recentrage

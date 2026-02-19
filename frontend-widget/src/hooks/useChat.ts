@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react';
-import { useChatStore } from '../store/chat.store';
-import ApiService from '../services/api.service';
-import socketService from '../services/socket.service';
+import { useChatStore } from '../store/chat.store.ts';
+import ApiService from '../services/api.service.ts';
+import socketService from '../services/socket.service.ts';
 import type { Message } from '../types';
 
 export const useChat = () => {

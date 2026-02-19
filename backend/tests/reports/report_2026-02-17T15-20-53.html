@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapport Tests Chat4Lead — 17/02/2026 16:20:53</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--amber:#f59e0b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+h1{font-size:28px;margin-bottom:4px}
+.subtitle{color:var(--muted);margin-bottom:32px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:40px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;text-align:center}
+.stat-value{font-size:36px;font-weight:700}
+.stat-label{color:var(--muted);font-size:13px;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.test{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:20px;overflow:hidden}
+.test-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;transition:background .15s}
+.test-header:hover{background:rgba(99,102,241,.06)}
+.test-name{font-weight:600;font-size:16px}
+.test-desc{color:var(--muted);font-size:13px}
+.badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.5px}
+.badge.pass{background:rgba(16,185,129,.15);color:var(--green)}
+.badge.fail{background:rgba(239,68,68,.15);color:var(--red)}
+.test-body{padding:0 24px 24px;display:none}
+.test.open .test-body{display:block}
+.exchange{margin:8px 0}
+.msg{padding:10px 14px;border-radius:10px;margin:4px 0;max-width:85%;font-size:14px;word-wrap:break-word}
+.msg.user{background:var(--accent);color:#fff;margin-left:auto;text-align:right}
+.msg.bot{background:#334155}
+.msg-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.assertion{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;margin:4px 0;font-size:14px}
+.assertion.pass{background:rgba(16,185,129,.08)}
+.assertion.fail{background:rgba(239,68,68,.08)}
+.assertion-icon{font-size:16px}
+.lead-table{width:100%;border-collapse:collapse;margin:12px 0}
+.lead-table td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:14px}
+.lead-table td:first-child{color:var(--muted);width:140px}
+.section-title{font-size:14px;font-weight:600;color:var(--accent);margin:20px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+.verdict{font-size:18px;font-weight:700;padding:16px 24px;border-radius:12px;margin-top:32px;text-align:center}
+.verdict.good{background:rgba(16,185,129,.12);color:var(--green);border:1px solid rgba(16,185,129,.3)}
+.verdict.warn{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.verdict.bad{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📊 Rapport Tests Chat4Lead</h1>
+<p class="subtitle">Généré le 17/02/2026 16:20:53 — Durée totale : 122s</p>
+
+<div class="summary">
+  <div class="stat"><div class="stat-value">3</div><div class="stat-label">Tests exécutés</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--green)">2</div><div class="stat-label">Réussis</div></div>
+  <div class="stat"><div class="stat-value" style="color:var(--red)">1</div><div class="stat-label">Échoués</div></div>
+  <div class="stat"><div class="stat-value" style="color:#f59e0b">67%</div><div class="stat-label">Taux de succès</div></div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Déménagement entreprise <span style="color:var(--muted);font-weight:400;font-size:13px">test-32</span></div>
+      <div class="test-desc">Directrice des opérations qui déménage des bureaux complets 800m²</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>10</td></tr>
+      <tr><td>Score final</td><td><strong>90/100</strong></td></tr>
+      <tr><td>Priorité</td><td>CHAUD</td></tr>
+      <tr><td>Prénom</td><td>Isabelle</td></tr>
+      <tr><td>Nom</td><td>Fontaine</td></tr>
+      <tr><td>Email</td><td>i.fontaine@techcorp.fr</td></tr>
+      <tr><td>Téléphone</td><td>0145678900</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>49.9s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (6/6)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 85, obtenu 90</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>priorite</strong>: attendu [&quot;CHAUD&quot;], obtenu &quot;CHAUD&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;Isabelle&quot;, obtenu &quot;Isabelle&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Fontaine&quot;, obtenu &quot;Fontaine&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;i.fontaine@techcorp.fr&quot;, obtenu &quot;i.fontaine@techcorp.fr&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0145678900&quot;, obtenu &quot;0145678900&quot;</div>
+
+    <div class="section-title">💬 Conversation (10 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je suis directrice des opérations chez TechCorp</div>
+      <div class="msg bot">Bonjour Directrice ! 👋<br><br>Merci de nous contacter pour votre déménagement. Je vais vous poser quelques questions pour estimer au mieux votre projet.<br><br>**Commençons : d'où et vers où souhaitez-vous déménager ?** (villes ou quartiers)</div>
+      <div class="msg-meta">3483ms · score=20</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Nous déménageons nos bureaux de Paris La Défense vers Boulogne-Billancourt</div>
+      <div class="msg bot">Parfait ! Paris La Défense vers Boulogne-Billancourt, c'est environ 10 km. ✓<br><br>**Maintenant, parlons des locaux :**<br>- Combien de m² occupez-vous actuellement à La Défense ?</div>
+      <div class="msg-meta">2050ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Ce sont 800m² de bureaux sur 2 étages avec ascenseur</div>
+      <div class="msg bot">Bien noté : 800 m² sur 2 étages avec ascenseur à La Défense. ✓<br><br>**Et à Boulogne-Billancourt, comment se présente le nouvel espace ?** (nombre d'étages, ascenseur ?)</div>
+      <div class="msg-meta">3032ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Il y a environ 50 postes de travail, 10 salles de réunion, une salle serveurs</div>
+      <div class="msg bot">Merci pour ces détails. Et pour le nouvel espace à Boulogne-Billancourt : **combien d'étages et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">1839ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Nous avons besoin d'une prestation clef en main avec gestion des serveurs informatiques</div>
+      <div class="msg bot">Parfait, vous avez besoin du **Luxe (clef en main)** avec prise en charge des serveurs informatiques. C'est noté. ✓<br><br>Avant de finaliser, **quelle est la date prévue pour ce déménagement ?**</div>
+      <div class="msg-meta">1296ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Le déménagement doit se faire sur un weekend pour ne pas impacter la production</div>
+      <div class="msg bot">C'est une excellente organisation. **Quel weekend avez-vous en tête ?** (Une date précise ou une fourchette ?)</div>
+      <div class="msg-meta">4711ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Budget estimé : 50 000€</div>
+      <div class="msg bot">Merci de cette indication budgétaire. C'est noté pour notre équipe commerciale. ✓<br><br>Avant de conclure, j'ai besoin de vos **coordonnées de contact** :<br>- **Téléphone** ?<br>- **Email** ?</div>
+      <div class="msg-meta">1675ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Je m'appelle Isabelle Fontaine</div>
+      <div class="msg bot">Merci Isabelle. J'ai déjà votre nom. 😊<br><br>Pour finir, pouvez-vous me donner :<br>- **Votre téléphone** ?<br>- **Votre email** ?</div>
+      <div class="msg-meta">4039ms · score=70</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">i.fontaine@techcorp.fr</div>
+      <div class="msg bot">Parfait, Isabelle. 📧<br><br>Et votre **numéro de téléphone** pour que l'équipe vous recontacte rapidement ?</div>
+      <div class="msg-meta">3107ms · score=80</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">01 45 67 89 00</div>
+      <div class="msg bot">Excellent, Isabelle ! Merci pour ces informations. ✓<br><br>Avant de finaliser, j'ai juste besoin de confirmer :<br>- **À quel étage** se trouve votre logement à **Paris** ? (Ascenseur oui/non ?)<br>- **À quel étage** à **Boulogne-Billancourt** ? (Ascenseur oui/non ?)</div>
+      <div class="msg-meta">1647ms · score=90</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead en anglais — BOT DOIT RÉPONDRE EN ANGLAIS <span style="color:var(--muted);font-weight:400;font-size:13px">test-28</span></div>
+      <div class="test-desc">Lead qui écrit en anglais — test détection langue + réponse adaptée</div>
+    </div>
+    <span class="badge pass">✓ PASS</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>7</td></tr>
+      <tr><td>Score final</td><td><strong>60/100</strong></td></tr>
+      <tr><td>Priorité</td><td>TIEDE</td></tr>
+      <tr><td>Prénom</td><td>John</td></tr>
+      <tr><td>Nom</td><td>Smith</td></tr>
+      <tr><td>Email</td><td>john.smith@email.com</td></tr>
+      <tr><td>Téléphone</td><td>0612345678</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>33.6s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (5/5)</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>score ≥</strong>: attendu 50, obtenu 60</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.prenom</strong>: attendu &quot;John&quot;, obtenu &quot;John&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.nom</strong>: attendu &quot;Smith&quot;, obtenu &quot;Smith&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;john.smith@email.com&quot;, obtenu &quot;john.smith@email.com&quot;</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.telephone</strong>: attendu &quot;0612345678&quot;, obtenu &quot;0612345678&quot;</div>
+
+    <div class="section-title">💬 Conversation (7 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Hello, I need to move</div>
+      <div class="msg bot"># Hello! 👋<br><br>Welcome to **Déménagements Test Paris**. I'm Tom, and I'm here to help you plan your move.<br><br>Let me gather some key information to give you an accurate quote.<br><br>**First question: Where are you moving from, and where are you moving to?** (cities or neighborhoods)</div>
+      <div class="msg-meta">4219ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">From Paris to London</div>
+      <div class="msg bot"># Got it! 🚚<br><br>Paris ➡️ London (~455 km) – that's quite a journey!<br><br>Just to mention: London is outside our usual service zone, but we can still explore your project. Our team will review and get back to you.<br><br>**Next: Tell me about your current place in Paris.**<br>- How many rooms? (or approximate square meters)<br>- Which floor are you on?<br>- Is there an elevator?</div>
+      <div class="msg-meta">2312ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">It's a 3 bedroom apartment, 80m²</div>
+      <div class="msg bot"># Perfect! 📐<br><br>80 m² / 3-bedroom apartment in Paris – that gives us a good starting point.<br><br>**Quick follow-up on access:**<br>- Which floor are you on in Paris?<br>- Is there an elevator in your building?</div>
+      <div class="msg-meta">2144ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">March 15th</div>
+      <div class="msg bot"># Got it! 📅<br><br>March 15th is noted for your move date.<br><br>But I still need the **floor &amp; elevator info** for your Paris apartment – that affects logistics and cost.<br><br>- What floor are you on?<br>- Elevator: yes or no?</div>
+      <div class="msg-meta">2959ms · score=30</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">John Smith</div>
+      <div class="msg bot"># Great, John! 👋<br><br>Thanks for that. I've got your first name.<br><br>Now, back to your **Paris apartment access:**<br>- What floor are you on?<br>- Is there an elevator?</div>
+      <div class="msg-meta">4209ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">john.smith@email.com</div>
+      <div class="msg bot"># Perfect, John! ✅<br><br>Email noted: john.smith@email.com<br><br>Still need those **access details for your Paris place:**<br>- What floor?<br>- Elevator: yes or no?</div>
+      <div class="msg-meta">1213ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">0612345678</div>
+      <div class="msg bot"># All set! ✅<br><br>Phone noted: 0612345678<br><br>Now, let's finalize the logistics – **your Paris apartment:**<br>- What floor are you on?<br>- Elevator: yes or no?</div>
+      <div class="msg-meta">1329ms · score=60</div>
+    </div>
+  </div>
+</div>
+
+<div class="test" onclick="this.classList.toggle('open')">
+  <div class="test-header">
+    <div>
+      <div class="test-name">Lead multi-langue (FR/EN/ES) <span style="color:var(--muted);font-weight:400;font-size:13px">test-29</span></div>
+      <div class="test-desc">Lead qui alterne entre 3 langues dans la même conversation</div>
+    </div>
+    <span class="badge fail">✗ FAIL</span>
+  </div>
+  <div class="test-body">
+
+    <div class="section-title">📋 Résumé</div>
+    <table class="lead-table">
+      <tr><td>Messages envoyés</td><td>8</td></tr>
+      <tr><td>Score final</td><td><strong>50/100</strong></td></tr>
+      <tr><td>Priorité</td><td>MOYEN</td></tr>
+      <tr><td>Prénom</td><td>—</td></tr>
+      <tr><td>Nom</td><td>—</td></tr>
+      <tr><td>Email</td><td>carlos.rodriguez@email.com</td></tr>
+      <tr><td>Téléphone</td><td>—</td></tr>
+      <tr><td>Formule</td><td>—</td></tr>
+      <tr><td>Durée</td><td>38.5s</td></tr>
+    </table>
+
+    <div class="section-title">🔍 Assertions (1/4)</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>score ≥</strong>: attendu 55, obtenu 50</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.prenom</strong>: attendu &quot;Carlos&quot;, obtenu null</div>
+    <div class="assertion fail"><span class="assertion-icon">✗</span><strong>field.nom</strong>: attendu &quot;Rodriguez&quot;, obtenu null</div>
+    <div class="assertion pass"><span class="assertion-icon">✓</span><strong>field.email</strong>: attendu &quot;carlos.rodriguez@email.com&quot;, obtenu &quot;carlos.rodriguez@email.com&quot;</div>
+
+    <div class="section-title">💬 Conversation (8 échanges)</div>
+    <div class="exchange">
+      <div class="msg user">Bonjour, je voudrais déménager</div>
+      <div class="msg bot">Bonjour ! 👋<br><br>Bienvenue chez Déménagements Test Paris. Je suis Tom, et je vais vous aider à qualifier votre projet.<br><br>**Commençons par le trajet :** D'où déménagez-vous et où allez-vous ?</div>
+      <div class="msg-meta">2819ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">Actually, I'm moving from Paris to Madrid</div>
+      <div class="msg bot">Hello! 👋<br><br>Got it – Paris to Madrid, that's quite a journey! (~1,270 km)<br><br>Just so you know, this is a bit outside our usual intervention zones (we mainly operate in the Île-de-France area: 75, 92, 93, 94). But don't worry – I'll collect all your details, and our team will review your request.<br><br>**Next question: What type of accommodation are you moving from and to?** (e.g., studio, 1-bedroom, house, etc.)</div>
+      <div class="msg-meta">3019ms · score=10</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">C'est un appartement de 85m²</div>
+      <div class="msg bot">Parfait ! 85 m² – c'est noté.<br><br>**Et à Madrid, c'est un appartement aussi ?** Avez-vous une idée de la surface ?</div>
+      <div class="msg-meta">2525ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">3rd floor, no elevator</div>
+      <div class="msg bot">D'accord – 3ème étage sans ascenseur à Paris, c'est noté.<br><br>**À Madrid, quel étage et y a-t-il un ascenseur ?**</div>
+      <div class="msg-meta">4234ms · score=35</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">En avril, le 20</div>
+      <div class="msg bot">Parfait, **20 avril** – c'est noté ! 📅<br><br>**Rapide question sur Madrid : quel étage et y a-t-il un ascenseur dans votre nouveau logement ?**</div>
+      <div class="msg-meta">1904ms · score=55</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">My name is Carlos Rodriguez</div>
+      <div class="msg bot">Pleasure to meet you, Carlos! 👋<br><br>So we have:<br>- **Departure**: Paris, 3rd floor, no elevator<br>- **Arrival**: Madrid, 20 April<br>- **Apartment size**: 85 m²<br><br>**What floor is your Madrid apartment, and is there an elevator?**</div>
+      <div class="msg-meta">1548ms · score=40</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">carlos.rodriguez@email.com</div>
+      <div class="msg bot">Got it, Carlos – I have your email.<br><br>**Just need to confirm: what floor in Madrid, and is there an elevator there?**</div>
+      <div class="msg-meta">1136ms · score=50</div>
+    </div>
+    <div class="exchange">
+      <div class="msg user">+34 612 345 678</div>
+      <div class="msg bot">Perfect, Carlos. I have your contact details. 📞<br><br>**Back to Madrid – what floor and is there an elevator in your new place?**</div>
+      <div class="msg-meta">3693ms · score=50</div>
+    </div>
+  </div>
+</div>
+
+<div class="verdict warn">⚠️ Ajustements recommandés — 67% de réussite</div>
+</div>
+</body>
+</html>

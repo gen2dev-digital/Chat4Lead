@@ -83,7 +83,12 @@ export class ConversationService {
 
             const newConversation = await this.createConversation(newLead.id, entrepriseId, metier);
 
-            return { conversationId: newConversation.id, isNew: true };
+            return {
+                conversationId: newConversation.id,
+                isNew: true,
+                reply: "Bonjour ! 👋 Je suis Tom, votre assistant dédié à l'excellence. Comment puis-je sublimer votre expérience aujourd'hui ?",
+                actions: ["Voir les Tarifs", "Réserver une Démo", "Nos Services"]
+            };
         } catch (error) {
             logger.error('Erreur dans getOrCreateConversation:', error);
             throw error;
