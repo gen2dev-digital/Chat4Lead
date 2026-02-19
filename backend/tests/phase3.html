@@ -1053,11 +1053,12 @@
         };
 
         const API_BASE = 'https://chat4-lead-backend.vercel.app/api';
+        const API_KEY = '5e3b46bc-c29c-4c2f-8689-bb8a4a803beb';
 
         async function apiCall(method, path, body) {
             const res = await fetch(API_BASE + path, {
                 method,
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
                 body: body ? JSON.stringify(body) : undefined
             });
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
