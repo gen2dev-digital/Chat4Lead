@@ -13,84 +13,77 @@ const router = Router();
 router.post('/start', async (req: Request, res: Response) => {
     try {
         const { phase, testerProfile, conversationId } = req.body;
+        if (!phase) return res.status(400).json({ error: 'phase requise' });
 
-        if (!phase || !['phase1', 'phase2', 'phase3'].includes(phase)) {
-            return res.status(400).json({ error: 'phase doit être "phase1", "phase2" ou "phase3"' });
-        }
-        if (!conversationId) {
-            return res.status(400).json({ error: 'conversationId requis' });
-        }
-
-        const session = testSessionService.startSession({ phase, testerProfile, conversationId });
-
-        logger.info('Manual test session started', { sessionId: session.sessionId, phase });
-
-        res.json({ sessionId: session.sessionId });
+        const session = await testSessionService.startSession({ phase, testerProfile, conversationId });
+        res.json(session);
     } catch (error) {
         logger.error('Error starting test session:', error);
         res.status(500).json({ error: 'Impossible de démarrer la session' });
     }
 });
 
-// ══════════════════════════════════════════════
-//  POST /api/test-session/:sessionId/feedback
-//  Enregistre le feedback et génère le rapport
-// ══════════════════════════════════════════════
-
 router.post('/:sessionId/feedback', async (req: Request, res: Response) => {
     try {
         const { sessionId } = req.params;
         const { feedback, conversationId } = req.body;
 
-        if (!feedback) {
-            return res.status(400).json({ error: 'feedback requis' });
-        }
-        if (!conversationId) {
-            return res.status(400).json({ error: 'conversationId requis' });
-        }
-
-        // Récupérer les données de conversation pour le rapport
         let conversationData: any = {};
-        try {
-            conversationData = await conversationService.getConversation(conversationId);
-        } catch (e) {
-            logger.warn('Could not fetch conversation data for report', { conversationId });
+        if (conversationId) {
+            try {
+                conversationData = await conversationService.getConversation(conversationId);
+            } catch (e) {
+                logger.warn('Could not fetch conversation data for report', { conversationId });
+            }
         }
 
-        const { reportFilename } = await testSessionService.submitFeedback(
-            sessionId,
-            feedback,
-            conversationData
-        );
-
-        logger.info('Manual test feedback submitted', { sessionId, reportFilename });
+        const { reportFilename } = await testSessionService.submitFeedback(sessionId, feedback, conversationData);
 
         res.json({
             success: true,
-            reportUrl: `/tests/reports/${reportFilename}`,
+            reportUrl: `/api/test-session/report/${sessionId}`,
             reportFilename,
         });
     } catch (error: any) {
         logger.error('Error submitting feedback:', error);
-        if (error.message?.includes('introuvable')) {
-            return res.status(404).json({ error: error.message });
-        }
         res.status(500).json({ error: 'Impossible d\'enregistrer le feedback' });
     }
 });
 
-// ══════════════════════════════════════════════
-//  GET /api/test-session/dashboard
-//  Données agrégées pour le dashboard de synthèse
-// ══════════════════════════════════════════════
-
-router.get('/dashboard', async (_req: Request, res: Response) => {
+router.get('/dashboard', async (req: Request, res: Response) => {
     try {
-        const data = testSessionService.getDashboard();
+        const testerProfile = req.query.testerProfile as string;
+        const data = await testSessionService.getDashboard(testerProfile);
         res.json(data);
     } catch (error) {
         logger.error('Error fetching dashboard:', error);
         res.status(500).json({ error: 'Impossible de charger le dashboard' });
+    }
+});
+
+router.get('/report/:sessionId', async (req: Request, res: Response) => {
+    try {
+        const { sessionId } = req.params;
+
+        // On récupère la session pour avoir l'ID de conversation
+        const sessions = await testSessionService.getDashboard();
+        const session = sessions.sessions.find(s => s.id === sessionId);
+
+        if (!session) return res.status(404).send('Session introuvable');
+
+        let conversationData: any = {};
+        try {
+            conversationData = await conversationService.getConversation(session.conversationId);
+        } catch (e) {
+            logger.warn('Could not fetch conversation data for report', { sessionId });
+        }
+
+        const html = await testSessionService.generateReportHTML(sessionId, conversationData);
+        res.setHeader('Content-Type', 'text/html');
+        res.send(html);
+    } catch (error) {
+        logger.error('Error generating report:', error);
+        res.status(500).send('Erreur lors de la génération du rapport');
     }
 });
 

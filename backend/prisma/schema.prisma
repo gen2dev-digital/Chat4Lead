@@ -164,3 +164,24 @@ model ConversationCache {
 
   @@index([metier])
 }
+
+model ManualTestSession {
+  id              String   @id @default(uuid())
+  phase           String
+  testerProfile   String?
+  conversationId  String
+  startTime       DateTime @default(now())
+  endTime         DateTime?
+  feedback        Json?
+  reportFilename  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Cache of extracted data at time of test
+  lastScore       Int?
+  lastPriority    String?
+  messageCount    Int      @default(0)
+  
+  @@index([phase])
+  @@index([conversationId])
+}
