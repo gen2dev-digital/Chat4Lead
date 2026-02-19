@@ -509,11 +509,12 @@
             <div class="logo">Chat<span>4</span>Lead</div>
             <h1>Dashboard Synthèse</h1>
             <div class="header-badge">Tests Manuels</div>
+            <div class="header-badge" id="backend-badge" style="display:none;background:rgba(20,184,166,.15);border-color:rgba(20,184,166,.3);color:#14b8a6;">Backend: <span id="backend-url"></span></div>
             <button class="refresh-btn" onclick="loadDashboard()">↻ Actualiser</button>
         </div>
 
         <!-- Quick links -->
-        <div class="quick-links">
+        <div class="quick-links" id="quick-links">
             <a class="quick-link" href="../phase1.html" target="_blank">🛠️ Ouvrir Phase 1 (Dev)</a>
             <a class="quick-link" href="../phase2.html" target="_blank">🚚 Ouvrir Phase 2 (Proches)</a>
             <a class="quick-link" href="../phase3.html" target="_blank">🏢 Ouvrir Phase 3 (Déménageurs)</a>
@@ -662,15 +663,30 @@
     </div>
 
     <script>
-        const API_BASE = 'https://chat4-lead-backend.vercel.app';
+        const urlParams = new URLSearchParams(window.location.search);
+        const backendParam = urlParams.get('backend');
+        const isHttpOrigin = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+        const API_BASE = (backendParam || (isHttpOrigin ? window.location.origin : null) || 'https://chat4-lead-backend.vercel.app').replace(/\/$/, '');
+        const backendSuffix = backendParam ? '?backend=' + encodeURIComponent(backendParam) : '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            ['../phase1.html', '../phase2.html', '../phase3.html'].forEach((path, i) => {
+                const a = document.querySelectorAll('.quick-link')[i];
+                if (a) a.href = path + backendSuffix;
+            });
+            if (backendParam || (isHttpOrigin && window.location.origin !== 'https://chat4-lead-backend.vercel.app')) {
+                const badge = document.getElementById('backend-badge');
+                const span = document.getElementById('backend-url');
+                if (badge && span) { badge.style.display = 'inline-flex'; span.textContent = API_BASE.replace(/\/api$/, ''); }
+            }
+        });
 
         async function loadDashboard() {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('content').style.display = 'none';
 
-            const urlParams = new URLSearchParams(window.location.search);
             const profile = urlParams.get('profile');
-            const url = API_BASE + '/api/test-session/dashboard' + (profile ? `?testerProfile=${encodeURIComponent(profile)}` : '');
+            const url = API_BASE + '/api/test-session/dashboard' + (profile ? '?testerProfile=' + encodeURIComponent(profile) : '');
 
             try {
                 const data = await fetch(url).then(r => r.json());
@@ -679,6 +695,10 @@
                 document.getElementById('loading').innerHTML = `
       <div style="color:#ef4444;font-size:1rem;">⚠️ Impossible de charger les données</div>
       <div style="color:var(--muted);font-size:.85rem;margin-top:8px;">Vérifiez que le serveur est bien lancé.</div>
+      <div style="color:var(--muted);font-size:.8rem;margin-top:12px;max-width:400px;">
+        <strong>Alternative :</strong> Lancez le backend en local (<code>cd backend && npm run dev</code>) puis ouvrez<br>
+        <a href="http://localhost:3000/tests/reports/dashboard-synthese.html" style="color:var(--accent);">http://localhost:3000/tests/reports/dashboard-synthese.html</a>
+      </div>
     `;
                 console.error(e);
             }

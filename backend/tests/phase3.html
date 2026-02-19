@@ -1034,7 +1034,7 @@
                 pour qu'il soit un vrai allié pour votre activité.</p>
             <a href="#" id="report-link" class="report-link" style="display:none">🔗 Voir le rapport de session</a>
             <div style="margin-top: 20px;">
-                <a href="./reports/dashboard-synthese.html" style="color:var(--text-muted); font-size: .85rem;">📊
+                <a href="./reports/dashboard-synthese.html" id="dashboard-link" style="color:var(--text-muted); font-size: .85rem;">📊
                     Accéder au Dashboard Global</a>
             </div>
         </section>
@@ -1052,8 +1052,16 @@
             sending: false
         };
 
-        const API_BASE = 'https://chat4-lead-backend.vercel.app/api';
+        const _urlParams = new URLSearchParams(window.location.search);
+        const _backendParam = _urlParams.get('backend');
+        const _isHttp = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+        const BACKEND_BASE = (_backendParam || (_isHttp ? window.location.origin : null) || 'https://chat4-lead-backend.vercel.app').replace(/\/$/, '');
+        const API_BASE = BACKEND_BASE + '/api';
         const API_KEY = '5e3b46bc-c29c-4c2f-8689-bb8a4a803beb';
+        document.addEventListener('DOMContentLoaded', () => {
+            const el = document.getElementById('dashboard-link');
+            if (el && _backendParam) el.href = './reports/dashboard-synthese.html?backend=' + encodeURIComponent(_backendParam);
+        });
 
         async function apiCall(method, path, body) {
             const res = await fetch(API_BASE + path, {
@@ -1080,7 +1088,7 @@
                 const init = await apiCall('POST', '/conversation/init', {});
                 state.conversationId = init.conversationId;
 
-                const sess = await fetch(API_BASE.replace('/api', '') + '/api/test-session/start', {
+                const sess = await fetch(BACKEND_BASE + '/api/test-session/start', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phase: 'phase3', conversationId: state.conversationId })
@@ -1205,7 +1213,7 @@
             };
 
             try {
-                const res = await fetch(API_BASE.replace('/api', '') + `/api/test-session/${state.sessionId}/feedback`, {
+                const res = await fetch(BACKEND_BASE + `/api/test-session/${state.sessionId}/feedback`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ feedback, conversationId: state.conversationId })

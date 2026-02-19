@@ -1102,7 +1102,7 @@
                     <button class="btn-secondary" onclick="resetTest()">↺ Nouveau test</button>
                     <button class="btn-secondary" onclick="toggleChat()">💬 Voir conversation (scroll)</button>
                     <a class="btn-secondary" id="r-conv-link" href="#" target="_blank">🔗 Voir rapport complet</a>
-                    <a class="btn-primary" href="./reports/dashboard-synthese.html" target="_blank">📊 Dashboard →</a>
+                    <a class="btn-primary" href="./reports/dashboard-synthese.html" id="dashboard-link" target="_blank">📊 Dashboard →</a>
                 </div>
             </div>
         </section>
@@ -1161,7 +1161,19 @@
 
         // ─── Chat ─────────────────────────────────────────────────────────────────────
         window.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('backend-url').value = window.location.origin;
+            const params = new URLSearchParams(window.location.search);
+            const backendParam = params.get('backend');
+            const isHttp = window.location.protocol === 'http:' || window.location.protocol === 'https:';
+            const backendUrl = document.getElementById('backend-url');
+            if (backendParam) {
+                backendUrl.value = backendParam.replace(/\/$/, '');
+            } else if (isHttp) {
+                backendUrl.value = window.location.origin;
+            }
+            const dashLink = document.getElementById('dashboard-link');
+            if (dashLink && backendUrl.value && backendUrl.value !== 'https://chat4-lead-backend.vercel.app') {
+                dashLink.href = './reports/dashboard-synthese.html?backend=' + encodeURIComponent(backendUrl.value);
+            }
         });
 
         async function startChat() {
