@@ -2,27 +2,36 @@ import Redis from 'ioredis';
 import { config } from './env';
 import { logger } from '../utils/logger';
 
-const redis = new Redis(config.REDIS_URL, {
-    maxRetriesPerRequest: 0, // Ne pas bloquer les requêtes si Redis est down
-    enableOfflineQueue: false,
-    connectTimeout: 5000,
-    retryStrategy(times) {
-        // Arrêter de réessayer après 3 tentatives en production s'il n'y a pas de Redis
-        if (config.NODE_ENV === 'production' && times > 3) return null;
-        return Math.min(times * 50, 2000);
-    },
-});
+const isLocalhostRedis = config.REDIS_URL.includes('localhost') || config.REDIS_URL.includes('127.0.0.1');
+const shouldConnect = config.NODE_ENV !== 'production' || !isLocalhostRedis;
 
-redis.on('connect', () => {
-    logger.info('🚀 Redis connected');
-});
+const redis = shouldConnect
+    ? new Redis(config.REDIS_URL, {
+        maxRetriesPerRequest: 0,
+        enableOfflineQueue: false,
+        connectTimeout: 5000,
+        retryStrategy(times) {
+            if (config.NODE_ENV === 'production' && times > 3) return null;
+            return Math.min(times * 50, 2000);
+        },
+    })
+    : null;
 
-redis.on('error', (err) => {
-    logger.error('❌ Redis error:', err);
-});
+if (redis) {
+    redis.on('connect', () => {
+        logger.info('🚀 Redis connected');
+    });
+
+    redis.on('error', (err) => {
+        logger.error('❌ Redis error:', err);
+    });
+} else {
+    logger.warn('⚠️ Redis connection skipped (localhost detected in production)');
+}
 
 export const cache = {
     async get<T>(key: string): Promise<T | null> {
+        if (!redis) return null;
         try {
             const data = await redis.get(key);
             return data ? (JSON.parse(data) as T) : null;
@@ -33,6 +42,7 @@ export const cache = {
     },
 
     async set(key: string, value: any, ttlSeconds?: number): Promise<void> {
+        if (!redis) return;
         try {
             const data = JSON.stringify(value);
             if (ttlSeconds) {
@@ -46,6 +56,7 @@ export const cache = {
     },
 
     async del(key: string): Promise<void> {
+        if (!redis) return;
         try {
             await redis.del(key);
         } catch (error) {

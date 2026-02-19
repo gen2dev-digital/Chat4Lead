@@ -28,6 +28,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.get('/api/ping', (req, res) => res.json({ status: 'ok', timestamp: new Date(), env: config.NODE_ENV }));
+
 app.use('/api/conversation', conversationRoutes);
 app.use('/api/conversations', conversationRoutes);  // Plural alias for GET listing
 app.use('/api/analytics', analyticsRoutes);
@@ -45,7 +47,7 @@ app.get('/health', async (req: Request, res: Response) => {
         logger.error('Health check database error:', error);
     }
 
-    if (config.REDIS_URL && config.REDIS_URL !== 'redis://localhost:6379') {
+    if (redis) {
         try {
             await redis.ping();
             redisStatus = 'connected';
@@ -53,7 +55,7 @@ app.get('/health', async (req: Request, res: Response) => {
             logger.error('Health check redis error:', error);
         }
     } else {
-        redisStatus = 'skipped (not configured)';
+        redisStatus = 'disabled';
     }
 
     const overallStatus = (databaseStatus === 'connected') ? 'ok' : 'error';
