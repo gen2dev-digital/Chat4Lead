@@ -1,18 +1,14 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "src/app.ts",
-            "use": "@vercel/node"
+    "functions": {
+        "api/main.ts": {
+            "includeFiles": "node_modules/.prisma/client/**"
         }
-    ],
-    "routes": [
+    },
+    "rewrites": [
         {
-            "src": "/api/(.*)",
-            "dest": "src/app.ts"
-        },
-        {
-            "handle": "filesystem"
+            "source": "/api/(.*)",
+            "destination": "/api/main"
         }
     ]
 }
