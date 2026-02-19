@@ -12,5 +12,7 @@ coverage/
 build/
 .next/
 backend/public/
+backend/api/main.js
+backend/src/**/*.js
 out/
 tsconfig.tsbuildinfo

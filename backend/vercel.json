@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "npm run build",
   "functions": {
-    "api/main.ts": {
+    "api/main.js": {
       "includeFiles": "node_modules/.prisma/client/**",
       "maxDuration": 25
     }
