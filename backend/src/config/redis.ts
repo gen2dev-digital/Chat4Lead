@@ -3,7 +3,8 @@ import { config } from './env';
 import { logger } from '../utils/logger';
 
 const isLocalhostRedis = config.REDIS_URL.includes('localhost') || config.REDIS_URL.includes('127.0.0.1');
-const shouldConnect = config.NODE_ENV !== 'production' || !isLocalhostRedis;
+// Skip Redis entirely if using localhost (no local Redis server) — only connect to real remote URLs
+const shouldConnect = !isLocalhostRedis;
 
 const redis = shouldConnect
     ? new Redis(config.REDIS_URL, {
@@ -11,8 +12,8 @@ const redis = shouldConnect
         enableOfflineQueue: false,
         connectTimeout: 5000,
         retryStrategy(times) {
-            if (config.NODE_ENV === 'production' && times > 3) return null;
-            return Math.min(times * 50, 2000);
+            if (times > 3) return null; // Stop retrying after 3 attempts in all envs
+            return Math.min(times * 200, 2000);
         },
     })
     : null;
