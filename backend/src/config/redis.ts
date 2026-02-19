@@ -3,10 +3,13 @@ import { config } from './env';
 import { logger } from '../utils/logger';
 
 const redis = new Redis(config.REDIS_URL, {
-    maxRetriesPerRequest: null,
+    maxRetriesPerRequest: 0, // Ne pas bloquer les requêtes si Redis est down
+    enableOfflineQueue: false,
+    connectTimeout: 5000,
     retryStrategy(times) {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
+        // Arrêter de réessayer après 3 tentatives en production s'il n'y a pas de Redis
+        if (config.NODE_ENV === 'production' && times > 3) return null;
+        return Math.min(times * 50, 2000);
     },
 });
 
