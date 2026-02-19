@@ -263,12 +263,19 @@ export class MessageHandler {
 
         // ── Codes postaux et Villes explicites (ex: "Beauvais 60000") ──
         try {
+            const CITY_STOPWORDS = new Set([
+                'déménagement', 'demenagement', 'estimation', 'standard', 'formule',
+                'prestation', 'appartement', 'maison', 'studio', 'logement',
+                'surface', 'volume', 'budget', 'environ', 'contact', 'client',
+                'bonjour', 'merci', 'parfait', 'projet', 'arrivée', 'départ',
+            ]);
+
             const cityWithPostalPattern = /([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)\s+(\d{5})|(\d{5})\s+([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)/gi;
             let match;
             while ((match = cityWithPostalPattern.exec(combined)) !== null) {
                 const ville = match[1] || match[4];
                 const cp = match[2] || match[3];
-                if (ville && cp) {
+                if (ville && cp && !CITY_STOPWORDS.has(ville.toLowerCase())) {
                     const formattedVille = this.capitalizeFirst(ville);
                     if (!entities.villeDepart && !existingProjetData.villeDepart) {
                         entities.villeDepart = formattedVille;
@@ -385,12 +392,20 @@ export class MessageHandler {
 
         // ── Villes (si mentionnées avec "de", "à", "vers") ──
         try {
+            const CITY_STOP = new Set([
+                'déménagement', 'demenagement', 'estimation', 'standard', 'formule',
+                'prestation', 'appartement', 'maison', 'studio', 'logement',
+                'surface', 'volume', 'budget', 'environ', 'contact', 'client',
+                'bonjour', 'merci', 'parfait', 'projet', 'arrivée', 'départ',
+                'mon', 'ton', 'son', 'notre', 'votre', 'leur', 'un', 'une', 'le', 'la',
+            ]);
             const words = combined.split(/\s+/);
             for (let i = 0; i < words.length - 1; i++) {
                 const word = words[i].toLowerCase().replace(/[:]/g, '');
                 const nextWord = words[i + 1];
                 if (['de', 'vers', 'à'].includes(word) && /^[A-ZÀ-Ü]/.test(nextWord)) {
                     const city = nextWord.replace(/[,.!?;]/g, '');
+                    if (CITY_STOP.has(city.toLowerCase())) continue;
                     if (word === 'de' && !entities.villeDepart) entities.villeDepart = city;
                     if ((['vers', 'à'].includes(word)) && !entities.villeArrivee) {
                         entities.villeArrivee = city;

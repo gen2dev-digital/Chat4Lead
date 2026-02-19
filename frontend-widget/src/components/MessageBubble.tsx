@@ -63,12 +63,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     }}
                 >
                     {(() => {
-                        // Clean any residual <br> tags and render \n as line breaks
-                        const raw = message.content
-                            .replace(/<br\s*\/?>/gi, '\n')  // <br> → \n
-                            .replace(/<\/?[a-z][a-z0-9]*[^>]*>/gi, '') // strip other HTML
-                            .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')  // strip markdown bold
-                            .trim();
+                        const techTags = ['email_notification_queued', 'conversation_qualified', 'crm_push_queued', 'satisfaction_request_sent', 'appointment_module_triggered'];
+                        let raw = message.content
+                            .replace(/<br\s*\/?>/gi, '\n')
+                            .replace(/<\/?[a-z][a-z0-9]*[^>]*>/gi, '')
+                            .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1');
+                        techTags.forEach(tag => { raw = raw.replace(new RegExp(tag, 'g'), ''); });
+                        raw = raw.trim();
 
                         return raw.split('\n').map((line, i, arr) => (
                             <React.Fragment key={i}>

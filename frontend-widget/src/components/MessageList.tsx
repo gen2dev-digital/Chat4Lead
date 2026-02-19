@@ -35,15 +35,15 @@ export const MessageList: React.FC<MessageListProps> = ({
                 <div className="w-full flex flex-col items-center gap-3.5 px-4 mb-8 animate-fade-in">
                     <QuickAction
                         icon={<Calculator size={18} />}
-                        title="Faire une estimation"
-                        desc="Obtenez un devis personnalisé"
-                        onClick={() => handleOptionClick('Je souhaite faire une estimation de mon déménagement.')}
+                        title="Estimation tarifaire"
+                        desc="Obtenez une estimation de prix"
+                        onClick={() => handleOptionClick('Je souhaite obtenir une estimation tarifaire pour mon déménagement.')}
                         gradient="linear-gradient(135deg, #6366f1, #818cf8)"
                     />
 
                     <QuickAction
                         icon={<Package size={18} />}
-                        title="Calculer mon volume"
+                        title="Calcul du volume"
                         desc="Estimez le volume à déménager"
                         onClick={() => handleOptionClick('Je voudrais calculer le volume de mon déménagement.')}
                         gradient="linear-gradient(135deg, #8b5cf6, #a78bfa)"
@@ -51,9 +51,9 @@ export const MessageList: React.FC<MessageListProps> = ({
 
                     <QuickAction
                         icon={<Truck size={18} />}
-                        title="Nos services"
-                        desc="Découvrez nos prestations"
-                        onClick={() => handleOptionClick('Quels sont vos services et prestations ?')}
+                        title="Informations complémentaires"
+                        desc="Formules, services et prestations"
+                        onClick={() => handleOptionClick('Je souhaite des informations complémentaires sur vos services.')}
                         gradient="linear-gradient(135deg, #3b82f6, #60a5fa)"
                     />
                 </div>

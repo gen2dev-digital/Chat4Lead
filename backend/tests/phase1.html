@@ -1114,6 +1114,14 @@
         let API_BASE = 'https://chat4-lead-backend.vercel.app/api';
         let API_KEY = '5e3b46bc-c29c-4c2f-8689-bb8a4a803beb';
 
+        const ACTION_LABELS = {
+            'email_notification_queued': '📧 Email de notification envoyé',
+            'conversation_qualified': '✅ Lead qualifié automatiquement',
+            'crm_push_queued': '🚀 Fiche envoyée au CRM',
+            'satisfaction_request_sent': '⭐ Demande de satisfaction envoyée',
+            'appointment_module_triggered': '📅 Module RDV proposé'
+        };
+
         // ─── Presets ──────────────────────────────────────────────────────────────────
         const PRESETS = {
             libre: { label: 'Libre', firstMsg: null },
@@ -1377,6 +1385,8 @@
                 const scoreEl = document.getElementById('live-score');
                 scoreEl.textContent = res.score;
                 scoreEl.style.color = res.score >= 70 ? 'var(--success)' : res.score >= 45 ? 'var(--warning)' : 'var(--red)';
+                scoreEl.title = `Score ${res.score}/100 — Complétude (50pts) + Urgence (20pts) + Valeur projet (20pts) + Engagement (10pts)`;
+                scoreEl.style.cursor = 'help';
             }
 
             // Priority
@@ -1386,6 +1396,9 @@
                 const pEl = document.getElementById('live-priority');
                 pEl.textContent = lead.priorite;
                 pEl.className = 'priority-badge ' + lead.priorite;
+                const priorityTips = { CHAUD: 'Prioritaire — projet complet/urgent', TIEDE: 'Intéressant — quelques infos manquantes', MOYEN: 'À suivre — projet lointain', FROID: 'Peu qualifié — infos insuffisantes' };
+                pEl.title = priorityTips[lead.priorite] || '';
+                pEl.style.cursor = 'help';
                 state.lastLead = lead;
             }
 
@@ -1396,12 +1409,17 @@
                 if (lead.prenom || lead.nom) rows.push(['Identité', [lead.prenom, lead.nom].filter(Boolean).join(' ')]);
                 if (lead.email) rows.push(['Email', lead.email]);
                 if (lead.telephone) rows.push(['Téléphone', lead.telephone]);
-                if (proj.villeDepart) rows.push(['Départ', proj.villeDepart + (proj.codePostalDepart ? ' ' + proj.codePostalDepart : '')]);
-                if (proj.villeArrivee) rows.push(['Arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' ' + proj.codePostalArrivee : '')]);
-                if (proj.surface) rows.push(['Surface', proj.surface + ' m²']);
-                if (proj.dateSouhaitee) rows.push(['Date', proj.dateSouhaitee]);
-                if (proj.formule) rows.push(['Formule', proj.formule]);
-                if (lead.creneauRappel) rows.push(['Créneau', lead.creneauRappel]);
+                if (proj.villeDepart) rows.push(['📍 Départ', proj.villeDepart + (proj.codePostalDepart ? ' (' + proj.codePostalDepart + ')' : '')]);
+                if (proj.villeArrivee) rows.push(['📍 Arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' (' + proj.codePostalArrivee + ')' : '')]);
+                if (proj.surface) rows.push(['🏠 Surface', proj.surface + ' m²']);
+                if (proj.nbPieces) rows.push(['🚪 Pièces', 'F' + proj.nbPieces]);
+                if (proj.volumeEstime) rows.push(['📦 Volume', proj.volumeEstime + ' m³']);
+                if (proj.etage) rows.push(['🏢 Étage', proj.etage]);
+                if (proj.ascenseur != null) rows.push(['🛗 Ascenseur', proj.ascenseur ? 'Oui' : 'Non']);
+                if (proj.dateSouhaitee) rows.push(['📅 Date', proj.dateSouhaitee]);
+                if (proj.formule) rows.push(['📋 Formule', proj.formule]);
+                if (lead.creneauRappel) rows.push(['📞 Créneau', lead.creneauRappel]);
+                if (lead.satisfaction) rows.push(['⭐ Satisfaction', lead.satisfaction]);
 
                 const el = document.getElementById('entity-list');
                 if (rows.length) {
@@ -1416,7 +1434,7 @@
                 state.allActions.push(...res.actions);
                 const el = document.getElementById('actions-list');
                 el.innerHTML = state.allActions.map(a =>
-                    `<div class="action-tag">⚡ ${a}</div>`
+                    `<div class="action-tag">${ACTION_LABELS[a] || a}</div>`
                 ).join('');
             }
         }
@@ -1450,7 +1468,18 @@
             const scoreEl = document.getElementById('r-score');
             scoreEl.textContent = state.lastScore + '/100';
             scoreEl.style.color = state.lastScore >= 70 ? 'var(--success)' : state.lastScore >= 45 ? 'var(--warning)' : 'var(--red)';
-            document.getElementById('r-priority').textContent = state.lastPriority;
+            scoreEl.title = 'Score calculé sur : complétude des infos (50pts), urgence/date (20pts), valeur du projet/volume (20pts), engagement (10pts). ≥80 = CHAUD, ≥60 = TIÈDE, ≥40 = MOYEN, <40 = FROID';
+
+            const priorityEl = document.getElementById('r-priority');
+            priorityEl.textContent = state.lastPriority;
+            const priorityExplain = {
+                'CHAUD': 'Lead prioritaire — score élevé, projet complet et/ou urgent',
+                'TIEDE': 'Lead intéressant — projet en cours, quelques infos manquantes',
+                'MOYEN': 'Lead à suivre — peu d\'infos ou projet lointain',
+                'FROID': 'Lead peu qualifié — informations insuffisantes'
+            };
+            priorityEl.title = priorityExplain[state.lastPriority] || '';
+            priorityEl.style.cursor = 'help';
             document.getElementById('r-messages').textContent = state.messageCount;
             document.getElementById('r-duration').textContent = durationStr;
 
@@ -1461,12 +1490,16 @@
             if (lead?.prenom || lead?.nom) rows.push(['Identité', [lead.prenom, lead.nom].filter(Boolean).join(' ')]);
             if (lead?.email) rows.push(['Email', lead.email]);
             if (lead?.telephone) rows.push(['Téléphone', lead.telephone]);
-            if (proj.villeDepart) rows.push(['Ville départ', proj.villeDepart]);
-            if (proj.villeArrivee) rows.push(['Ville arrivée', proj.villeArrivee]);
-            if (proj.surface) rows.push(['Surface', proj.surface + ' m²']);
-            if (proj.dateSouhaitee) rows.push(['Date', proj.dateSouhaitee]);
-            if (proj.formule) rows.push(['Formule', proj.formule]);
-            if (lead?.creneauRappel) rows.push(['Créneau rappel', lead.creneauRappel]);
+            if (proj.villeDepart) rows.push(['📍 Ville départ', proj.villeDepart + (proj.codePostalDepart ? ' (' + proj.codePostalDepart + ')' : '')]);
+            if (proj.villeArrivee) rows.push(['📍 Ville arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' (' + proj.codePostalArrivee + ')' : '')]);
+            if (proj.surface) rows.push(['🏠 Surface', proj.surface + ' m²']);
+            if (proj.nbPieces) rows.push(['🚪 Pièces', 'F' + proj.nbPieces]);
+            if (proj.volumeEstime) rows.push(['📦 Volume estimé', proj.volumeEstime + ' m³']);
+            if (proj.etage) rows.push(['🏢 Étage', proj.etage]);
+            if (proj.dateSouhaitee) rows.push(['📅 Date', proj.dateSouhaitee]);
+            if (proj.formule) rows.push(['📋 Formule', proj.formule]);
+            if (lead?.creneauRappel) rows.push(['📞 Créneau rappel', lead.creneauRappel]);
+            if (lead?.satisfaction) rows.push(['⭐ Satisfaction', lead.satisfaction]);
 
             const tbl = document.getElementById('r-entities');
             tbl.innerHTML = rows.length
@@ -1474,7 +1507,7 @@
                 : '<tr><td colspan="2" style="color:var(--text-muted);text-align:center">Aucune donnée extraite</td></tr>';
 
             document.getElementById('r-actions').innerHTML = state.allActions.length
-                ? state.allActions.map(a => `<span style="display:inline-block;margin:3px;background:rgba(108,99,255,.1);border:1px solid rgba(108,99,255,.2);color:var(--accent);padding:3px 10px;border-radius:6px;font-size:.78rem">⚡ ${a}</span>`).join('')
+                ? state.allActions.map(a => `<span style="display:inline-block;margin:3px;background:rgba(108,99,255,.1);border:1px solid rgba(108,99,255,.2);color:var(--accent);padding:3px 10px;border-radius:6px;font-size:.78rem">${ACTION_LABELS[a] || a}</span>`).join('')
                 : '<span style="color:var(--text-muted)">Aucune action déclenchée</span>';
         }
 
@@ -1514,6 +1547,41 @@
             const comment = document.getElementById('star-comment').value.trim();
             const text = `[NOTE: ${rating}/5] ${comment}`.trim();
             sendMsgText(text);
+        }
+
+        async function submitDeveloperFeedback() {
+            const status = document.getElementById('fb-status');
+            const feedback = {
+                note: Number(document.getElementById('f-note').value || 0),
+                problemes: document.getElementById('f-bugs').value.trim(),
+                suggestions: document.getElementById('f-suggestions').value.trim(),
+            };
+
+            try {
+                status.textContent = '⏳ Enregistrement...';
+                status.style.color = 'var(--text-muted)';
+
+                const backendBase = document.getElementById('backend-url').value.replace(/\/$/, '');
+                const res = await fetch(
+                    `${backendBase}/api/test-session/${state.sessionId}/feedback`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ feedback, conversationId: state.conversationId }),
+                    }
+                ).then(r => r.json());
+
+                status.textContent = '✅ Analyse enregistrée avec succès';
+                status.style.color = 'var(--success)';
+
+                if (res.reportUrl) {
+                    document.getElementById('r-conv-link').href = res.reportUrl;
+                }
+            } catch (e) {
+                console.error(e);
+                status.textContent = '❌ Erreur lors de l\'enregistrement';
+                status.style.color = 'var(--red)';
+            }
         }
     </script>
 </body>

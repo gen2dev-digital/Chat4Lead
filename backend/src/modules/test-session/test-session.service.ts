@@ -179,14 +179,28 @@ export const testSessionService = {
   <tr><td>Nom / Prénom</td><td><strong>${htmlEsc(lead.nom || '')} ${htmlEsc(lead.prenom || '')}</strong></td></tr>
   <tr><td>Email</td><td>${htmlEsc(lead.email || '—')}</td></tr>
   <tr><td>Téléphone</td><td>${htmlEsc(lead.telephone || '—')}</td></tr>
-  <tr><td>Départ</td><td>${htmlEsc(projet.villeDepart || '—')} (${htmlEsc(projet.codePostalDepart || '')})</td></tr>
-  <tr><td>Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')} (${htmlEsc(projet.codePostalArrivee || '')})</td></tr>
-  <tr><td>Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
-  <tr><td>Date souhaitée</td><td>${htmlEsc(projet.dateSouhaitee || '—')}</td></tr>
-  <tr><td>Formule</td><td>${htmlEsc(projet.formule || '—')}</td></tr>
-  <tr><td>Priorité calculée</td><td><span style="color:${priorityColor};font-weight:bold;">${priorite}</span></td></tr>
-  <tr><td>Score final</td><td><strong style="color:${scoreColor};">${score}/100</strong></td></tr>
+  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${projet.codePostalDepart ? ' (' + htmlEsc(projet.codePostalDepart) + ')' : ''}</td></tr>
+  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${projet.codePostalArrivee ? ' (' + htmlEsc(projet.codePostalArrivee) + ')' : ''}</td></tr>
+  <tr><td>🏠 Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
+  ${projet.nbPieces ? `<tr><td>🚪 Pièces</td><td>F${projet.nbPieces}</td></tr>` : ''}
+  ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³</td></tr>` : ''}
+  ${projet.etage ? `<tr><td>🏢 Étage</td><td>${htmlEsc(projet.etage)}</td></tr>` : ''}
+  <tr><td>📅 Date souhaitée</td><td>${htmlEsc(projet.dateSouhaitee || '—')}</td></tr>
+  <tr><td>📋 Formule</td><td>${htmlEsc(projet.formule || '—')}</td></tr>
+  ${lead.creneauRappel ? `<tr><td>📞 Créneau rappel</td><td>${htmlEsc(lead.creneauRappel)}</td></tr>` : ''}
+  <tr><td>Priorité calculée</td><td><span style="color:${priorityColor};font-weight:bold;cursor:help;" title="CHAUD=prioritaire, TIÈDE=intéressant, MOYEN=à suivre, FROID=peu qualifié">${priorite}</span></td></tr>
+  <tr><td>Score final</td><td><strong style="color:${scoreColor};cursor:help;" title="Complétude (50pts) + Urgence (20pts) + Valeur projet (20pts) + Engagement (10pts)">${score}/100</strong></td></tr>
 </table>`;
+
+        // Récapitulatif de fin de conversation (si le bot a généré un résumé)
+        let recapHtml = '';
+        const recapMsg = exchanges.reverse().find(e => e.role === 'bot' && (e.content.includes('récapitulatif') || e.content.includes('VOTRE PROJET') || e.content.includes('Récap')));
+        exchanges.reverse();
+        if (recapMsg) {
+            recapHtml = `
+<div class="section-title">📋 Récapitulatif du Projet (généré par le bot)</div>
+<div style="white-space:pre-line;font-size:14px;line-height:1.7;padding:12px 16px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:10px;">${htmlEsc(recapMsg.content)}</div>`;
+        }
 
         let feedbackHtml = '';
         const fb = session.feedback as any;
@@ -287,6 +301,7 @@ h1{font-size:26px;margin-bottom:4px}
     <div class="stat"><div class="stat-value">${durationStr}</div><div class="stat-label">Durée</div></div>
   </div>
   <div class="card">${leadDataHtml}</div>
+  ${recapHtml ? `<div class="card">${recapHtml}</div>` : ''}
   ${feedbackHtml ? `<div class="card">${feedbackHtml}</div>` : ''}
   <div class="card">${convHtml}</div>
   <div class="verdict ${verdictClass}">${verdictText}</div>
