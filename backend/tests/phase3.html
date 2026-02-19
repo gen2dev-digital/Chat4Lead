@@ -906,7 +906,8 @@
                 <div class="fb-card">
                     <span class="fb-label">3. CLASSIFICATION CHAUD/TIÈDE/FROID</span>
                     <p style="font-size:0.8rem; margin-bottom:10px; color:var(--text-muted)">Le bot a classé ce lead :
-                        <span id="bot-class-display" style="font-weight:bold; color:var(--accent)">...</span></p>
+                        <span id="bot-class-display" style="font-weight:bold; color:var(--accent)">...</span>
+                    </p>
                     <div class="opt-list" id="q-classif">
                         <div class="opt-item" onclick="sel('q-classif', this, 'Oui, c\'est exact')"><span
                                 class="opt-dot"></span> Oui, c'est exact</div>
@@ -1051,7 +1052,7 @@
             sending: false
         };
 
-        const API_BASE = window.location.origin + '/api';
+        const API_BASE = 'https://chat4-lead-backend.vercel.app/api';
 
         async function apiCall(method, path, body) {
             const res = await fetch(API_BASE + path, {
