@@ -6,7 +6,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc && cp dist/api/main.js api/main.js && (mkdir -p src && cp -r dist/src/. src/) && mkdir -p public && cp -r tests public/",
+    "build": "prisma generate && mkdir -p public && cp -r tests public/",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
