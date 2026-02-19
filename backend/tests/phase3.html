@@ -1080,7 +1080,7 @@
                 const init = await apiCall('POST', '/conversation/init', {});
                 state.conversationId = init.conversationId;
 
-                const sess = await fetch('/api/test-session/start', {
+                const sess = await fetch(API_BASE.replace('/api', '') + '/api/test-session/start', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ phase: 'phase3', conversationId: state.conversationId })
@@ -1205,7 +1205,7 @@
             };
 
             try {
-                const res = await fetch(`/api/test-session/${state.sessionId}/feedback`, {
+                const res = await fetch(API_BASE.replace('/api', '') + `/api/test-session/${state.sessionId}/feedback`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ feedback, conversationId: state.conversationId })
