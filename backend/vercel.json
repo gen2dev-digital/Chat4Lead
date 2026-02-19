@@ -2,8 +2,8 @@
     "version": 2,
     "functions": {
         "api/main.ts": {
-            "memory": 1024,
-            "maxDuration": 10
+            "includeFiles": "node_modules/.prisma/client/**",
+            "maxDuration": 25
         }
     },
     "rewrites": [

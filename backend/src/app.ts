@@ -77,7 +77,8 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     logger.error('Unhandled Error:', err);
     res.status(500).json({
         error: 'Internal Server Error',
-        message: config.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+        message: err.message,
+        stack: config.NODE_ENV === 'development' ? err.stack : undefined
     });
 });
 
