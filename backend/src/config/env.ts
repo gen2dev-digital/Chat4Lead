@@ -10,7 +10,7 @@ const envSchema = z.object({
     CLAUDE_MODEL: z.string().default('claude-3-5-sonnet-20240620'),
     GROK_API_KEY: z.string().optional(),
     LLM_PROVIDER: z.enum(['claude', 'grok']).default('claude'),
-    PORT: z.preprocess((val) => Number(val), z.number().default(3000)),
+    PORT: z.preprocess((val) => (val ? Number(val) : undefined), z.number().default(3000)),
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     JWT_SECRET: z.string().default('temporary_secret_for_build_purposes_only_change_me'),
     ALLOWED_ORIGINS: z.string().default('*'),
