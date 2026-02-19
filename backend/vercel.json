@@ -1,14 +1,18 @@
 {
     "version": 2,
-    "functions": {
-        "src/app.ts": {
-            "runtime": "nodejs20.x"
-        }
-    },
-    "rewrites": [
+    "builds": [
         {
-            "source": "/api/(.*)",
-            "destination": "src/app.ts"
+            "src": "src/app.ts",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/api/(.*)",
+            "dest": "src/app.ts"
+        },
+        {
+            "handle": "filesystem"
         }
     ]
 }
