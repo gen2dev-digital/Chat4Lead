@@ -917,8 +917,8 @@
                 <div class="chat-body" id="chat-body"></div>
                 <div class="chat-input-row">
                     <button class="toolbar-btn" id="voice-btn" onclick="toggleVoice()" title="Dicter">🎤</button>
-                    <label class="toolbar-btn" for="file-upload-p2" title="Joindre un fichier" style="cursor:pointer;margin:0;">📎</label>
-                    <input type="file" id="file-upload-p2" style="display:none" onchange="handleFileUpload(event)">
+                    <label class="toolbar-btn" for="file-upload-p2" title="Joindre un fichier (texte, PDF, image)" style="cursor:pointer;margin:0;">📎</label>
+                    <input type="file" id="file-upload-p2" style="display:none" accept=".txt,.csv,.json,.md,.pdf,image/*" onchange="handleFileUpload(event)">
                     <input type="text" class="chat-input" id="chat-input" placeholder="Votre message…"
                         onkeydown="if(event.key==='Enter')sendMsg()">
                     <button class="send-btn" id="send-btn" onclick="sendMsg()">&#10148;</button>
@@ -1351,10 +1351,33 @@
             voiceRecognition.onerror = () => { voiceActive = false; btn.classList.remove('active'); btn.textContent = '🎤'; };
             voiceRecognition.start();
         }
+        const MAX_FILE_CONTENT_P2 = 10000;
+        const TEXT_TYPES_P2 = ['text/plain', 'application/json', 'text/csv', 'text/markdown', 'text/xml', 'application/xml'];
+        const TEXT_EXT_P2 = /\.(txt|csv|json|md|xml)$/i;
         function handleFileUpload(event) {
             const file = event.target.files[0]; if (!file) return;
             const inp = document.getElementById('chat-input');
-            inp.value = `[Fichier: ${file.name}]`; inp.focus(); event.target.value = '';
+            const prefix = '[Fichier: ' + file.name + ']\n\n';
+            if (TEXT_TYPES_P2.includes(file.type) || TEXT_EXT_P2.test(file.name)) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    let content = (reader.result || '').toString();
+                    if (content.length > MAX_FILE_CONTENT_P2) content = content.slice(0, MAX_FILE_CONTENT_P2) + '\n\n… (tronqué)';
+                    inp.value = prefix + content; inp.focus();
+                };
+                reader.onerror = function() { inp.value = prefix + '(erreur lecture)'; inp.focus(); };
+                reader.readAsText(file, 'UTF-8');
+            } else if (file.type === 'application/pdf') {
+                inp.value = prefix + 'Collez ci-dessous les informations importantes du PDF ou décrivez le contenu pour que le bot en tienne compte.';
+                inp.focus();
+            } else if (file.type.startsWith('image/')) {
+                inp.value = prefix + "Décrivez l'image ou les infos utiles pour votre demande (le bot prendra en compte votre description).";
+                inp.focus();
+            } else {
+                inp.value = prefix + 'Décrivez le contenu ou collez les infos importantes pour votre demande.';
+                inp.focus();
+            }
+            event.target.value = '';
         }
     </script>
 </body>
