@@ -268,12 +268,17 @@ export class MessageHandler {
                 'prestation', 'appartement', 'maison', 'studio', 'logement',
                 'surface', 'volume', 'budget', 'environ', 'contact', 'client',
                 'bonjour', 'merci', 'parfait', 'projet', 'arrivée', 'départ',
+                'quel', 'quelle', 'quels', 'votre', 'notre', 'avez', 'vous', 'créneau',
             ]);
+
+            // Mask phone numbers BEFORE city/CP extraction to avoid false positives (e.g. last 5 digits of phone)
+            const combinedMasked = combined.replace(/(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}/g, 'XXXXXXXX');
+            const combinedForCity = combinedMasked.replace(/\((\d{5})\)/g, ' $1 ');
 
             // No 'i' flag: only match properly capitalized city names to avoid capturing full sentences
             const cityWithPostalPattern = /([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)\s+(\d{5})|(\d{5})\s+([A-ZÀ-Ÿ][a-zà-ÿ-]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ-]+)*)/g;
             let match;
-            while ((match = cityWithPostalPattern.exec(combined)) !== null) {
+            while ((match = cityWithPostalPattern.exec(combinedForCity)) !== null) {
                 const ville = match[1] || match[4];
                 const cp = match[2] || match[3];
                 if (ville && cp && !CITY_STOPWORDS.has(ville.toLowerCase())) {
@@ -288,9 +293,9 @@ export class MessageHandler {
                 }
             }
 
-            // Fallback pour CP seuls (avec résolution Geo API)
+            // Fallback pour CP seuls sur le texte masqué (évite d'extraire des CP depuis les numéros de tél.)
             const cpRegex = /\b\d{5}\b/g;
-            const cps = combined.match(cpRegex);
+            const cps = combinedMasked.match(cpRegex);
             if (cps && cps.length > 0) {
                 // 1. CP Départ
                 if (!entities.codePostalDepart && !existingProjetData.codePostalDepart) {
@@ -335,12 +340,12 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ Pieces extraction failed', e); }
 
-        // ── Volume explicite (m³ / m3 / mètres cubes) ──
+        // ── Volume explicite (m³ / m3 / mètres cubes) — gère les décimales (ex: 62,5 m³) ──
         try {
-            const volumeRegex = /(\d+)\s*(?:m³|m3|mètres?\s*cubes?)/gi;
+            const volumeRegex = /(\d+(?:[.,]\d+)?)\s*(?:m³|m3|mètres?\s*cubes?)/gi;
             const volumeMatch = volumeRegex.exec(combined);
             if (volumeMatch) {
-                entities.volumeEstime = parseInt(volumeMatch[1], 10);
+                entities.volumeEstime = parseFloat(volumeMatch[1].replace(',', '.'));
             }
         } catch (e) { logger.error('❌ Volume extraction failed', e); }
 
@@ -391,7 +396,7 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ Date extraction failed', e); }
 
-        // ── Villes (si mentionnées avec "de", "à", "vers") ──
+        // ── Villes (si mentionnées avec "de", "à", "vers", "d'", "de l'", "de la") ──
         try {
             const CITY_STOP = new Set([
                 'déménagement', 'demenagement', 'estimation', 'standard', 'formule',
@@ -399,16 +404,33 @@ export class MessageHandler {
                 'surface', 'volume', 'budget', 'environ', 'contact', 'client',
                 'bonjour', 'merci', 'parfait', 'projet', 'arrivée', 'départ',
                 'mon', 'ton', 'son', 'notre', 'votre', 'leur', 'un', 'une', 'le', 'la',
+                'quel', 'quelle', 'créneau',
             ]);
             const words = combined.split(/\s+/);
             for (let i = 0; i < words.length - 1; i++) {
-                const word = words[i].toLowerCase().replace(/[:]/g, '');
-                const nextWord = words[i + 1];
-                if (['de', 'vers', 'à'].includes(word) && /^[A-ZÀ-Ü]/.test(nextWord)) {
-                    const city = nextWord.replace(/[,.!?;]/g, '');
+                const rawWord = words[i].toLowerCase().replace(/[:]/g, '');
+                // Handle contractions: "d'Avignon" → split to ["d'", "Avignon"] or check if starts with d'/vers/à
+                let prep = rawWord;
+                let nextWord = words[i + 1];
+
+                // Handle contraction "d'Avignon" as a single token
+                const contractionMatch = rawWord.match(/^d[''](.+)/i);
+                if (contractionMatch) {
+                    const cityCandidate = contractionMatch[1];
+                    if (/^[A-ZÀ-Ü]/i.test(cityCandidate) && cityCandidate.length > 1) {
+                        const city = this.capitalizeFirst(cityCandidate.replace(/[,.!?;]/g, ''));
+                        if (!CITY_STOP.has(city.toLowerCase()) && !entities.villeDepart && !existingProjetData.villeDepart) {
+                            entities.villeDepart = city;
+                        }
+                        continue;
+                    }
+                }
+
+                if (['de', 'vers', 'à', "de l'", "de la", "d'"].includes(prep) && /^[A-ZÀ-Ü]/i.test(nextWord)) {
+                    const city = this.capitalizeFirst(nextWord.replace(/[,.!?;]/g, ''));
                     if (CITY_STOP.has(city.toLowerCase())) continue;
-                    if (word === 'de' && !entities.villeDepart) entities.villeDepart = city;
-                    if ((['vers', 'à'].includes(word)) && !entities.villeArrivee) {
+                    if (prep === 'de' && !entities.villeDepart && !existingProjetData.villeDepart) entities.villeDepart = city;
+                    if (['vers', 'à'].includes(prep) && !entities.villeArrivee && !existingProjetData.villeArrivee) {
                         entities.villeArrivee = city;
                     }
                 }
@@ -426,15 +448,31 @@ export class MessageHandler {
             logger.info('✅ Nom extrait', { nom });
         }
 
-        // ── Créneau de rappel ──
-        if (lowerCombined.includes('matin') || lowerCombined.includes('9h-12h')) {
-            entities.creneauRappel = 'Matin (9h-12h)';
-        } else if (lowerCombined.includes('après-midi') || lowerCombined.includes('14h-18h') || lowerCombined.includes('apres-midi')) {
-            entities.creneauRappel = 'Après-midi (14h-18h)';
-        } else if (lowerCombined.includes('soir') || lowerCombined.includes('18h-20h')) {
-            entities.creneauRappel = 'Soir (18h-20h)';
-        } else if (lowerCombined.includes('pas de préférence') || lowerCombined.includes('peu importe')) {
-            entities.creneauRappel = 'Pas de préférence';
+        // ── Créneau de rappel (jour + horaire) ──
+        {
+            const JOURS: Record<string, string> = {
+                'lundi': 'Lundi', 'mardi': 'Mardi', 'mercredi': 'Mercredi',
+                'jeudi': 'Jeudi', 'vendredi': 'Vendredi', 'samedi': 'Samedi', 'dimanche': 'Dimanche',
+            };
+            let jourTrouve = '';
+            for (const [k, v] of Object.entries(JOURS)) {
+                if (lowerCombined.includes(k)) { jourTrouve = v; break; }
+            }
+            let horaireTrouve = '';
+            if (lowerCombined.includes('matin') || lowerCombined.includes('9h') || lowerCombined.includes('9h-12h')) {
+                horaireTrouve = 'Matin (9h-12h)';
+            } else if (lowerCombined.includes('après-midi') || lowerCombined.includes('apres-midi') || lowerCombined.includes('14h')) {
+                horaireTrouve = 'Après-midi (14h-18h)';
+            } else if (lowerCombined.includes('soir') || lowerCombined.includes('18h') || lowerCombined.includes('20h')) {
+                horaireTrouve = 'Soir (après 18h)';
+            } else if (lowerCombined.includes('midi') || lowerCombined.includes('12h')) {
+                horaireTrouve = 'Midi (12h-14h)';
+            }
+            if (lowerCombined.includes('pas de préférence') || lowerCombined.includes('peu importe') || lowerCombined.includes('n\'importe')) {
+                entities.creneauRappel = 'Pas de préférence';
+            } else if (jourTrouve || horaireTrouve) {
+                entities.creneauRappel = [jourTrouve, horaireTrouve].filter(Boolean).join(' ');
+            }
         }
 
         // ── Satisfaction (extraite du message utilisateur uniquement) ──

@@ -912,6 +912,60 @@
         .star:hover {
             transform: scale(1.2);
         }
+
+        /* ── Light mode ── */
+        body.light {
+            --bg: #f4f5f7;
+            --surface: #ffffff;
+            --surface2: #eef0f4;
+            --border: #d0d5dd;
+            --text: #1a1d2e;
+            --text-muted: #6b7280;
+        }
+        body.light body::before { opacity: 0.4; }
+
+        /* ── Toolbar buttons (theme, voice, upload) ── */
+        .toolbar-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .toolbar-btn:hover { background: rgba(108,99,255,0.15); }
+        .toolbar-btn.active { background: rgba(108,99,255,0.25); border-color: var(--accent); }
+
+        .chat-input-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 12px;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        /* Day picker widget */
+        .day-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .day-btn {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 4px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .day-btn:hover, .day-btn.selected { border-color: #6c63ff; color: #6c63ff; background: rgba(108,99,255,0.1); }
     </style>
 </head>
 
@@ -922,6 +976,7 @@
         <header class="top-bar">
             <div class="logo">Chat<span>4</span>Lead</div>
             <div class="badge-phase">Phase 1 · Dev</div>
+            <button class="toolbar-btn" id="theme-toggle" onclick="toggleTheme()" title="Mode clair/sombre">🌙</button>
         </header>
 
         <!-- ── INTRO ── -->
@@ -980,6 +1035,9 @@
                         <div class="timer" id="timer">00:00</div>
                         <div class="chat-body" id="chat-body"></div>
                         <div class="chat-input-row">
+                            <button class="toolbar-btn" id="voice-btn" onclick="toggleVoice()" title="Dicter un message">🎤</button>
+                            <label class="toolbar-btn" for="file-upload-p1" title="Joindre un fichier" style="cursor:pointer;margin:0;">📎</label>
+                            <input type="file" id="file-upload-p1" style="display:none" onchange="handleFileUpload(event,'chat-input')">
                             <input type="text" class="chat-input" id="chat-input" placeholder="Votre message…"
                                 onkeydown="if(event.key==='Enter')sendMsg()">
                             <button class="send-btn" id="send-btn" onclick="sendMsg()">&#10148;</button>
@@ -1076,10 +1134,17 @@
                 <div class="report-entities">
                     <h3>🛠️ Analyse & Annotations</h3>
                     <div style="display:grid; gap:12px; margin-top:8px;">
-                        <div>
-                            <label style="font-size:.75rem; color:var(--text-muted);">Note Qualité Chat (0-10)</label>
-                            <input type="number" id="f-note" value="8" min="0" max="10"
-                                style="width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; border-radius:4px;">
+                        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+                            <div>
+                                <label style="font-size:.75rem; color:var(--text-muted);">Note Qualité Chat (0-10)</label><br>
+                                <input type="number" id="f-note" value="8" min="0" max="10"
+                                    style="width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; border-radius:4px;">
+                            </div>
+                            <div>
+                                <label style="font-size:.75rem; color:var(--text-muted);">Note Qualité Données Extraites (0-10)</label><br>
+                                <input type="number" id="f-note-data" value="8" min="0" max="10"
+                                    style="width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; border-radius:4px;">
+                            </div>
                         </div>
                         <div>
                             <label style="font-size:.75rem; color:var(--text-muted);">🐛 Problèmes détectés</label>
@@ -1268,7 +1333,24 @@
             m.appendChild(txt);
 
             // SPECIAL WIDGETS
-            if (cleanText.includes("Quel créneau vous arrange pour être recontacté ?")) {
+            if (cleanText.includes("Quel jour souhaitez-vous être recontacté ?")) {
+                const widget = document.createElement('div');
+                widget.className = 'widget-container';
+                widget.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Choisissez un jour :</div>
+                    <div class="day-grid">
+                        <button class="day-btn" onclick="selectDay(this,'Lundi')">Lun</button>
+                        <button class="day-btn" onclick="selectDay(this,'Mardi')">Mar</button>
+                        <button class="day-btn" onclick="selectDay(this,'Mercredi')">Mer</button>
+                        <button class="day-btn" onclick="selectDay(this,'Jeudi')">Jeu</button>
+                        <button class="day-btn" onclick="selectDay(this,'Vendredi')">Ven</button>
+                        <button class="day-btn" onclick="selectDay(this,'Samedi')">Sam</button>
+                        <button class="day-btn" onclick="selectDay(this,'Dimanche')">Dim</button>
+                        <button class="day-btn" onclick="sendMsgText('Peu importe le jour')">🔄 Flexible</button>
+                    </div>
+                `;
+                m.appendChild(widget);
+            } else if (cleanText.includes("Quel créneau vous arrange pour être recontacté ?")) {
                 const widget = document.createElement('div');
                 widget.className = 'widget-container';
                 widget.innerHTML = `
@@ -1569,10 +1651,74 @@
             sendMsgText(text);
         }
 
+        // ─── Theme toggle ─────────────────────────────────────────────────────────
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light');
+            document.getElementById('theme-toggle').textContent = isLight ? '🌑' : '🌙';
+            localStorage.setItem('p1-theme', isLight ? 'light' : 'dark');
+        }
+        (function() {
+            if (localStorage.getItem('p1-theme') === 'light') {
+                document.body.classList.add('light');
+                const btn = document.getElementById('theme-toggle');
+                if (btn) btn.textContent = '🌑';
+            }
+        })();
+
+        // ─── Voice input ──────────────────────────────────────────────────────────
+        let voiceRecognition = null;
+        let voiceActive = false;
+        function toggleVoice() {
+            const btn = document.getElementById('voice-btn');
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                alert('La reconnaissance vocale n\'est pas supportée par ce navigateur. Utilisez Chrome.');
+                return;
+            }
+            if (voiceActive && voiceRecognition) {
+                voiceRecognition.stop();
+                return;
+            }
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            voiceRecognition = new SR();
+            voiceRecognition.lang = 'fr-FR';
+            voiceRecognition.continuous = false;
+            voiceRecognition.interimResults = false;
+            voiceRecognition.onstart = () => { voiceActive = true; btn.classList.add('active'); btn.textContent = '🔴'; };
+            voiceRecognition.onend = () => { voiceActive = false; btn.classList.remove('active'); btn.textContent = '🎤'; };
+            voiceRecognition.onresult = (e) => {
+                const txt = e.results[0][0].transcript;
+                const inp = document.getElementById('chat-input');
+                inp.value = (inp.value ? inp.value + ' ' : '') + txt;
+                inp.focus();
+            };
+            voiceRecognition.onerror = () => { voiceActive = false; btn.classList.remove('active'); btn.textContent = '🎤'; };
+            voiceRecognition.start();
+        }
+
+        // ─── File upload ──────────────────────────────────────────────────────────
+        function handleFileUpload(event, inputId) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const inp = document.getElementById(inputId || 'chat-input');
+            inp.value = `[Fichier: ${file.name}]`;
+            inp.focus();
+            event.target.value = '';
+        }
+
+        // ─── Day picker ───────────────────────────────────────────────────────────
+        let selectedDay = '';
+        function selectDay(btn, day) {
+            btn.closest('.widget-container').querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedDay = day;
+            setTimeout(() => sendMsgText(day), 200);
+        }
+
         async function submitDeveloperFeedback() {
             const status = document.getElementById('fb-status');
             const feedback = {
                 note: Number(document.getElementById('f-note').value || 0),
+                noteData: Number(document.getElementById('f-note-data').value || 0),
                 problemes: document.getElementById('f-bugs').value.trim(),
                 suggestions: document.getElementById('f-suggestions').value.trim(),
             };

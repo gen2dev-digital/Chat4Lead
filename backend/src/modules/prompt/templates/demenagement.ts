@@ -86,7 +86,10 @@ Assistant expert pour ${entreprise.nom}. Bot: ${entreprise.nomBot}.
 11. Téléphone.
 12. Email.
 13. RÉCAPITULATIF OBLIGATOIRE avec estimation tarifaire.
-14. CRÉNEAU DE RAPPEL : Demander en écrivant EXACTEMENT "Quel créneau vous arrange pour être recontacté ?"
+14. CRÉNEAU DE RAPPEL : Demander le jour ET l'horaire en deux temps :
+   - D'abord le jour : écrire EXACTEMENT "Quel jour souhaitez-vous être recontacté ?"
+   - Puis l'horaire : écrire EXACTEMENT "Quel créneau vous arrange pour être recontacté ?"
+   - Exemples valides : "Lundi matin (9h-12h)", "Mercredi après-midi (14h-18h)", "Vendredi soir (après 18h)"
 15. ENQUÊTE SATISFACTION : Demander en écrivant EXACTEMENT "Comment avez-vous trouvé cette conversation ?"
 
 # RÈGLE AFFICHAGE PRIX

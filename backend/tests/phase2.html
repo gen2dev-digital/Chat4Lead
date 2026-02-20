@@ -806,6 +806,26 @@
                 padding: 24px 20px;
             }
         }
+
+        /* ── Light mode ── */
+        body.light {
+            --bg: #f4f5f7; --surface: #ffffff; --surface2: #eef0f4;
+            --border: #d0d5dd; --text: #1a1d2e; --text-muted: #6b7280;
+        }
+        .toolbar-btn {
+            background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+            color: var(--text); padding: 6px 10px; border-radius: 8px;
+            cursor: pointer; font-size: 1rem; transition: background 0.2s;
+        }
+        .toolbar-btn:hover { background: rgba(108,99,255,0.15); }
+        .toolbar-btn.active { background: rgba(108,99,255,0.25); border-color: var(--accent); }
+        .day-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:8px; }
+        .day-btn { background:#1a1a1a; border:1px solid var(--border); color:var(--text); padding:6px 4px; border-radius:6px; font-size:.75rem; cursor:pointer; transition:all .2s; text-align:center; }
+        .day-btn:hover, .day-btn.selected { border-color:#6c63ff; color:#6c63ff; background:rgba(108,99,255,0.1); }
+        .slot-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .slot-btn { background:#1a1a1a; border:1px solid var(--border); color:var(--text); padding:8px; border-radius:6px; font-size:.8rem; cursor:pointer; transition:all .2s; }
+        .slot-btn:hover { border-color:#6c63ff; color:#6c63ff; }
+        .widget-container { margin-top:12px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:12px; padding:12px; }
     </style>
 </head>
 
@@ -816,6 +836,7 @@
         <header class="top-bar">
             <div class="logo">Chat<span>4</span>Lead</div>
             <div class="badge-phase">Phase 2 · Proches</div>
+            <button class="toolbar-btn" id="theme-toggle" onclick="toggleTheme()" title="Mode clair/sombre">🌙</button>
         </header>
 
         <!-- ── INTRO ── -->
@@ -876,6 +897,9 @@
                 <div class="timer" id="timer">00:00</div>
                 <div class="chat-body" id="chat-body"></div>
                 <div class="chat-input-row">
+                    <button class="toolbar-btn" id="voice-btn" onclick="toggleVoice()" title="Dicter">🎤</button>
+                    <label class="toolbar-btn" for="file-upload-p2" title="Joindre un fichier" style="cursor:pointer;margin:0;">📎</label>
+                    <input type="file" id="file-upload-p2" style="display:none" onchange="handleFileUpload(event)">
                     <input type="text" class="chat-input" id="chat-input" placeholder="Votre message…"
                         onkeydown="if(event.key==='Enter')sendMsg()">
                     <button class="send-btn" id="send-btn" onclick="sendMsg()">&#10148;</button>
@@ -1118,13 +1142,52 @@
             typingEl = null;
         }
 
+        function sendMsgText(text) {
+            document.getElementById('chat-input').value = text;
+            sendMsg();
+        }
+
         function addBotMsg(text) {
             const body = document.getElementById('chat-body');
             const m = document.createElement('div');
             m.className = 'msg bot';
             m.textContent = text;
+            const cleanText = text.trim();
+            if (cleanText.includes("Quel jour souhaitez-vous être recontacté ?")) {
+                const w = document.createElement('div');
+                w.className = 'widget-container';
+                w.innerHTML = `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">Choisissez un jour :</div>
+                    <div class="day-grid">
+                        <button class="day-btn" onclick="selectDay(this,'Lundi')">Lun</button>
+                        <button class="day-btn" onclick="selectDay(this,'Mardi')">Mar</button>
+                        <button class="day-btn" onclick="selectDay(this,'Mercredi')">Mer</button>
+                        <button class="day-btn" onclick="selectDay(this,'Jeudi')">Jeu</button>
+                        <button class="day-btn" onclick="selectDay(this,'Vendredi')">Ven</button>
+                        <button class="day-btn" onclick="selectDay(this,'Samedi')">Sam</button>
+                        <button class="day-btn" onclick="selectDay(this,'Dimanche')">Dim</button>
+                        <button class="day-btn" onclick="sendMsgText('Peu importe')">🔄 Flexible</button>
+                    </div>`;
+                m.appendChild(w);
+            } else if (cleanText.includes("Quel créneau vous arrange pour être recontacté ?")) {
+                const w = document.createElement('div');
+                w.className = 'widget-container';
+                w.innerHTML = `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">Choisissez un créneau :</div>
+                    <div class="slot-grid">
+                        <button class="slot-btn" onclick="sendMsgText('Matin (9h-12h)')">🌅 Matin</button>
+                        <button class="slot-btn" onclick="sendMsgText('Midi (12h-14h)')">🕛 Midi</button>
+                        <button class="slot-btn" onclick="sendMsgText('Après-midi (14h-18h)')">☀️ Après-midi</button>
+                        <button class="slot-btn" onclick="sendMsgText('Soir (après 18h)')">🌙 Soir</button>
+                    </div>`;
+                m.appendChild(w);
+            }
             body.appendChild(m);
             body.scrollTop = body.scrollHeight;
+        }
+
+        function selectDay(btn, day) {
+            btn.closest('.widget-container').querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            setTimeout(() => sendMsgText(day), 200);
         }
 
         function addUserMsg(text) {
@@ -1236,6 +1299,43 @@
                 alert('Erreur lors de l\'envoi. Vérifiez la connexion au serveur.');
                 console.error(e);
             }
+        }
+
+        // ─── Theme toggle ─────────────────────────────────────────────────────────
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light');
+            document.getElementById('theme-toggle').textContent = isLight ? '🌑' : '🌙';
+            localStorage.setItem('p2-theme', isLight ? 'light' : 'dark');
+        }
+        (function() {
+            if (localStorage.getItem('p2-theme') === 'light') {
+                document.body.classList.add('light');
+                const btn = document.getElementById('theme-toggle');
+                if (btn) btn.textContent = '🌑';
+            }
+        })();
+
+        // ─── Voice input ──────────────────────────────────────────────────────────
+        let voiceRecognition = null, voiceActive = false;
+        function toggleVoice() {
+            const btn = document.getElementById('voice-btn');
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                alert('Reconnaissance vocale non supportée. Utilisez Chrome.'); return;
+            }
+            if (voiceActive && voiceRecognition) { voiceRecognition.stop(); return; }
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            voiceRecognition = new SR();
+            voiceRecognition.lang = 'fr-FR'; voiceRecognition.continuous = false; voiceRecognition.interimResults = false;
+            voiceRecognition.onstart = () => { voiceActive = true; btn.classList.add('active'); btn.textContent = '🔴'; };
+            voiceRecognition.onend = () => { voiceActive = false; btn.classList.remove('active'); btn.textContent = '🎤'; };
+            voiceRecognition.onresult = (e) => { const inp = document.getElementById('chat-input'); inp.value = (inp.value ? inp.value + ' ' : '') + e.results[0][0].transcript; inp.focus(); };
+            voiceRecognition.onerror = () => { voiceActive = false; btn.classList.remove('active'); btn.textContent = '🎤'; };
+            voiceRecognition.start();
+        }
+        function handleFileUpload(event) {
+            const file = event.target.files[0]; if (!file) return;
+            const inp = document.getElementById('chat-input');
+            inp.value = `[Fichier: ${file.name}]`; inp.focus(); event.target.value = '';
         }
     </script>
 </body>
