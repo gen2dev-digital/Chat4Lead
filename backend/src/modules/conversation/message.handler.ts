@@ -700,7 +700,7 @@ export class MessageHandler {
         const projetFields = [
             'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
             'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
-            'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'international', 'contraintes',
+            'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'autorisationStationnementDepart', 'autorisationStationnementArrivee', 'caveOuStockage', 'international', 'contraintes',
         ];
 
         for (const field of projetFields) {
@@ -1018,6 +1018,9 @@ export class MessageHandler {
             // Champs booléens (on garde true seulement)
             if (data.monteMeuble === true) e.monteMeuble = true;
             if (data.autorisationStationnement === true) e.autorisationStationnement = true;
+            if (data.autorisationStationnementDepart === true) e.autorisationStationnementDepart = true;
+            if (data.autorisationStationnementArrivee === true) e.autorisationStationnementArrivee = true;
+            if (data.caveOuStockage === true) e.caveOuStockage = true;
             if (data.international === true) e.international = true;
 
             // Tableau d'objets spéciaux (on garde seulement si non vide)

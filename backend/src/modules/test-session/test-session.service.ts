@@ -216,7 +216,8 @@ export const testSessionService = {
   ${projet.international ? `<tr><td>🌍 International</td><td style="color:#f59e0b;font-weight:600">Oui — hors France</td></tr>` : ''}
   ${projet.objetSpeciaux && Array.isArray(projet.objetSpeciaux) && projet.objetSpeciaux.length > 0 ? `<tr><td>📦 Objets spéciaux</td><td style="color:#f59e0b">${htmlEsc(projet.objetSpeciaux.join(', '))}</td></tr>` : ''}
   ${projet.monteMeuble ? `<tr><td>🏗️ Monte-meuble</td><td style="color:#f59e0b;font-weight:600">Requis</td></tr>` : ''}
-  ${projet.autorisationStationnement ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise</td></tr>` : ''}
+  ${(projet.autorisationStationnementDepart || projet.autorisationStationnementArrivee) ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise (${projet.autorisationStationnementDepart && projet.autorisationStationnementArrivee ? 'départ et arrivée' : projet.autorisationStationnementDepart ? 'départ' : 'arrivée'})</td></tr>` : projet.autorisationStationnement ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise</td></tr>` : ''}
+  ${projet.caveOuStockage ? `<tr><td>📦 Cave / stockage</td><td style="color:#f59e0b">Oui</td></tr>` : ''}
   ${projet.contraintes ? `<tr><td>⚠️ Contraintes</td><td style="color:#f59e0b">${htmlEsc(projet.contraintes)}</td></tr>` : ''}
   <tr><td>Priorité calculée</td><td><span style="color:${priorityColor};font-weight:bold;cursor:help;" title="CHAUD=prioritaire, TIÈDE=intéressant, MOYEN=à suivre, FROID=peu qualifié">${priorite}</span></td></tr>
   <tr><td>Score final</td><td><strong style="color:${scoreColor};cursor:help;" title="Complétude (50pts) + Urgence (20pts) + Valeur projet (20pts) + Engagement (10pts)">${score}/100</strong></td></tr>
@@ -335,6 +336,16 @@ export const testSessionService = {
 })();
 </script>` : '';
 
+        const SYSTEM_PHRASES = [
+            'Email de notification envoyé', 'Lead qualifié automatiquement', 'Fiche envoyée au CRM', 'Conversation qualifiée'
+        ];
+        function stripSystemPhrases(text: string): string {
+            let out = text;
+            for (const phrase of SYSTEM_PHRASES) {
+                out = out.replace(new RegExp(phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), '');
+            }
+            return out.replace(/\s{2,}/g, ' ').trim();
+        }
         let convHtml = '';
         if (exchanges.length) {
             convHtml = `<div class="section-title">💬 Conversation (${exchanges.length} messages)</div>\n`;
@@ -342,6 +353,7 @@ export const testSessionService = {
                 let content = ex.content;
                 if (ex.role === 'bot') {
                     Object.keys(ACTION_LABELS).forEach(key => content = content.replace(new RegExp(key, 'g'), ''));
+                    content = stripSystemPhrases(content);
                 }
                 convHtml += `<div class="msg ${ex.role}">${htmlEsc(content.trim())}</div>\n`;
             }
