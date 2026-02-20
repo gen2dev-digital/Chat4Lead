@@ -89,6 +89,29 @@ router.get('/report/:sessionId', async (req: Request, res: Response) => {
 });
 
 // ══════════════════════════════════════════════
+//  PATCH /api/test-session/:sessionId/organiser-feedback
+//  Analyse organisateur (Phase 2/3) : note conv, note extraction, lead qualifié
+// ══════════════════════════════════════════════
+
+router.patch('/:sessionId/organiser-feedback', async (req: Request, res: Response) => {
+    try {
+        const { sessionId } = req.params;
+        const { noteConversation, noteExtraction, leadQualifie } = req.body;
+        await testSessionService.updateOrganiserFeedback(sessionId, {
+            noteConversation: noteConversation != null ? Number(noteConversation) : undefined,
+            noteExtraction: noteExtraction != null ? Number(noteExtraction) : undefined,
+            leadQualifie: typeof leadQualifie === 'string' ? leadQualifie : undefined,
+        });
+        res.json({ success: true });
+    } catch (error: any) {
+        logger.error('Error updating organiser feedback:', error);
+        res.status(error?.message === 'Session introuvable' ? 404 : 500).json({
+            error: error?.message || 'Impossible d\'enregistrer l\'analyse organisateur',
+        });
+    }
+});
+
+// ══════════════════════════════════════════════
 //  DELETE /api/test-session/:sessionId
 //  Supprime une session (ex: sessions "Auto" sans feedback)
 // ══════════════════════════════════════════════

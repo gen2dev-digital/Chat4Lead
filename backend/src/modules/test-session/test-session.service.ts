@@ -79,6 +79,30 @@ export const testSessionService = {
         return { reportFilename: updatedSession.reportFilename };
     },
 
+    /**
+     * Met à jour ou ajoute l'analyse organisateur (note conv, note extraction, lead qualifié)
+     * pour les sessions Phase 2 et Phase 3. Fusionne avec le feedback existant.
+     */
+    async updateOrganiserFeedback(
+        sessionId: string,
+        data: { noteConversation?: number; noteExtraction?: number; leadQualifie?: string }
+    ) {
+        const session = await prisma.manualTestSession.findUnique({ where: { id: sessionId } });
+        if (!session) throw new Error('Session introuvable');
+        const fb = (session.feedback as Record<string, unknown>) || {};
+        const merged = {
+            ...fb,
+            organiserNoteConv: data.noteConversation,
+            organiserNoteExtraction: data.noteExtraction,
+            organiserLeadQualifie: data.leadQualifie,
+        };
+        await prisma.manualTestSession.update({
+            where: { id: sessionId },
+            data: { feedback: merged },
+        });
+        return { success: true };
+    },
+
     async getDashboard(testerProfile?: string) {
         const sessions = await prisma.manualTestSession.findMany({
             where: testerProfile ? { testerProfile } : {},
@@ -248,8 +272,68 @@ export const testSessionService = {
   <tr><td>Classification OK ?</td><td>${htmlEsc(fb.classifOk)}</td></tr>
   ${fb.classifDetail ? `<tr><td>Précision classification</td><td>${htmlEsc(fb.classifDetail)}</td></tr>` : ''}
   <tr><td>Questions manquantes</td><td>${fb.questionsManquantes ? htmlEsc(fb.questionsManquantes) : '—'}</td></tr>
+  ${fb.noteConversation != null ? `<tr><td>Note qualité conversation (pro)</td><td><strong>${fb.noteConversation}/10</strong></td></tr>` : ''}
+  ${fb.noteExtraction != null ? `<tr><td>Note qualité extraction (pro)</td><td><strong>${fb.noteExtraction}/10</strong></td></tr>` : ''}
+  ${fb.leadQualifie ? `<tr><td>Lead qualifié ? (pro)</td><td style="font-weight:600">${htmlEsc(fb.leadQualifie)}</td></tr>` : ''}
 </table>`;
         }
+
+        // Bloc Analyse organisateur (Phase 2 et 3) — rempli après coup par l'organisateur
+        let organiserHtml = '';
+        const ob = (session.feedback as any) || {};
+        if ((session.phase === 'phase2' || session.phase === 'phase3') && (ob.organiserNoteConv != null || ob.organiserNoteExtraction != null || ob.organiserLeadQualifie)) {
+            const oc = ob.organiserNoteConv ?? '—';
+            const oe = ob.organiserNoteExtraction ?? '—';
+            const oq = ob.organiserLeadQualifie ?? '—';
+            const oqColor = oq === 'Oui' ? 'var(--green)' : oq === 'Non' ? 'var(--red)' : 'var(--amber)';
+            organiserHtml = `
+<div class="card" style="margin-top:16px">
+  <div class="section-title">📋 Analyse organisateur</div>
+  <table class="lead-table">
+    <tr><td>Note qualité conversation</td><td><strong>${oc}/10</strong></td></tr>
+    <tr><td>Note qualité extraction</td><td><strong>${oe}/10</strong></td></tr>
+    <tr><td>Lead qualifié ?</td><td style="font-weight:600;color:${oqColor}">${htmlEsc(String(oq))}</td></tr>
+  </table>
+</div>`;
+        }
+
+        // Formulaire pour remplir / mettre à jour l'analyse organisateur (Phase 2 et 3)
+        const organiserFormHtml = (session.phase === 'phase2' || session.phase === 'phase3') ? `
+<div class="card" id="organiser-form-card" style="margin-top:20px">
+  <div class="section-title">📋 Compléter l'analyse organisateur</div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:12px">En tant qu'organisateur, vous pouvez noter la qualité de la conversation, de l'extraction des données et indiquer si le lead est qualifié.</p>
+  <form id="organiser-form" style="display:grid;gap:12px;max-width:400px">
+    <label style="font-size:13px">Note qualité conversation (0-10) <input type="number" name="noteConversation" min="0" max="10" value="${ob.organiserNoteConv ?? ''}" style="width:60px;margin-left:8px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px"></label>
+    <label style="font-size:13px">Note qualité extraction (0-10) <input type="number" name="noteExtraction" min="0" max="10" value="${ob.organiserNoteExtraction ?? ''}" style="width:60px;margin-left:8px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px"></label>
+    <label style="font-size:13px">Lead qualifié ?
+      <select name="leadQualifie" style="margin-left:8px;background:var(--card);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:6px">
+        <option value="">—</option>
+        <option value="Oui" ${ob.organiserLeadQualifie === 'Oui' ? 'selected' : ''}>Oui</option>
+        <option value="Non" ${ob.organiserLeadQualifie === 'Non' ? 'selected' : ''}>Non</option>
+        <option value="Partiel" ${ob.organiserLeadQualifie === 'Partiel' ? 'selected' : ''}>Partiel</option>
+      </select>
+    </label>
+    <button type="submit" style="padding:8px 16px;background:var(--accent);border:none;color:#fff;border-radius:8px;cursor:pointer;font-size:14px">Enregistrer l'analyse</button>
+  </form>
+  <p id="organiser-status" style="font-size:13px;margin-top:8px"></p>
+</div>
+<script>
+(function(){
+  var form = document.getElementById('organiser-form');
+  var status = document.getElementById('organiser-status');
+  var sessionId = '${session.id}';
+  form.onsubmit = function(e){
+    e.preventDefault();
+    var fd = new FormData(form);
+    var body = { noteConversation: fd.get('noteConversation') ? parseInt(fd.get('noteConversation'), 10) : undefined, noteExtraction: fd.get('noteExtraction') ? parseInt(fd.get('noteExtraction'), 10) : undefined, leadQualifie: fd.get('leadQualifie') || undefined };
+    status.textContent = 'Enregistrement…';
+    status.style.color = 'var(--muted)';
+    fetch(window.location.origin + '/api/test-session/' + sessionId + '/organiser-feedback', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ if(r.ok) { status.textContent = 'Analyse enregistrée.'; status.style.color = 'var(--green)'; } else { status.textContent = 'Erreur ' + r.status; status.style.color = 'var(--red)'; } })
+      .catch(function(err){ status.textContent = 'Erreur: ' + err.message; status.style.color = 'var(--red)'; });
+  };
+})();
+</script>` : '';
 
         let convHtml = '';
         if (exchanges.length) {
@@ -311,8 +395,10 @@ h1{font-size:26px;margin-bottom:4px}
   <div class="card">${leadDataHtml}</div>
   ${recapHtml ? `<div class="card">${recapHtml}</div>` : ''}
   ${feedbackHtml ? `<div class="card">${feedbackHtml}</div>` : ''}
+  ${organiserHtml}
   <div class="card">${convHtml}</div>
   <div class="verdict ${verdictClass}">${verdictText}</div>
+  ${organiserFormHtml}
 </div>
 </body>
 </html>`;

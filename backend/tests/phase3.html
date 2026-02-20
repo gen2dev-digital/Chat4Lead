@@ -1066,6 +1066,31 @@
                     <textarea class="fb-input" id="q-priorite-1" placeholder="Votre conseil le plus important..."
                         rows="2"></textarea>
                 </div>
+
+                <!-- BLOC 5: QUALITÉ CONVERSATION & EXTRACTION (pro) -->
+                <div class="fb-card full"
+                    style="background:rgba(99, 255, 218, 0.05); border-color:var(--accent3); text-align:center;">
+                    <h3 style="color:var(--accent3); font-family:Syne; text-transform:uppercase; letter-spacing:2px;">
+                        ━━━ QUALITÉ DU CHATBOT (VOTRE AVIS PRO) ━━━━━━━</h3>
+                </div>
+                <div class="fb-card">
+                    <span class="fb-label">Note qualité de la conversation (0–10)</span>
+                    <input type="number" class="fb-input" id="q-note-conv" min="0" max="10" placeholder="0 à 10"
+                        style="max-width:120px">
+                </div>
+                <div class="fb-card">
+                    <span class="fb-label">Note qualité de l'extraction des données (0–10)</span>
+                    <input type="number" class="fb-input" id="q-note-extraction" min="0" max="10" placeholder="0 à 10"
+                        style="max-width:120px">
+                </div>
+                <div class="fb-card">
+                    <span class="fb-label">Lead qualifié ? (votre avis)</span>
+                    <div class="opt-list" id="q-lead-qualifie">
+                        <div class="opt-item" onclick="sel('q-lead-qualifie', this, 'Oui')"><span class="opt-dot"></span> Oui</div>
+                        <div class="opt-item" onclick="sel('q-lead-qualifie', this, 'Non')"><span class="opt-dot"></span> Non</div>
+                        <div class="opt-item" onclick="sel('q-lead-qualifie', this, 'Partiel')"><span class="opt-dot"></span> Partiel</div>
+                    </div>
+                </div>
             </div>
 
             <button class="submit-btn" id="submit-btn" onclick="submit()">Envoyer ma validation ✓</button>
@@ -1312,6 +1337,8 @@
             btn.disabled = true;
             btn.textContent = 'Envoi en cours…';
 
+            const noteConvEl = document.getElementById('q-note-conv');
+            const noteExtEl = document.getElementById('q-note-extraction');
             const feedback = {
                 infosSuffisantes: state.answers['q-infos'],
                 infosDetail: document.getElementById('q-infos-detail').value,
@@ -1329,7 +1356,10 @@
                 budgetMensuel: state.answers['q-budget'],
                 priorite1: document.getElementById('q-priorite-1').value,
                 computedScore: state.lastScore,
-                computedPriority: state.lastPriority
+                computedPriority: state.lastPriority,
+                noteConversation: noteConvEl && noteConvEl.value !== '' ? parseInt(noteConvEl.value, 10) : undefined,
+                noteExtraction: noteExtEl && noteExtEl.value !== '' ? parseInt(noteExtEl.value, 10) : undefined,
+                leadQualifie: state.answers['q-lead-qualifie'] || undefined
             };
 
             try {
