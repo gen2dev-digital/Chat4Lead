@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { testSessionService } from './test-session.service';
 import { conversationService } from '../conversation/conversation.service';
+import { prisma } from '../../config/database';
 import { logger } from '../../utils/logger';
 
 const router = Router();
@@ -84,6 +85,22 @@ router.get('/report/:sessionId', async (req: Request, res: Response) => {
     } catch (error) {
         logger.error('Error generating report:', error);
         res.status(500).send('Erreur lors de la génération du rapport');
+    }
+});
+
+// ══════════════════════════════════════════════
+//  DELETE /api/test-session/:sessionId
+//  Supprime une session (ex: sessions "Auto" sans feedback)
+// ══════════════════════════════════════════════
+
+router.delete('/:sessionId', async (req: Request, res: Response) => {
+    try {
+        const { sessionId } = req.params;
+        await prisma.manualTestSession.delete({ where: { id: sessionId } });
+        res.json({ success: true });
+    } catch (error) {
+        logger.error('Error deleting test session:', error);
+        res.status(500).json({ error: 'Impossible de supprimer la session' });
     }
 });
 

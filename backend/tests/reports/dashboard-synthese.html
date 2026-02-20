@@ -861,13 +861,17 @@
                 if (s.phase === 'phase1') { badgeClass = 'badge-phase1'; badgeLabel = '🛠️ Phase 1'; }
                 else if (s.phase === 'phase3') { badgeClass = 'badge-phase3'; badgeLabel = '🏢 Phase 3'; }
 
+                const isAuto = !s.feedback;
                 return `
           <tr>
             <td><span class="${badgeClass}">${badgeLabel}</span></td>
             <td style="font-family:monospace;font-size:.78rem;color:var(--muted)">${s.sessionId}</td>
             <td style="color:var(--muted);font-size:.82rem">${new Date(s.createdAt).toLocaleString('fr-FR')}</td>
             <td>${s.feedback ? '<span style="color:var(--green)">✓ Soumis</span>' : (s.phase === 'phase1' ? '<span style="color:var(--muted)">Auto</span>' : '<span style="color:var(--muted)">En attente</span>')}</td>
-            <td>${s.reportFilename ? `<a class="report-btn" href="${API_BASE}/api/test-session/report/${s.sessionId}" target="_blank">Voir →</a>` : '—'}</td>
+            <td style="display:flex;gap:6px;align-items:center">
+              <a class="report-btn" href="${API_BASE}/api/test-session/report/${s.sessionId}" target="_blank">Voir →</a>
+              ${isAuto ? `<button onclick="deleteSession('${s.sessionId}')" title="Supprimer cette session" style="background:none;border:1px solid var(--red,#ef4444);color:var(--red,#ef4444);padding:3px 7px;border-radius:5px;cursor:pointer;font-size:.75rem;line-height:1">🗑️</button>` : ''}
+            </td>
           </tr>
         `}).join('')}
       </tbody>
@@ -877,6 +881,20 @@
 
         function escHtml(s) {
             return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        async function deleteSession(id) {
+            if (!confirm('Supprimer cette session ? Cette action est irréversible.')) return;
+            try {
+                const res = await fetch(API_BASE + '/api/test-session/' + id, { method: 'DELETE' });
+                if (res.ok) {
+                    loadDashboard();
+                } else {
+                    alert('Erreur lors de la suppression.');
+                }
+            } catch (e) {
+                alert('Erreur réseau : ' + e.message);
+            }
         }
 
         // Auto-load on start

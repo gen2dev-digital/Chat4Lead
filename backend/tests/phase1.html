@@ -831,6 +831,29 @@
             }
         }
 
+        /* ── Full Responsive (mobile-first) ── */
+        @media (max-width: 768px) {
+            .top-bar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+            .wrap { padding: 0 0 40px; }
+            .hero { padding: 40px 16px 28px; }
+            .presets { gap: 6px; }
+            .preset-btn { font-size: .75rem; padding: 6px 10px; }
+            .cta-btn { width: 100%; }
+            #chat-section { padding: 16px; }
+            .chat-window { height: 60vh; }
+            .chat-input-row { padding: 6px 10px; gap: 4px; }
+            .chat-input { font-size: .85rem; }
+            .toolbar-btn { padding: 5px 7px; font-size: .9rem; }
+            .end-chat-btn { width: 100%; margin-top: 12px; }
+            .report-card { padding: 20px 14px; }
+            .report-actions { flex-direction: column; gap: 8px; }
+            .btn-primary, .btn-secondary { width: 100%; justify-content: center; text-align: center; }
+            .slot-grid { grid-template-columns: 1fr 1fr; }
+            .day-grid { grid-template-columns: repeat(4, 1fr); }
+            .dev-tools { padding: 14px; }
+            .dev-input { font-size: .8rem; }
+        }
+
         /* Bot actions / buttons */
         .bot-actions {
             display: flex;
@@ -1134,16 +1157,26 @@
                 <div class="report-entities">
                     <h3>🛠️ Analyse & Annotations</h3>
                     <div style="display:grid; gap:12px; margin-top:8px;">
-                        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+                        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;">
                             <div>
                                 <label style="font-size:.75rem; color:var(--text-muted);">Note Qualité Chat (0-10)</label><br>
                                 <input type="number" id="f-note" value="8" min="0" max="10"
                                     style="width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; border-radius:4px;">
                             </div>
                             <div>
-                                <label style="font-size:.75rem; color:var(--text-muted);">Note Qualité Données Extraites (0-10)</label><br>
+                                <label style="font-size:.75rem; color:var(--text-muted);">Note Qualité Données (0-10)</label><br>
                                 <input type="number" id="f-note-data" value="8" min="0" max="10"
                                     style="width:60px; background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px; border-radius:4px;">
+                            </div>
+                            <div>
+                                <label style="font-size:.75rem; color:var(--text-muted);">Lead qualifié ? (vendable)</label><br>
+                                <select id="f-lead-qualifie"
+                                    style="background:var(--bg); border:1px solid var(--border); color:var(--text); padding:4px 8px; border-radius:4px; font-family:inherit; font-size:.85rem;">
+                                    <option value="">—</option>
+                                    <option value="Oui">Oui ✅</option>
+                                    <option value="Non">Non ❌</option>
+                                    <option value="Partiel">Partiel ⚠️</option>
+                                </select>
                             </div>
                         </div>
                         <div>
@@ -1622,6 +1655,7 @@
             state.lastPriority = '—';
             state.lastLead = {};
             state.allActions = [];
+            state.pendingRating = 0;
             document.getElementById('chat-body').innerHTML = '';
             document.getElementById('live-score').textContent = '—';
             document.getElementById('live-priority').textContent = '—';
@@ -1645,7 +1679,11 @@
         }
 
         function submitStars() {
-            const rating = state.pendingRating || 5;
+            const rating = state.pendingRating || 0;
+            if (rating === 0) {
+                alert('Veuillez sélectionner une note avant de valider.');
+                return;
+            }
             const comment = document.getElementById('star-comment').value.trim();
             const text = `[NOTE: ${rating}/5] ${comment}`.trim();
             sendMsgText(text);
@@ -1719,6 +1757,7 @@
             const feedback = {
                 note: Number(document.getElementById('f-note').value || 0),
                 noteData: Number(document.getElementById('f-note-data').value || 0),
+                leadQualifie: document.getElementById('f-lead-qualifie').value,
                 problemes: document.getElementById('f-bugs').value.trim(),
                 suggestions: document.getElementById('f-suggestions').value.trim(),
             };

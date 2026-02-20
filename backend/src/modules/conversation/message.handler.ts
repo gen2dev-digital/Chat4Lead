@@ -115,11 +115,17 @@ export class MessageHandler {
                 llmContent = "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler votre message ?";
             }
 
-            // ── 6b. Nettoyage du texte LLM ──
+            // ── 6b. Extraire le bloc DATA JSON du LLM (Option B) ──
+            const { llmEntities, clean: cleanedContent } = this.parseLLMDataBlock(llmContent);
+            llmContent = cleanedContent;
+
+            // ── 6c. Nettoyage du texte LLM ──
             llmContent = this.sanitizeReply(llmContent);
 
-            // ── 7.  Extraction complète et mise à jour finale ──
-            const finalEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
+            // ── 7.  Extraction regex (fallback) + merge (LLM a priorité) ──
+            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
+            // LLM entities override regex entities (LLM has full context understanding)
+            const finalEntities = { ...regexEntities, ...llmEntities };
             if (currentLead && Object.keys(finalEntities).length > 0) {
                 currentLead = await this.updateLead(currentLead.id, finalEntities);
             }
@@ -331,12 +337,18 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ Surface extraction failed', e); }
 
-        // ── Nombre de pièces (F2, F3, T2, T3…) ──
+        // ── Nombre de pièces (F2, F3, T2, T3 + "2 bedrooms / 2-bedroom") ──
         try {
             const piecesRegex = /\b[FT](\d)\b/gi;
             const piecesMatch = piecesRegex.exec(combined);
             if (piecesMatch) {
                 entities.nbPieces = parseInt(piecesMatch[1], 10);
+            } else {
+                const bedroomRegex = /(\d+)[\s-]?(?:bedroom|bed)s?\b/i;
+                const bedroomMatch = bedroomRegex.exec(combined);
+                if (bedroomMatch) {
+                    entities.nbPieces = parseInt(bedroomMatch[1], 10);
+                }
             }
         } catch (e) { logger.error('❌ Pieces extraction failed', e); }
 
@@ -426,11 +438,11 @@ export class MessageHandler {
                     }
                 }
 
-                if (['de', 'vers', 'à', "de l'", "de la", "d'"].includes(prep) && /^[A-ZÀ-Ü]/i.test(nextWord)) {
+                if (['de', 'from', 'vers', 'à', 'to', "de l'", "de la", "d'"].includes(prep) && /^[A-ZÀ-Üa-zà-ü]/i.test(nextWord)) {
                     const city = this.capitalizeFirst(nextWord.replace(/[,.!?;]/g, ''));
                     if (CITY_STOP.has(city.toLowerCase())) continue;
-                    if (prep === 'de' && !entities.villeDepart && !existingProjetData.villeDepart) entities.villeDepart = city;
-                    if (['vers', 'à'].includes(prep) && !entities.villeArrivee && !existingProjetData.villeArrivee) {
+                    if (['de', 'from'].includes(prep) && !entities.villeDepart && !existingProjetData.villeDepart) entities.villeDepart = city;
+                    if (['vers', 'à', 'to'].includes(prep) && !entities.villeArrivee && !existingProjetData.villeArrivee) {
                         entities.villeArrivee = city;
                     }
                 }
@@ -449,26 +461,35 @@ export class MessageHandler {
         }
 
         // ── Créneau de rappel (jour + horaire) ──
+        // IMPORTANT: recherche uniquement dans le message utilisateur (pas dans la réponse bot)
+        // pour éviter les faux positifs quand le bot propose "matin ou après-midi"
         {
+            const lowerMsg = message.toLowerCase();
             const JOURS: Record<string, string> = {
                 'lundi': 'Lundi', 'mardi': 'Mardi', 'mercredi': 'Mercredi',
                 'jeudi': 'Jeudi', 'vendredi': 'Vendredi', 'samedi': 'Samedi', 'dimanche': 'Dimanche',
+                'monday': 'Lundi', 'tuesday': 'Mardi', 'wednesday': 'Mercredi',
+                'thursday': 'Jeudi', 'friday': 'Vendredi', 'saturday': 'Samedi', 'sunday': 'Dimanche',
             };
             let jourTrouve = '';
-            for (const [k, v] of Object.entries(JOURS)) {
-                if (lowerCombined.includes(k)) { jourTrouve = v; break; }
+            if (lowerMsg.includes('demain') || lowerMsg.includes('tomorrow')) {
+                jourTrouve = 'Demain';
+            } else {
+                for (const [k, v] of Object.entries(JOURS)) {
+                    if (lowerMsg.includes(k)) { jourTrouve = v; break; }
+                }
             }
             let horaireTrouve = '';
-            if (lowerCombined.includes('matin') || lowerCombined.includes('9h') || lowerCombined.includes('9h-12h')) {
+            if (lowerMsg.includes('matin') || lowerMsg.includes('morning') || lowerMsg.includes('9h') || lowerMsg.includes('9h-12h')) {
                 horaireTrouve = 'Matin (9h-12h)';
-            } else if (lowerCombined.includes('après-midi') || lowerCombined.includes('apres-midi') || lowerCombined.includes('14h')) {
+            } else if (lowerMsg.includes('après-midi') || lowerMsg.includes('apres-midi') || lowerMsg.includes('afternoon') || lowerMsg.includes('14h')) {
                 horaireTrouve = 'Après-midi (14h-18h)';
-            } else if (lowerCombined.includes('soir') || lowerCombined.includes('18h') || lowerCombined.includes('20h')) {
+            } else if (lowerMsg.includes('soir') || lowerMsg.includes('evening') || lowerMsg.includes('18h') || lowerMsg.includes('20h')) {
                 horaireTrouve = 'Soir (après 18h)';
-            } else if (lowerCombined.includes('midi') || lowerCombined.includes('12h')) {
+            } else if (lowerMsg.includes('midi') || lowerMsg.includes('noon') || lowerMsg.includes('12h')) {
                 horaireTrouve = 'Midi (12h-14h)';
             }
-            if (lowerCombined.includes('pas de préférence') || lowerCombined.includes('peu importe') || lowerCombined.includes('n\'importe')) {
+            if (lowerMsg.includes('pas de préférence') || lowerMsg.includes('peu importe') || lowerMsg.includes("n'importe") || lowerMsg.includes('anytime') || lowerMsg.includes('flexible')) {
                 entities.creneauRappel = 'Pas de préférence';
             } else if (jourTrouve || horaireTrouve) {
                 entities.creneauRappel = [jourTrouve, horaireTrouve].filter(Boolean).join(' ');
@@ -540,7 +561,12 @@ export class MessageHandler {
             'laissez', 'contacter', 'rappeler', 'confirmer', 'standard', 'luxe', 'eco', 'formule', 'prestation',
             'parking', 'ascenseur', 'escalier', 'cest', 'note', 'noté',
             'jdemenage', 'jdemenag', 'demenage', 'demenagement', 'demenageons', 'demenager', 'moving', 'move', 'immoving', 'deménage', 'démén',
-            'midi', 'apres', 'après', 'matin', 'soir', 'heure', 'heures', 'rdv', 'rendez-vous'
+            'midi', 'apres', 'après', 'matin', 'soir', 'heure', 'heures', 'rdv', 'rendez-vous',
+            // Mots anglais courants (satisfaction, confirmations) qui ne sont jamais des prénoms
+            'its', 'good', 'great', 'excellent', 'perfect', 'wonderful', 'fine', 'nice', 'awesome',
+            'thanks', 'thank', 'okay', 'alright', 'done', 'noted', 'confirmed', 'understood',
+            'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+            'tomorrow', 'today', 'yesterday', 'morning', 'afternoon', 'evening', 'night'
         ]);
 
         const NAME_STOPWORDS = new Set([
@@ -674,6 +700,7 @@ export class MessageHandler {
         const projetFields = [
             'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
             'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
+            'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'international', 'contraintes',
         ];
 
         for (const field of projetFields) {
@@ -943,6 +970,66 @@ export class MessageHandler {
         } catch (error) {
             logger.warn('⚠️ Geo API error', { codePostal, error: String(error) });
             return null;
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  LLM DATA BLOCK PARSER (Option B extraction)
+    // ──────────────────────────────────────────────
+
+    /**
+     * Parse le bloc <!--DATA:{...}--> inséré par le LLM à la fin de chaque réponse.
+     * Ce bloc contient toutes les données structurées extraites par le LLM (fiabilité > regex).
+     * Retourne les entités parsées + le texte nettoyé (sans le bloc).
+     */
+    private parseLLMDataBlock(raw: string): { llmEntities: any; clean: string } {
+        const match = raw.match(/<!--DATA:([\s\S]*?)-->/);
+        const clean = raw.replace(/<!--DATA:[\s\S]*?-->/, '').trim();
+
+        if (!match) {
+            logger.debug('🔍 [LLM-DATA] No DATA block found in reply');
+            return { llmEntities: {}, clean };
+        }
+
+        try {
+            const data = JSON.parse(match[1].trim());
+            const e: any = {};
+
+            // Champs directs du lead
+            if (data.prenom && typeof data.prenom === 'string') e.prenom = data.prenom;
+            if (data.nom && typeof data.nom === 'string') e.nom = data.nom;
+            if (data.email && typeof data.email === 'string') e.email = data.email.toLowerCase();
+            if (data.telephone && typeof data.telephone === 'string') e.telephone = data.telephone;
+            if (data.creneauRappel && typeof data.creneauRappel === 'string') e.creneauRappel = data.creneauRappel;
+            if (data.satisfaction && typeof data.satisfaction === 'string') e.satisfaction = data.satisfaction;
+
+            // Champs projetData — on garde uniquement les valeurs non-vides
+            const projetFields = [
+                'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
+                'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'formule',
+                'contraintes',
+            ];
+            for (const f of projetFields) {
+                if (data[f] !== null && data[f] !== undefined && data[f] !== '' && data[f] !== 0) {
+                    e[f] = data[f];
+                }
+            }
+
+            // Champs booléens (on garde true seulement)
+            if (data.monteMeuble === true) e.monteMeuble = true;
+            if (data.autorisationStationnement === true) e.autorisationStationnement = true;
+            if (data.international === true) e.international = true;
+
+            // Tableau d'objets spéciaux (on garde seulement si non vide)
+            if (Array.isArray(data.objetSpeciaux) && data.objetSpeciaux.length > 0) {
+                e.objetSpeciaux = data.objetSpeciaux;
+            }
+
+            logger.info('✅ [LLM-DATA] Block parsed', { fields: Object.keys(e) });
+            return { llmEntities: e, clean };
+        } catch (err) {
+            logger.warn('⚠️ [LLM-DATA] Failed to parse DATA block', { error: String(err), raw: match[1].substring(0, 100) });
+            return { llmEntities: {}, clean };
         }
     }
 }

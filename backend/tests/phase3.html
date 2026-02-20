@@ -570,6 +570,25 @@
             }
         }
 
+        /* ── Full Responsive (mobile-first) ── */
+        @media (max-width: 768px) {
+            .top-bar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+            .wrap { padding: 0 0 40px; }
+            .chat-layout { grid-template-columns: 1fr; }
+            .chat-col { min-height: 60vh; }
+            .chat-body { height: 50vh; }
+            .chat-footer { padding: 10px 12px; gap: 6px; }
+            .chat-inp { font-size: .85rem; }
+            .toolbar-btn { padding: 5px 7px; font-size: .9rem; }
+            .score-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .feedback-section { padding: 20px 14px; }
+            .fb-grid { grid-template-columns: 1fr; }
+            .fb-card { padding: 16px; }
+            .submit-btn { width: 100%; }
+            .slot-grid { grid-template-columns: 1fr 1fr; }
+            .day-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
         .fb-card {
             background: var(--surface);
             border: 1px solid var(--border);

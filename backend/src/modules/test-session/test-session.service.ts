@@ -188,6 +188,12 @@ export const testSessionService = {
   <tr><td>📅 Date souhaitée</td><td>${htmlEsc(projet.dateSouhaitee || '—')}</td></tr>
   <tr><td>📋 Formule</td><td>${htmlEsc(projet.formule || '—')}</td></tr>
   ${lead.creneauRappel ? `<tr><td>📞 Créneau rappel</td><td>${htmlEsc(lead.creneauRappel)}</td></tr>` : ''}
+  ${lead.satisfaction ? `<tr><td>⭐ Satisfaction</td><td>${htmlEsc(lead.satisfaction)}</td></tr>` : ''}
+  ${projet.international ? `<tr><td>🌍 International</td><td style="color:#f59e0b;font-weight:600">Oui — hors France</td></tr>` : ''}
+  ${projet.objetSpeciaux && Array.isArray(projet.objetSpeciaux) && projet.objetSpeciaux.length > 0 ? `<tr><td>📦 Objets spéciaux</td><td style="color:#f59e0b">${htmlEsc(projet.objetSpeciaux.join(', '))}</td></tr>` : ''}
+  ${projet.monteMeuble ? `<tr><td>🏗️ Monte-meuble</td><td style="color:#f59e0b;font-weight:600">Requis</td></tr>` : ''}
+  ${projet.autorisationStationnement ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise</td></tr>` : ''}
+  ${projet.contraintes ? `<tr><td>⚠️ Contraintes</td><td style="color:#f59e0b">${htmlEsc(projet.contraintes)}</td></tr>` : ''}
   <tr><td>Priorité calculée</td><td><span style="color:${priorityColor};font-weight:bold;cursor:help;" title="CHAUD=prioritaire, TIÈDE=intéressant, MOYEN=à suivre, FROID=peu qualifié">${priorite}</span></td></tr>
   <tr><td>Score final</td><td><strong style="color:${scoreColor};cursor:help;" title="Complétude (50pts) + Urgence (20pts) + Valeur projet (20pts) + Engagement (10pts)">${score}/100</strong></td></tr>
 </table>`;
@@ -208,7 +214,9 @@ export const testSessionService = {
             feedbackHtml = `
 <div class="section-title">🛠️ Analyse Développeur (Phase 1)</div>
 <table class="lead-table">
-  <tr><td>Note Qualité Chat</td><td><strong>${fb.note}/10</strong></td></tr>
+  <tr><td>Note Qualité Chat</td><td><strong>${fb.note ?? '—'}/10</strong></td></tr>
+  <tr><td>Note Qualité Données</td><td><strong>${fb.noteData ?? '—'}/10</strong></td></tr>
+  <tr><td>Lead qualifié ?</td><td style="font-weight:600;color:${fb.leadQualifie === 'Oui' ? 'var(--green)' : fb.leadQualifie === 'Non' ? 'var(--red)' : 'var(--amber)'}">${fb.leadQualifie ?? '—'}</td></tr>
   <tr><td>🐛 Problèmes Détectés</td><td style="color:var(--red)">${fb.problemes ? htmlEsc(fb.problemes) : 'Aucun'}</td></tr>
   <tr><td>💡 Suggestions</td><td style="color:var(--green)">${fb.suggestions ? htmlEsc(fb.suggestions) : 'Aucune'}</td></tr>
 </table>`;

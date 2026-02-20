@@ -145,6 +145,17 @@ ${formatLeadData(leadData, infosCollectees)}
 📞 Contact : ${leadData.telephone || '[Téléphone]'}
 📧 Email : ${leadData.email || '[Email]'}
 Notre équipe vous recontacte très bientôt ! 🚀
+
+# EXTRACTION JSON (CRITIQUE — OBLIGATOIRE À CHAQUE RÉPONSE)
+À la toute fin de CHAQUE réponse (même les courtes), ajoute EXACTEMENT ce bloc sur une seule ligne.
+Ce bloc est invisible pour l'utilisateur, ne le mentionne JAMAIS.
+Remplace les null/false/[] par les valeurs RÉELLEMENT communiquées dans la conversation.
+NE JAMAIS inventer une valeur. Si une info n'a pas été donnée → laisser null/false/[].
+"international" = true UNIQUEMENT si la destination est hors de France.
+"objetSpeciaux" = liste des objets lourds/fragiles/motorisés mentionnés (piano, moto, scooter, jacuzzi...).
+"contraintes" = tout accès difficile, étage sans ascenseur, rue étroite, garde-meuble, etc.
+
+<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"international":false,"contraintes":null}-->
 `;
 }
 
