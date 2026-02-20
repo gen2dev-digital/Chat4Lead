@@ -498,6 +498,115 @@
         .quick-link:hover {
             border-color: var(--accent);
         }
+
+        /* ── Full responsive (mobile & tablet) ── */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 12px 32px;
+            }
+            .header {
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-bottom: 24px;
+            }
+            .header h1 {
+                font-size: 1.25rem;
+                margin-left: 0;
+            }
+            .header-badge {
+                margin-left: 0;
+            }
+            .header .refresh-btn {
+                width: 100%;
+            }
+            .quick-links {
+                gap: 8px;
+                margin-bottom: 24px;
+            }
+            .quick-link {
+                flex: 1 1 100%;
+                justify-content: center;
+                padding: 10px 12px;
+                font-size: .8rem;
+            }
+            .phases {
+                gap: 12px;
+                margin-bottom: 24px;
+            }
+            .phase-card {
+                padding: 16px;
+            }
+            .phase-title {
+                font-size: .95rem;
+            }
+            .verdict {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+                padding: 16px;
+                margin-bottom: 24px;
+            }
+            .verdict-title {
+                font-size: 1.1rem;
+            }
+            .main-grid {
+                gap: 16px;
+            }
+            .card {
+                padding: 16px;
+            }
+            .card-title {
+                font-size: .78rem;
+                margin-bottom: 12px;
+            }
+            .gongo-grid {
+                grid-template-columns: 1fr;
+            }
+            /* Table scroll horizontal sur mobile */
+            .sessions-table-card {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .sessions-table {
+                min-width: 520px;
+                font-size: .78rem;
+            }
+            .sessions-table th,
+            .sessions-table td {
+                padding: 8px 10px;
+            }
+            .sessions-table td:first-of-type {
+                white-space: nowrap;
+            }
+            .sessions-table td:nth-child(2) {
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .problem-item,
+            .suggestion-item {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .empty {
+                padding: 32px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px 10px 24px;
+            }
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            .sessions-table {
+                min-width: 480px;
+            }
+        }
     </style>
 </head>
 
@@ -646,7 +755,7 @@
                 </div>
 
                 <!-- Sessions table -->
-                <div class="card full">
+                <div class="card full sessions-table-card">
                     <div class="card-title">📋 Toutes les Sessions</div>
                     <div id="sessions-container">
                         <div class="empty">
