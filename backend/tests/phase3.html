@@ -1008,6 +1008,8 @@
                                 class="opt-dot"></span> Formulaire web basique</div>
                         <div class="opt-item" onclick="sel('q-process', this, 'Appel entrant direct')"><span
                                 class="opt-dot"></span> Appel entrant direct</div>
+                        <div class="opt-item" onclick="sel('q-process', this, 'Achat de fiche')"><span
+                                class="opt-dot"></span> Achat de fiche</div>
                         <div class="opt-item" onclick="sel('q-process', this, 'Rien de structuré')"><span
                                 class="opt-dot"></span> Rien de structuré (main)</div>
                         <div class="opt-item" onclick="sel('q-process', this, 'Autre')"><span class="opt-dot"></span>
@@ -1015,6 +1017,19 @@
                     </div>
                     <input type="text" class="fb-input" id="q-process-detail" placeholder="Si autre, précisez"
                         style="margin-top:10px;">
+                </div>
+
+                <div class="fb-card">
+                    <span class="fb-label">5b. MOYEN D'ACQUISITION CLIENT</span>
+                    <div class="opt-list" id="q-acquisition" style="flex-wrap:wrap;">
+                        <div class="opt-item" onclick="selMulti('q-acquisition', this, 'Réseaux sociaux')"><span class="opt-dot"></span> Réseaux sociaux</div>
+                        <div class="opt-item" onclick="selMulti('q-acquisition', this, 'Achat de fiche')"><span class="opt-dot"></span> Achat de fiche</div>
+                        <div class="opt-item" onclick="selMulti('q-acquisition', this, 'Ads (Google/Meta)')"><span class="opt-dot"></span> Ads (Google / Meta)</div>
+                        <div class="opt-item" onclick="selMulti('q-acquisition', this, 'Référencement naturel')"><span class="opt-dot"></span> Référencement naturel</div>
+                        <div class="opt-item" onclick="selMulti('q-acquisition', this, 'Bouche-à-oreille')"><span class="opt-dot"></span> Bouche-à-oreille</div>
+                        <div class="opt-item" onclick="selMulti('q-acquisition', this, 'Autre')"><span class="opt-dot"></span> Autre</div>
+                    </div>
+                    <input type="text" class="fb-input" id="q-acquisition-detail" placeholder="Précisez si besoin" style="margin-top:10px;">
                 </div>
 
                 <div class="fb-card">
@@ -1120,16 +1135,24 @@
             <button class="submit-btn" id="submit-btn" onclick="submit()">Envoyer ma validation ✓</button>
         </section>
 
+        <section id="data-preview-section" style="display:none; padding:30px 20px; max-width:700px; margin:0 auto;">
+            <h2 style="font-family:Syne; color:var(--accent3); text-transform:uppercase; letter-spacing:2px; margin-bottom:8px;">📋 Infos collectées</h2>
+            <p style="color:var(--text-muted); margin-bottom:20px; font-size:.9rem;">Consultez les données extraites par Tom avant de répondre au questionnaire.</p>
+            <div id="data-preview-content" style="background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; font-size:.9rem; line-height:1.8;"></div>
+            <div style="margin-top:16px; text-align:center;">
+                <a href="#" id="report-preview-link" style="display:none; color:var(--accent3); font-size:.88rem; margin-bottom:16px; display:block;">🔗 Voir le rapport complet →</a>
+            </div>
+            <button onclick="showFeedback()" style="margin-top:16px; width:100%; padding:14px; background:var(--accent); color:#fff; border:none; border-radius:10px; font-size:1rem; font-weight:700; cursor:pointer; font-family:Syne; text-transform:uppercase; letter-spacing:1px;">
+                J'ai consulté les données — Passer au questionnaire →
+            </button>
+        </section>
+
         <section id="thanks-section">
             <div class="thanks-icon">✓</div>
             <h2>Expertise validée</h2>
             <p>Merci pour votre retour professionnel. Vos observations vont nous aider à calibrer l'intelligence de Tom
                 pour qu'il soit un vrai allié pour votre activité.</p>
             <a href="#" id="report-link" class="report-link" style="display:none">🔗 Voir le rapport de session</a>
-            <div style="margin-top: 20px;">
-                <a href="./reports/dashboard-synthese.html" id="dashboard-link" style="color:var(--text-muted); font-size: .85rem;">📊
-                    Accéder au Dashboard Global</a>
-            </div>
         </section>
     </div>
 
@@ -1142,6 +1165,7 @@
             answers: {},
             lastScore: 0,
             lastPriority: '—',
+            lastLead: null,
             sending: false
         };
 
@@ -1151,10 +1175,7 @@
         const BACKEND_BASE = (_backendParam || (_isHttp ? window.location.origin : null) || 'https://chat4-lead-backend.vercel.app').replace(/\/$/, '');
         const API_BASE = BACKEND_BASE + '/api';
         const API_KEY = '5e3b46bc-c29c-4c2f-8689-bb8a4a803beb';
-        document.addEventListener('DOMContentLoaded', () => {
-            const el = document.getElementById('dashboard-link');
-            if (el && _backendParam) el.href = './reports/dashboard-synthese.html?backend=' + encodeURIComponent(_backendParam);
-        });
+        document.addEventListener('DOMContentLoaded', () => {});
 
         async function apiCall(method, path, body) {
             const res = await fetch(API_BASE + path, {
@@ -1206,8 +1227,19 @@
             div.className = 'msg bot';
             let cleanText = (text || '').trim();
             systemActionsP3.forEach(tag => { cleanText = cleanText.replace(new RegExp(tag, 'g'), ''); });
+            cleanText = cleanText.trim();
             const txt = document.createElement('div');
-            txt.textContent = cleanText;
+            if (cleanText.includes('VOTRE PROJET DE DÉMÉNAGEMENT')) {
+                const lines = cleanText.split('\n');
+                txt.innerHTML = lines.map(line => {
+                    const t = line.trim();
+                    if (!t) return '<div style="height:4px;"></div>';
+                    return `<div style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.07); line-height:1.5;">${t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+                }).join('');
+                txt.style.cssText = 'border:1px solid rgba(108,99,255,.2); border-radius:10px; padding:12px 14px; background:rgba(108,99,255,.04); margin-top:4px;';
+            } else {
+                txt.textContent = cleanText;
+            }
             div.appendChild(txt);
             if (cleanText.includes("Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous")) {
                 const w = document.createElement('div');
@@ -1242,6 +1274,26 @@
                     </div>
                     <div style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;">Le créneau sera reconfirmé par notre conseiller avant la visite.</div>`;
                 div.appendChild(w);
+            }
+            // Widget prestation (Eco / Standard / Luxe)
+            if (cleanText.includes('Eco') && cleanText.includes('Standard') && cleanText.includes('Luxe')) {
+                const pw = document.createElement('div');
+                pw.className = 'widget-container';
+                pw.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Choisissez votre prestation :</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="slot-btn" onclick="sendMsgText('Eco')" style="flex:1;min-width:80px;text-align:center;">
+                            🚚 <strong>Eco</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Transport seul</span>
+                        </button>
+                        <button class="slot-btn" onclick="sendMsgText('Standard')" style="flex:1;min-width:80px;text-align:center;">
+                            📦 <strong>Standard</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Eco + Protection + Démontage</span>
+                        </button>
+                        <button class="slot-btn" onclick="sendMsgText('Luxe')" style="flex:1;min-width:80px;text-align:center;">
+                            ✨ <strong>Luxe</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Clef en main</span>
+                        </button>
+                    </div>
+                `;
+                div.appendChild(pw);
             }
             if (actions && actions.length > 0) {
                 const userActions = actions.filter(a => !systemActionsP3.includes(a));
@@ -1322,6 +1374,7 @@
                     tag.textContent = priority;
                     tag.className = `priority-tag ${priority}`;
                 }
+                if (res.leadData) state.lastLead = res.leadData;
             } catch (e) {
                 hideTyping();
                 addErrorMsg("Erreur de connexion.");
@@ -1331,11 +1384,55 @@
             }
         }
 
+        function fillDataPreview() {
+            const l = state.lastLead || {};
+            const p = l.projetData || {};
+            const rows = [
+                ['👤 Nom', `${l.prenom || '—'} ${l.nom || ''}`.trim()],
+                ['📞 Téléphone', l.telephone || '—'],
+                ['📧 Email', l.email || '—'],
+                ['📍 Départ', p.villeDepart || '—'],
+                ['🏁 Arrivée', p.villeArrivee || '—'],
+                ['🏠 Surface', p.surface ? `${p.surface} m²` : '—'],
+                ['📦 Volume', p.volumeEstime ? `~${p.volumeEstime} m³` : '—'],
+                ['🛠️ Prestation', p.formule || '—'],
+                ['📅 Date souhaitée', p.dateSouhaitee || '—'],
+                ['🅿️ Stationnement départ', p.autorisationStationnementDepart ? 'Autorisation requise' : (p.autorisationStationnement ? 'Autorisation requise' : 'Facile')],
+                ['🅿️ Stationnement arrivée', p.autorisationStationnementArrivee ? 'Autorisation requise' : 'Facile'],
+                ['⚠️ Contraintes', p.contraintes || '—'],
+            ];
+            const html = rows.map(([k, v]) =>
+                `<div style="display:flex; gap:12px; padding:6px 0; border-bottom:1px solid var(--border);">
+                    <span style="min-width:180px; color:var(--text-muted); font-size:.85rem;">${k}</span>
+                    <span style="font-weight:600;">${v}</span>
+                </div>`
+            ).join('');
+            document.getElementById('data-preview-content').innerHTML = html;
+        }
+
+        function showFeedback() {
+            document.getElementById('data-preview-section').style.display = 'none';
+            document.getElementById('feedback-section').style.display = 'block';
+            document.getElementById('bot-class-display').textContent = state.lastPriority || 'TIÈDE';
+            window.scrollTo(0, 0);
+        }
+
+        function showReportPreview() {
+            if (state.sessionId) {
+                const previewLink = document.getElementById('report-preview-link');
+                if (previewLink) {
+                    previewLink.href = BACKEND_BASE + `/api/test-session/report/${state.sessionId}`;
+                    previewLink.style.display = 'block';
+                }
+            }
+        }
+
         function endChat() {
             clearInterval(state.timerInterval);
             document.getElementById('chat-section').style.display = 'none';
-            document.getElementById('feedback-section').style.display = 'block';
-            document.getElementById('bot-class-display').textContent = state.lastPriority || 'TIÈDE';
+            document.getElementById('data-preview-section').style.display = 'block';
+            fillDataPreview();
+            showReportPreview();
             window.scrollTo(0, 0);
         }
 
@@ -1343,6 +1440,15 @@
             document.querySelectorAll(`#${qId} .opt-item`).forEach(i => i.classList.remove('selected'));
             el.classList.add('selected');
             state.answers[qId] = val;
+        }
+
+        function selMulti(qId, el, val) {
+            el.classList.toggle('selected');
+            const selected = Array.from(document.querySelectorAll(`#${qId} .opt-item.selected`)).map(i => {
+                const spans = i.querySelectorAll('span');
+                return i.textContent.trim().replace(/^[^\s]+\s+/, '');
+            });
+            state.answers[qId] = selected;
         }
 
         // ─── Theme toggle ─────────────────────────────────────────────────────────
@@ -1422,6 +1528,8 @@
                 questionsManquantes: document.getElementById('q-questions-manquantes').value,
                 comparaisonProcess: state.answers['q-process'],
                 comparaisonDetail: document.getElementById('q-process-detail').value,
+                acquisitionClient: state.answers['q-acquisition'] || undefined,
+                acquisitionDetail: document.getElementById('q-acquisition-detail')?.value || undefined,
                 gainPercu: state.answers['q-gain'],
                 intentionAdoption: state.answers['q-adoption'],
                 adoptionDetail: document.getElementById('q-adoption-detail').value,

@@ -90,7 +90,7 @@ export class MessageHandler {
 
             // ── 5.  Préparer les messages ────────────
             // ── 5.  Préparer les messages (Contexte étendu !!) ────────────
-            const recentMessages = context.messages.slice(-50);
+            const recentMessages = context.messages.slice(-24);
             const llmMessages = [
                 ...recentMessages,
                 { role: 'user' as const, content: message },

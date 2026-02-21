@@ -7,7 +7,7 @@ const envSchema = z.object({
     DATABASE_URL: z.string().url(),
     REDIS_URL: z.string().default('redis://localhost:6379'),
     ANTHROPIC_API_KEY: z.string().optional(),
-    CLAUDE_MODEL: z.string().default('claude-3-5-sonnet-20240620'),
+    CLAUDE_MODEL: z.string().default('claude-haiku-4-5-20251001'),
     GROK_API_KEY: z.string().optional(),
     LLM_PROVIDER: z.enum(['claude', 'grok']).default('claude'),
     PORT: z.preprocess((val) => (val ? Number(val) : undefined), z.number().default(3000)),

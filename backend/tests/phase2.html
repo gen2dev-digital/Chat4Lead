@@ -1083,15 +1083,7 @@
         <section id="thanks-section">
             <div class="thanks-icon">🎉</div>
             <h2>Merci beaucoup !</h2>
-            <p>Votre retour est précieux pour améliorer Tom avant son lancement. Vos réponses ont été enregistrées et un
-                rapport a été généré automatiquement.</p>
-            <br>
-            <p style="color:var(--accent3);font-size:.9rem;">Session ID : <strong id="report-id"></strong></p>
-            <a class="report-link" id="report-link" href="#" target="_blank" style="display:none;">Voir le rapport →</a>
-            <div style="margin-top:20px;">
-                <a href="./reports/dashboard-synthese.html" id="dashboard-link" style="color:var(--text-muted); font-size: .85rem;">📊
-                    Accéder au Dashboard Global</a>
-            </div>
+            <p>Votre retour est précieux pour améliorer Tom avant son lancement. Vos réponses ont bien été enregistrées.</p>
         </section>
 
     </div>
@@ -1105,8 +1097,6 @@
         const API_BASE = BACKEND_BASE + '/api';
         const API_KEY = '5e3b46bc-c29c-4c2f-8689-bb8a4a803beb';
         document.addEventListener('DOMContentLoaded', () => {
-            const el = document.getElementById('dashboard-link');
-            if (el && _backendParam) el.href = './reports/dashboard-synthese.html?backend=' + encodeURIComponent(_backendParam);
         });
 
         // ─── State ────────────────────────────────────────────────────────────────────
@@ -1194,8 +1184,19 @@
             m.className = 'msg bot';
             let cleanText = (text || '').trim();
             systemActions.forEach(tag => { cleanText = cleanText.replace(new RegExp(tag, 'g'), ''); });
+            cleanText = cleanText.trim();
             const txt = document.createElement('div');
-            txt.textContent = cleanText;
+            if (cleanText.includes('VOTRE PROJET DE DÉMÉNAGEMENT')) {
+                const lines = cleanText.split('\n');
+                txt.innerHTML = lines.map(line => {
+                    const t = line.trim();
+                    if (!t) return '<div style="height:4px;"></div>';
+                    return `<div style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.07); line-height:1.5;">${t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+                }).join('');
+                txt.style.cssText = 'border:1px solid rgba(108,99,255,.2); border-radius:10px; padding:12px 14px; background:rgba(108,99,255,.04); margin-top:4px;';
+            } else {
+                txt.textContent = cleanText;
+            }
             m.appendChild(txt);
             if (cleanText.includes("Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous")) {
                 const w = document.createElement('div');
@@ -1230,6 +1231,26 @@
                     </div>
                     <div style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;">Le créneau sera reconfirmé par notre conseiller avant la visite.</div>`;
                 m.appendChild(w);
+            }
+            // Widget prestation (Eco / Standard / Luxe)
+            if (cleanText.includes('Eco') && cleanText.includes('Standard') && cleanText.includes('Luxe')) {
+                const pw = document.createElement('div');
+                pw.className = 'widget-container';
+                pw.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Choisissez votre prestation :</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="slot-btn" onclick="sendMsgText('Eco')" style="flex:1;min-width:80px;text-align:center;">
+                            🚚 <strong>Eco</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Transport seul</span>
+                        </button>
+                        <button class="slot-btn" onclick="sendMsgText('Standard')" style="flex:1;min-width:80px;text-align:center;">
+                            📦 <strong>Standard</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Eco + Protection + Démontage</span>
+                        </button>
+                        <button class="slot-btn" onclick="sendMsgText('Luxe')" style="flex:1;min-width:80px;text-align:center;">
+                            ✨ <strong>Luxe</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Clef en main</span>
+                        </button>
+                    </div>
+                `;
+                m.appendChild(pw);
             }
             if (actions && actions.length > 0) {
                 const userActions = actions.filter(a => !systemActions.includes(a));
@@ -1352,13 +1373,6 @@
 
                 document.getElementById('feedback-section').style.display = 'none';
                 document.getElementById('thanks-section').style.display = 'block';
-                document.getElementById('report-id').textContent = state.sessionId;
-
-                if (res.reportUrl) {
-                    const link = document.getElementById('report-link');
-                    link.href = BACKEND_BASE + res.reportUrl;
-                    link.style.display = 'inline-block';
-                }
             } catch (e) {
                 btn.disabled = false;
                 btn.textContent = 'Envoyer mon avis ✓';

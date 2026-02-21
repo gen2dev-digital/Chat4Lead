@@ -1355,14 +1355,24 @@
             const m = document.createElement('div');
             m.className = 'msg bot';
 
-            const txt = document.createElement('div');
-
             // Filter technical elements from display
             let cleanText = text || '';
             const techTags = ['email_notification_queued', 'conversation_qualified', 'crm_push_queued', 'satisfaction_request_sent', 'appointment_module_triggered'];
             techTags.forEach(tag => cleanText = cleanText.replace(new RegExp(tag, 'g'), ''));
+            cleanText = cleanText.trim();
 
-            txt.textContent = cleanText.trim();
+            const txt = document.createElement('div');
+            if (cleanText.includes('VOTRE PROJET DE DÉMÉNAGEMENT')) {
+                const lines = cleanText.split('\n');
+                txt.innerHTML = lines.map(line => {
+                    const t = line.trim();
+                    if (!t) return '<div style="height:4px;"></div>';
+                    return `<div style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,.07); line-height:1.5;">${t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+                }).join('');
+                txt.style.cssText = 'border:1px solid rgba(108,99,255,.2); border-radius:10px; padding:12px 14px; background:rgba(108,99,255,.04); margin-top:4px;';
+            } else {
+                txt.textContent = cleanText;
+            }
             m.appendChild(txt);
 
             // SPECIAL WIDGETS
@@ -1421,6 +1431,27 @@
                     <button class="btn-primary" style="width:100%; justify-content:center; padding:6px;" onclick="submitStars()">Envoyer l'avis</button>
                 `;
                 m.appendChild(widget);
+            }
+
+            // Widget prestation (Eco / Standard / Luxe)
+            if (cleanText.includes('Eco') && cleanText.includes('Standard') && cleanText.includes('Luxe')) {
+                const pw = document.createElement('div');
+                pw.className = 'widget-container';
+                pw.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Choisissez votre prestation :</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="slot-btn" onclick="sendMsgText('Eco')" style="flex:1;min-width:80px;text-align:center;">
+                            🚚 <strong>Eco</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Transport seul</span>
+                        </button>
+                        <button class="slot-btn" onclick="sendMsgText('Standard')" style="flex:1;min-width:80px;text-align:center;">
+                            📦 <strong>Standard</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Eco + Protection + Démontage</span>
+                        </button>
+                        <button class="slot-btn" onclick="sendMsgText('Luxe')" style="flex:1;min-width:80px;text-align:center;">
+                            ✨ <strong>Luxe</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Clef en main</span>
+                        </button>
+                    </div>
+                `;
+                m.appendChild(pw);
             }
 
             if (actions && actions.length > 0) {
