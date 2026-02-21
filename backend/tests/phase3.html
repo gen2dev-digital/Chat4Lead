@@ -393,6 +393,30 @@
             align-self: flex-end;
         }
 
+        .bot-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 12px;
+        }
+        .bot-act-btn {
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            color: #6c63ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .bot-act-btn:hover {
+            background: #6c63ff;
+            color: #fff;
+        }
+
         .chat-footer {
             padding: 16px 20px;
             border-top: 1px solid var(--border);
@@ -1164,7 +1188,7 @@
                 }).then(r => r.json());
                 state.sessionId = sess.sessionId;
 
-                addBotMsg("Bonjour ! Je suis Tom, votre assistant déménagement 🚚 Comment puis-je vous aider aujourd'hui ?");
+                addBotMsg(init.reply || "Bonjour ! Je suis Tom, votre assistant déménagement 🚚 Comment puis-je vous aider aujourd'hui ?", init.actions || []);
             } catch (e) {
                 addErrorMsg("Serveur hors ligne. Lancez le backend sur le port 3000.");
             }
@@ -1175,12 +1199,16 @@
             sendMsg();
         }
 
-        function addBotMsg(text) {
+        const systemActionsP3 = ['email_notification_queued', 'conversation_qualified', 'crm_push_queued', 'satisfaction_request_sent', 'appointment_module_triggered'];
+        function addBotMsg(text, actions = []) {
             const chatBody = document.getElementById('chat-body');
             const div = document.createElement('div');
             div.className = 'msg bot';
-            div.textContent = text;
-            const cleanText = (text || '').trim();
+            let cleanText = (text || '').trim();
+            systemActionsP3.forEach(tag => { cleanText = cleanText.replace(new RegExp(tag, 'g'), ''); });
+            const txt = document.createElement('div');
+            txt.textContent = cleanText;
+            div.appendChild(txt);
             if (cleanText.includes("Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous")) {
                 const w = document.createElement('div');
                 w.className = 'widget-container';
@@ -1214,6 +1242,21 @@
                     </div>
                     <div style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;">Le créneau sera reconfirmé par notre conseiller avant la visite.</div>`;
                 div.appendChild(w);
+            }
+            if (actions && actions.length > 0) {
+                const userActions = actions.filter(a => !systemActionsP3.includes(a));
+                if (userActions.length > 0) {
+                    const acts = document.createElement('div');
+                    acts.className = 'bot-actions';
+                    userActions.forEach(act => {
+                        const btn = document.createElement('button');
+                        btn.className = 'bot-act-btn';
+                        btn.textContent = act;
+                        btn.onclick = () => sendMsgText(act);
+                        acts.appendChild(btn);
+                    });
+                    div.appendChild(acts);
+                }
             }
             chatBody.appendChild(div);
             chatBody.scrollTop = chatBody.scrollHeight;
@@ -1268,7 +1311,7 @@
             try {
                 const res = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: text });
                 hideTyping();
-                addBotMsg(res.reply);
+                addBotMsg(res.reply, res.actions);
 
                 if (res.score != null) {
                     state.lastScore = res.score;

@@ -410,6 +410,30 @@
             align-self: flex-end;
         }
 
+        .bot-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 12px;
+        }
+        .bot-act-btn {
+            background: rgba(108, 99, 255, 0.1);
+            border: 1px solid rgba(108, 99, 255, 0.3);
+            color: #6c63ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .bot-act-btn:hover {
+            background: #6c63ff;
+            color: #fff;
+        }
+
         .chat-input-row {
             display: flex;
             gap: 10px;
@@ -1126,11 +1150,8 @@
                 }).then(r => r.json());
                 state.sessionId = sess.sessionId;
 
-                // 3. Get first bot message
-                showTyping();
-                const first = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: '__init__' });
-                hideTyping();
-                addBotMsg(first.reply || 'Bonjour ! Je suis Tom, votre assistant déménagement. Comment puis-je vous aider ?');
+                // 3. Afficher message d'accueil + 3 options (comme phase 1)
+                addBotMsg(init.reply || 'Bonjour ! Je suis Tom, votre assistant déménagement. Comment puis-je vous aider ?', init.actions || []);
             } catch (e) {
                 hideTyping();
                 addErrorMsg('Impossible de démarrer la conversation. Vérifiez que le serveur est lancé.');
@@ -1166,12 +1187,16 @@
             sendMsg();
         }
 
-        function addBotMsg(text) {
+        const systemActions = ['email_notification_queued', 'conversation_qualified', 'crm_push_queued', 'satisfaction_request_sent', 'appointment_module_triggered'];
+        function addBotMsg(text, actions = []) {
             const body = document.getElementById('chat-body');
             const m = document.createElement('div');
             m.className = 'msg bot';
-            m.textContent = text;
-            const cleanText = text.trim();
+            let cleanText = (text || '').trim();
+            systemActions.forEach(tag => { cleanText = cleanText.replace(new RegExp(tag, 'g'), ''); });
+            const txt = document.createElement('div');
+            txt.textContent = cleanText;
+            m.appendChild(txt);
             if (cleanText.includes("Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous")) {
                 const w = document.createElement('div');
                 w.className = 'widget-container';
@@ -1205,6 +1230,21 @@
                     </div>
                     <div style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;">Le créneau sera reconfirmé par notre conseiller avant la visite.</div>`;
                 m.appendChild(w);
+            }
+            if (actions && actions.length > 0) {
+                const userActions = actions.filter(a => !systemActions.includes(a));
+                if (userActions.length > 0) {
+                    const acts = document.createElement('div');
+                    acts.className = 'bot-actions';
+                    userActions.forEach(act => {
+                        const btn = document.createElement('button');
+                        btn.className = 'bot-act-btn';
+                        btn.textContent = act;
+                        btn.onclick = () => sendMsgText(act);
+                        acts.appendChild(btn);
+                    });
+                    m.appendChild(acts);
+                }
             }
             body.appendChild(m);
             body.scrollTop = body.scrollHeight;
@@ -1250,7 +1290,7 @@
             try {
                 const res = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: text });
                 hideTyping();
-                addBotMsg(res.reply || '…');
+                addBotMsg(res.reply || '…', res.actions);
             } catch (e) {
                 hideTyping();
                 addErrorMsg('Erreur de connexion. Réessayez.');
