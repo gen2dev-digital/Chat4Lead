@@ -701,6 +701,7 @@ export class MessageHandler {
             'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
             'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
             'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'autorisationStationnementDepart', 'autorisationStationnementArrivee', 'caveOuStockage', 'international', 'contraintes',
+            'rdvConseiller', 'creneauVisite',
         ];
 
         for (const field of projetFields) {
@@ -1027,6 +1028,10 @@ export class MessageHandler {
             if (Array.isArray(data.objetSpeciaux) && data.objetSpeciaux.length > 0) {
                 e.objetSpeciaux = data.objetSpeciaux;
             }
+
+            // RDV visite conseiller
+            if (data.rdvConseiller === true) e.rdvConseiller = true;
+            if (data.creneauVisite && typeof data.creneauVisite === 'string') e.creneauVisite = data.creneauVisite;
 
             logger.info('✅ [LLM-DATA] Block parsed', { fields: Object.keys(e) });
             return { llmEntities: e, clean };

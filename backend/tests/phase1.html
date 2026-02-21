@@ -1366,34 +1366,43 @@
             m.appendChild(txt);
 
             // SPECIAL WIDGETS
-            if (cleanText.includes("Quel jour souhaitez-vous être recontacté ?")) {
+            if (cleanText.includes("Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous")) {
                 const widget = document.createElement('div');
                 widget.className = 'widget-container';
                 widget.innerHTML = `
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Choisissez un jour :</div>
-                    <div class="day-grid">
-                        <button class="day-btn" onclick="selectDay(this,'Lundi')">Lun</button>
-                        <button class="day-btn" onclick="selectDay(this,'Mardi')">Mar</button>
-                        <button class="day-btn" onclick="selectDay(this,'Mercredi')">Mer</button>
-                        <button class="day-btn" onclick="selectDay(this,'Jeudi')">Jeu</button>
-                        <button class="day-btn" onclick="selectDay(this,'Vendredi')">Ven</button>
-                        <button class="day-btn" onclick="selectDay(this,'Samedi')">Sam</button>
-                        <button class="day-btn" onclick="selectDay(this,'Dimanche')">Dim</button>
-                        <button class="day-btn" onclick="sendMsgText('Peu importe le jour')">🔄 Flexible</button>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Votre choix :</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <button class="slot-btn" onclick="sendMsgText('Oui, je souhaite une visite')">✅ Oui, une visite</button>
+                        <button class="slot-btn" onclick="sendMsgText('Non merci')">❌ Non merci</button>
                     </div>
                 `;
                 m.appendChild(widget);
-            } else if (cleanText.includes("Quel créneau vous arrange pour être recontacté ?")) {
+            } else if (cleanText.includes("Quel jour vous conviendrait pour cette visite ?")) {
+                const widget = document.createElement('div');
+                widget.className = 'widget-container';
+                widget.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Choisissez un jour pour la visite :</div>
+                    <div class="day-grid">
+                        <button class="day-btn" onclick="selectVisiteDay(this,'Lundi')">Lun</button>
+                        <button class="day-btn" onclick="selectVisiteDay(this,'Mardi')">Mar</button>
+                        <button class="day-btn" onclick="selectVisiteDay(this,'Mercredi')">Mer</button>
+                        <button class="day-btn" onclick="selectVisiteDay(this,'Jeudi')">Jeu</button>
+                        <button class="day-btn" onclick="selectVisiteDay(this,'Vendredi')">Ven</button>
+                        <button class="day-btn" onclick="selectVisiteDay(this,'Samedi')">Sam</button>
+                        <button class="day-btn" onclick="sendMsgText('Flexible sur le jour')">🔄 Flexible</button>
+                    </div>
+                `;
+                m.appendChild(widget);
+            } else if (cleanText.includes("Quel créneau vous arrange pour la visite ?")) {
                 const widget = document.createElement('div');
                 widget.className = 'widget-container';
                 widget.innerHTML = `
                     <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">Choisissez un créneau :</div>
                     <div class="slot-grid">
-                        <button class="slot-btn" onclick="sendMsgText('Le matin (9h-12h)')">🌅 Matin (9h-12h)</button>
-                        <button class="slot-btn" onclick="sendMsgText('Le midi (12h-14h)')">🕛 Midi (12h-14h)</button>
-                        <button class="slot-btn" onclick="sendMsgText('L\\'après-midi (14h-18h)')">☀️ Après-midi (14h-18h)</button>
-                        <button class="slot-btn" onclick="sendMsgText('Le soir (après 18h)')">🌙 Soir (>18h)</button>
+                        <button class="slot-btn" onclick="sendMsgText('Matin (9h-12h)')">🌅 Matin (9h-12h)</button>
+                        <button class="slot-btn" onclick="sendMsgText('Après-midi (14h-18h)')">☀️ Après-midi (14h-18h)</button>
                     </div>
+                    <div style="font-size:0.68rem;color:var(--text-muted);margin-top:6px;">Le créneau sera reconfirmé par notre conseiller avant la visite.</div>
                 `;
                 m.appendChild(widget);
             } else if (cleanText.includes("Comment avez-vous trouvé cette conversation ?")) {
@@ -1771,6 +1780,12 @@
             btn.closest('.widget-container').querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             selectedDay = day;
+            setTimeout(() => sendMsgText(day), 200);
+        }
+
+        function selectVisiteDay(btn, day) {
+            btn.closest('.widget-container').querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
             setTimeout(() => sendMsgText(day), 200);
         }
 
