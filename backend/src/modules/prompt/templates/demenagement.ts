@@ -1,4 +1,5 @@
 import { Metier } from '@prisma/client';
+import { getDistanceKm, calculerEstimation } from '../tarification-calculator';
 
 export interface LeadData {
     prenom?: string;
@@ -54,6 +55,23 @@ export function buildPromptDemenagement(
 
     const rdvVisite = hasRdvVisite(leadData);
     const contactDeja = hasContactInfo(leadData);
+
+    const p = leadData.projetData || {};
+    const volume = typeof p.volumeEstime === 'number' ? p.volumeEstime : (p.volumeEstime ? parseFloat(String(p.volumeEstime)) : 0);
+    const villeDepart = p.villeDepart || '';
+    const villeArrivee = p.villeArrivee || '';
+    const formuleRaw = (p.formule || '').toString().toLowerCase();
+    const formule = ['eco', 'standard', 'luxe'].includes(formuleRaw) ? formuleRaw as 'eco' | 'standard' | 'luxe' : 'standard';
+    const distanceKm = getDistanceKm(villeDepart, villeArrivee);
+    const estimation = volume > 0 && distanceKm >= 0 && villeDepart && villeArrivee
+        ? calculerEstimation({
+            volume,
+            distanceKm,
+            formule,
+            etageChargement: typeof p.etage === 'number' ? p.etage : undefined,
+            ascenseurChargement: p.ascenseur === true || p.ascenseur === 1 ? 1 : 0,
+        })
+        : null;
 
     return `
 # IDENTITÉ
@@ -146,8 +164,9 @@ B13. ENQUÊTE SATISFACTION : écrire EXACTEMENT "Comment avez-vous trouvé cette
 
 # RÈGLE AFFICHAGE PRIX
 - ❌ INTERDIT : Afficher la formule de calcul (ex: "50 m³ × 20 €").
-- ✅ FORMAT CORRECT : "💰 Estimation : 750 à 1 100 € (devis définitif après visite technique)".
+- ✅ FORMAT CORRECT : "💰 Estimation : [min] à [max] € (devis définitif après visite technique)".
 - Affiche uniquement la fourchette finale.
+${estimation ? `- ESTIMATION CALCULÉE (OBLIGATOIRE) : Utilise EXACTEMENT cette fourchette dans le récap et toute réponse donnant un prix : ${estimation.min} à ${estimation.max} € (formule ${estimation.formule}, distance trajet prise en compte).` : ''}
 
 # DETAILS LOGIQUE VOLUME
 - Si le client donne un volume : Valider ("C'est noté, XX m³").
@@ -196,7 +215,7 @@ ${formatLeadData(leadData, infosCollectees)}
 🅿️ Accès arrivée : [Info stationnement arrivée]
 📦 Volume estimé : ~[XX] m³
 🛠️ Prestation : [Eco/Standard/Luxe]
-💰 Estimation : [fourchette €] (devis définitif après visite)
+💰 Estimation : ${estimation ? `${estimation.min} à ${estimation.max}` : '[fourchette]'} € (devis définitif après visite)
 📅 Date souhaitée : [date souhaitée]
 ${rdvVisite ? '📆 Visite conseiller : [créneau confirmé] — notre conseiller vous recontactera pour confirmer.\n' : ''}📞 Contact : ${leadData.telephone || '[Téléphone]'}
 📧 Email : ${leadData.email || '[Email]'}
