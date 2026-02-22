@@ -31,6 +31,7 @@
             box-sizing: border-box;
         }
 
+        html { overflow-x: hidden; }
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--bg);
@@ -53,13 +54,15 @@
         .wrap {
             position: relative;
             z-index: 1;
+            max-width: 100%;
+            overflow-x: hidden;
         }
 
         .top-bar {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 18px 32px;
+            padding: 18px clamp(12px, 4vw, 32px);
             border-bottom: 1px solid var(--border);
             background: rgba(22, 24, 32, .8);
             backdrop-filter: blur(12px);
@@ -266,9 +269,9 @@
         /* Chat */
         #chat-section {
             display: none;
-            max-width: 900px;
+            max-width: min(900px, 100%);
             margin: 0 auto;
-            padding: 48px 24px;
+            padding: 48px clamp(12px, 4vw, 24px);
         }
 
         #chat-section h2 {
@@ -290,11 +293,13 @@
             display: grid;
             grid-template-columns: 1fr 280px;
             gap: 20px;
+            width: 100%;
         }
 
         @media (max-width: 760px) {
             .chat-layout {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
         }
 
@@ -641,9 +646,14 @@
             border-radius: 6px;
         }
 
+        .end-chat-btn-wrap {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
         .end-chat-btn {
             display: block;
-            margin: 16px auto 0;
+            margin: 0 auto;
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-muted);
@@ -834,17 +844,18 @@
         /* ── Full Responsive (mobile-first) ── */
         @media (max-width: 768px) {
             .top-bar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
-            .wrap { padding: 0 0 40px; }
+            .wrap { padding: 0 12px 40px; }
             .hero { padding: 40px 16px 28px; }
             .presets { gap: 6px; }
             .preset-btn { font-size: .75rem; padding: 6px 10px; }
             .cta-btn { width: 100%; }
-            #chat-section { padding: 16px; }
-            .chat-window { height: 60vh; }
+            #chat-section { padding: 16px 12px; }
+            .chat-window { height: 60vh; min-height: 300px; }
             .chat-input-row { padding: 6px 10px; gap: 4px; }
             .chat-input { font-size: .85rem; }
             .toolbar-btn { padding: 5px 7px; font-size: .9rem; }
-            .end-chat-btn { width: 100%; margin-top: 12px; }
+            .end-chat-btn { width: 100%; max-width: 100%; }
+            .end-chat-btn-wrap { margin-top: 16px; padding-top: 16px; }
             .report-card { padding: 20px 14px; }
             .report-actions { flex-direction: column; gap: 8px; }
             .btn-primary, .btn-secondary { width: 100%; justify-content: center; text-align: center; }
@@ -1069,7 +1080,7 @@
                             <button class="send-btn" id="send-btn" onclick="sendMsg()">&#10148;</button>
                         </div>
                     </div>
-                    <button class="end-chat-btn" onclick="endChat()">Terminer &amp; voir le rapport &rarr;</button>
+                    <div class="end-chat-btn-wrap"><button class="end-chat-btn" onclick="confirmEndChat()">Terminer &amp; voir le rapport &rarr;</button></div>
                 </div>
 
                 <!-- Dev sidebar -->
@@ -1732,6 +1743,12 @@
                 el.innerHTML = state.allActions.map(a =>
                     `<div class="action-tag">${ACTION_LABELS[a] || a}</div>`
                 ).join('');
+            }
+        }
+
+        function confirmEndChat() {
+            if (confirm('Êtes-vous sûr de vouloir terminer la conversation ? Vous serez redirigé vers le rapport.')) {
+                endChat();
             }
         }
 

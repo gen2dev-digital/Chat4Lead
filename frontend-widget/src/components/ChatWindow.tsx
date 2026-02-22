@@ -47,7 +47,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     return (
         <div
             data-theme={isDarkMode ? 'dark' : 'light'}
-            className="fixed bottom-24 right-6 w-[420px] max-w-[95vw] h-[700px] max-h-[85vh] flex flex-col z-[9999] animate-scale-in"
+            className="fixed bottom-24 right-4 sm:right-6 w-[420px] max-w-[calc(100vw-32px)] h-[700px] max-h-[85vh] flex flex-col z-[9999] animate-scale-in"
             style={{
                 borderRadius: '24px',
                 boxShadow: isDarkMode
@@ -138,7 +138,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                         <ChevronDown size={18} />
                     </button>
                     <button
-                        onClick={() => setShowEndModal(true)}
+                        onClick={() => {
+                            if (window.confirm('Êtes-vous sûr de vouloir terminer la conversation ?')) {
+                                setShowEndModal(true);
+                            }
+                        }}
                         className="c4l-header-btn c4l-header-btn--danger p-2 rounded-xl transition-all duration-200 active:scale-90"
                         style={{
                             color: isDarkMode ? '#94a3b8' : '#64748b',
