@@ -63,6 +63,8 @@ export class MessageHandler {
                 {
                     nom: context.entreprise.nom,
                     nomBot: context.entreprise.nomBot,
+                    email: context.entreprise.email,
+                    telephone: context.entreprise.telephone ?? undefined,
                     zonesIntervention: context.config.zonesIntervention,
                     tarifsCustom: context.config.tarifsCustom,
                     specificites: context.config.specificites,
@@ -200,6 +202,8 @@ export class MessageHandler {
                 {
                     nom: context.entreprise.nom,
                     nomBot: context.entreprise.nomBot,
+                    email: context.entreprise.email,
+                    telephone: context.entreprise.telephone ?? undefined,
                     zonesIntervention: context.config.zonesIntervention,
                     tarifsCustom: context.config.tarifsCustom,
                     specificites: context.config.specificites,

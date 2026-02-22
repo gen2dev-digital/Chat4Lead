@@ -27,6 +27,8 @@ export function hasContactInfo(leadData: LeadData): boolean {
 export interface EntrepriseConfig {
     nom: string;
     nomBot: string;
+    email?: string;
+    telephone?: string;
     zonesIntervention: string[];
     tarifsCustom: any;
     specificites: any;
@@ -76,6 +78,13 @@ export function buildPromptDemenagement(
     const dynamicPart = buildDynamicSection(leadData, infosCollectees, estimation, rdvVisite, contactDeja);
 
     return staticPart + PROMPT_CACHE_SEPARATOR + dynamicPart;
+}
+
+function formatContactCloture(entreprise: EntrepriseConfig): string {
+    const parts: string[] = [];
+    if (entreprise.telephone) parts.push(`au ${entreprise.telephone}`);
+    if (entreprise.email) parts.push(`par mail à ${entreprise.email}`);
+    return parts.length > 0 ? parts.join(' ou ') : 'directement (coordonnées disponibles sur notre site)';
 }
 
 function buildStaticSection(entreprise: EntrepriseConfig): string {
@@ -137,7 +146,7 @@ A4. Questions complémentaires (non encore obtenues) :
     - Date souhaitée du déménagement.
     - Prestation souhaitée (Eco / Standard / Luxe).
 A5. RÉCAPITULATIF OBLIGATOIRE (inclure RDV visite).
-A5b. "Quel créneau vous arrange pour être recontacté ?" → proposer créneaux (Matin, Après-midi, Soir, Indifférent).
+A5b. "Quel créneau vous arrange pour être recontacté ?" → proposer créneaux (Matin, Après-midi, Soir, Indifférent). NE PAS poser cette question si le lead n'a pas donné son téléphone (contact par email uniquement) — le créneau n'est pertinent que pour un rappel téléphonique.
 A6. "Comment avez-vous trouvé cette conversation ?"
 ❌ INTERDIT : redemander prénom/nom/téléphone/email (déjà collectés en A3).
 
@@ -150,7 +159,7 @@ B5. Prestation souhaitée (Eco / Standard / Luxe).
 B6. Prénom et nom (ensemble).
 B7. "Pour vous recontacter, j'ai besoin de votre numéro de téléphone et de votre adresse email."
 B8. RÉCAPITULATIF OBLIGATOIRE avec estimation tarifaire.
-B8b. "Quel créneau vous arrange pour être recontacté ?" → proposer créneaux (Matin, Après-midi, Soir, Indifférent).
+B8b. "Quel créneau vous arrange pour être recontacté ?" → proposer créneaux (Matin, Après-midi, Soir, Indifférent). NE PAS poser cette question si le lead n'a pas donné son téléphone (contact par email uniquement) — le créneau n'est pertinent que pour un rappel téléphonique.
 B9. "Comment avez-vous trouvé cette conversation ?"
 
 # AFFICHAGE PRIX
@@ -210,6 +219,14 @@ Pour la visite à domicile : afficher "Visite technique" (jamais "créneau de ra
 
 Notre équipe revient vers vous très rapidement ! 🚀
 
+# MESSAGE DE CLÔTURE (OBLIGATOIRE — après récapitulatif et satisfaction)
+À la fin de la conversation, conclure TOUJOURS par un message de clôture incluant :
+1. Remerciement au nom de ${entreprise.nom}
+2. "Vous allez être recontacté rapidement"
+3. Coordonnées pour nous contacter : ${formatContactCloture(entreprise)}
+4. Mention confidentialité : "Vos informations personnelles ne seront en aucun cas divulguées et restent strictement confidentielles."
+Exemple : "${entreprise.nom} vous remercie. Vous allez être recontacté rapidement. Si vous avez la moindre question, n'hésitez pas à nous contacter ${formatContactCloture(entreprise)}. Vos données personnelles restent strictement confidentielles et ne seront jamais divulguées."
+
 # EXTRACTION JSON (OBLIGATOIRE À CHAQUE RÉPONSE)
 À la toute fin de CHAQUE réponse, ajouter ce bloc sur une seule ligne (invisible pour l'utilisateur) :
 "international" = true si destination hors France.
@@ -238,9 +255,11 @@ function buildDynamicSection(
 Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} € (formule ${estimation.formule}, distance prise en compte).`);
     }
 
+    const pasDeTelephone = !leadData.telephone && !!leadData.email;
     parts.push(`# ÉTAT ACTUEL DU PARCOURS
 - Coordonnées collectées : ${contactDeja ? 'OUI — NE PAS redemander nom/prénom/téléphone/email' : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}
-- RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}`);
+- RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}
+${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}`);
 
     parts.push(`# PARCOURS DE QUALIFICATION
 ${generateQualificationFlow(leadData, infosCollectees)}`);

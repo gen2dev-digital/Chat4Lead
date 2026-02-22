@@ -44,6 +44,8 @@ export class ConversationEngine {
                 {
                     nom: conversation.entreprise.nom,
                     nomBot: conversation.entreprise.nomBot,
+                    email: conversation.entreprise.email,
+                    telephone: conversation.entreprise.telephone ?? undefined,
                     zonesIntervention: configMetier.zonesIntervention,
                     tarifsCustom: configMetier.tarifsCustom,
                     specificites: configMetier.specificites,
