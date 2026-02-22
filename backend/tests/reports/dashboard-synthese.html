@@ -328,6 +328,54 @@
             background: rgba(99, 102, 241, .04);
         }
 
+        /* Expandable feedback row */
+        .feedback-expand-row td {
+            padding: 0 !important;
+            vertical-align: top;
+            border-bottom: 1px solid var(--border);
+        }
+        .feedback-expand-cell {
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, .5);
+            border-left: 3px solid var(--accent);
+        }
+        .feedback-expand-title {
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .feedback-expand-table {
+            width: 100%;
+            font-size: .82rem;
+            border-collapse: collapse;
+        }
+        .feedback-expand-table td {
+            padding: 6px 12px 6px 0;
+            border: none;
+            vertical-align: top;
+        }
+        .feedback-expand-table td:first-child {
+            color: var(--muted);
+            width: 200px;
+        }
+        .toggle-reponses-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: .72rem;
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: border-color .2s, color .2s;
+        }
+        .toggle-reponses-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
         .badge-phase1 {
             background: rgba(108, 99, 255, .15);
             color: #afadff;
@@ -943,6 +991,52 @@
   `).join('');
         }
 
+        const PHASE2_LABELS = {
+            naturalite: 'Naturalité',
+            comprehension: 'Compréhension',
+            comprehensionDetail: 'Détail compréhension',
+            repetition: 'Répétitions / irritants',
+            repetitionDetail: 'Détail répétitions',
+            confiance: 'Confiance / coordonnées',
+            confianceDetail: 'Détail confiance',
+            recommandation: 'Recommandation',
+            recommandationDetail: 'Détail intention',
+            note: 'Note expérience',
+            plu: 'Points forts',
+            gene: 'Points gênants'
+        };
+        const PHASE3_LABELS = {
+            infosSuffisantes: 'Infos suffisantes',
+            infosDetail: 'Précision infos',
+            decision: 'Décision commerciale',
+            decisionDetail: 'Précision décision',
+            classifOk: 'Classification OK',
+            classifDetail: 'Précision classification',
+            questionsManquantes: 'Questions manquantes',
+            comparaisonProcess: 'Comparaison process actuel',
+            comparaisonDetail: 'Détail comparaison',
+            acquisitionClient: 'Moyen d\'acquisition',
+            acquisitionDetail: 'Détail acquisition',
+            gainPercu: 'Gain perçu',
+            intentionAdoption: 'Intention d\'adoption',
+            adoptionDetail: 'Détail adoption',
+            valeurPerçue: 'Valeur perçue',
+            budgetMensuel: 'Budget mensuel',
+            priorite1: 'Priorité 1',
+            noteConversation: 'Note qualité conversation (pro)',
+            noteExtraction: 'Note qualité extraction (pro)',
+            leadQualifie: 'Lead qualifié ? (pro)'
+        };
+
+        function buildFeedbackRows(fb, labels) {
+            return Object.entries(labels).map(([key, label]) => {
+                const val = fb[key];
+                if (val == null || val === '') return '';
+                const display = Array.isArray(val) ? val.join(', ') : String(val);
+                return `<tr><td>${escHtml(label)}</td><td>${escHtml(display)}</td></tr>`;
+            }).filter(Boolean).join('');
+        }
+
         function renderSessions(sessions) {
             const container = document.getElementById('sessions-container');
             if (!sessions.length) {
@@ -971,21 +1065,49 @@
                 else if (s.phase === 'phase3') { badgeClass = 'badge-phase3'; badgeLabel = '🏢 Phase 3'; }
 
                 const isAuto = !s.feedback;
+                const hasFeedbackP2P3 = (s.phase === 'phase2' || s.phase === 'phase3') && s.feedback;
+                const expandId = 'expand-' + s.sessionId;
+                let feedbackExpandHtml = '';
+                if (hasFeedbackP2P3) {
+                    const fb = s.feedback;
+                    const labels = s.phase === 'phase2' ? PHASE2_LABELS : PHASE3_LABELS;
+                    const rows = buildFeedbackRows(fb, labels);
+                    feedbackExpandHtml = `
+          <tr class="feedback-expand-row" id="${expandId}" style="display:none">
+            <td colspan="5">
+              <div class="feedback-expand-cell">
+                <div class="feedback-expand-title">📋 Réponses du questionnaire ${s.phase === 'phase2' ? 'Phase 2 (Proches)' : 'Phase 3 (Déménageurs Pro)'}</div>
+                <table class="feedback-expand-table">${rows}</table>
+                <div style="margin-top:12px;font-size:.78rem">
+                  <a class="report-btn" href="${API_BASE}/api/test-session/report/${s.sessionId}" target="_blank">Voir le rapport complet →</a>
+                </div>
+              </div>
+            </td>
+          </tr>`;
+                }
                 return `
           <tr>
             <td><span class="${badgeClass}">${badgeLabel}</span></td>
             <td style="font-family:monospace;font-size:.78rem;color:var(--muted)">${s.sessionId}</td>
             <td style="color:var(--muted);font-size:.82rem">${new Date(s.createdAt).toLocaleString('fr-FR')}</td>
             <td>${s.feedback ? '<span style="color:var(--green)">✓ Soumis</span>' : (s.phase === 'phase1' ? '<span style="color:var(--muted)">Auto</span>' : '<span style="color:var(--muted)">En attente</span>')}</td>
-            <td style="display:flex;gap:6px;align-items:center">
-              <a class="report-btn" href="${API_BASE}/api/test-session/report/${s.sessionId}" target="_blank">Voir →</a>
+            <td style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+              ${hasFeedbackP2P3 ? `<button class="toggle-reponses-btn" onclick="toggleFeedback('${expandId}')" title="Voir les réponses">📋 Réponses</button>` : ''}
+              <a class="report-btn" href="${API_BASE}/api/test-session/report/${s.sessionId}" target="_blank">Voir rapport →</a>
               ${isAuto ? `<button onclick="deleteSession('${s.sessionId}')" title="Supprimer cette session" style="background:none;border:1px solid var(--red,#ef4444);color:var(--red,#ef4444);padding:3px 7px;border-radius:5px;cursor:pointer;font-size:.75rem;line-height:1">🗑️</button>` : ''}
             </td>
           </tr>
+          ${feedbackExpandHtml}
         `}).join('')}
       </tbody>
     </table>
   `;
+        }
+
+        function toggleFeedback(expandId) {
+            const row = document.getElementById(expandId);
+            if (!row) return;
+            row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
         }
 
         function escHtml(s) {
