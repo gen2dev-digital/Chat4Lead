@@ -16,3 +16,7 @@ backend/api/main.js
 backend/src/**/*.js
 out/
 tsconfig.tsbuildinfo
+
+# Build outputs
+*.js.map
+*.d.ts

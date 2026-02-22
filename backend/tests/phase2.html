@@ -302,6 +302,8 @@
             border-radius: 20px;
             overflow: hidden;
             margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
         }
 
         .chat-header {
@@ -361,7 +363,8 @@
 
         .chat-body {
             padding: 20px;
-            height: 380px;
+            flex: 1;
+            min-height: 200px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
@@ -846,7 +849,8 @@
             .hero { padding: 40px 16px 28px; }
             .cta-btn { width: 100%; }
             #chat-section { padding: 16px 12px; }
-            .chat-window { height: 60vh; min-height: 300px; border-radius: 12px; }
+            .chat-window { display: flex; flex-direction: column; min-height: 50vh; max-height: 70vh; border-radius: 12px; }
+            .chat-body { flex: 1; min-height: 280px; height: auto; }
             .chat-input-row { padding: 8px 10px; gap: 4px; }
             .chat-input { font-size: .85rem; }
             .toolbar-btn { padding: 5px 7px; font-size: .9rem; }
@@ -880,6 +884,18 @@
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         .stream-cursor { animation: blink 0.8s step-end infinite; color: var(--accent); }
         .widget-container { margin-top:12px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:12px; padding:12px; }
+        .confirm-end-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; padding: 20px; }
+        .confirm-end-overlay.visible { display: flex; }
+        .confirm-end-modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 360px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .confirm-end-modal h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--text); }
+        .confirm-end-modal p { font-size: .9rem; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+        .confirm-end-modal .btn-row { display: flex; gap: 12px; justify-content: flex-end; }
+        .confirm-end-modal .btn-cancel { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: inherit; }
+        .confirm-end-modal .btn-confirm { background: linear-gradient(135deg, var(--accent), #9d97ff); color: #fff; border: none; padding: 10px 18px; border-radius: 10px; cursor: pointer; font-family: inherit; font-weight: 600; }
+        .attachment-chip { display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin: 0 12px 8px; background: rgba(108,99,255,0.12); border: 1px solid rgba(108,99,255,0.3); border-radius: 10px; font-size: .85rem; }
+        .attachment-chip .attachment-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+        .attachment-chip .attachment-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 0 4px; }
+        .attachment-chip .attachment-remove:hover { color: var(--red); }
     </style>
 </head>
 
@@ -950,6 +966,11 @@
                 </div>
                 <div class="timer" id="timer">00:00</div>
                 <div class="chat-body" id="chat-body"></div>
+                <div id="attachment-chip-p2" class="attachment-chip" style="display:none;">
+                    <span class="attachment-icon">📎</span>
+                    <span class="attachment-name" id="attachment-name-p2"></span>
+                    <button type="button" class="attachment-remove" onclick="removeAttachmentP2()" title="Retirer">×</button>
+                </div>
                 <div class="chat-input-row">
                     <button class="toolbar-btn" id="voice-btn" onclick="toggleVoice()" title="Dicter">🎤</button>
                     <label class="toolbar-btn" for="file-upload-p2" title="Joindre un fichier (texte, PDF, image)" style="cursor:pointer;margin:0;">📎</label>
@@ -961,6 +982,17 @@
             </div>
             <div class="end-chat-btn-wrap"><button class="end-chat-btn" onclick="confirmEndChat()">Terminer la conversation &rarr;</button></div>
         </section>
+
+        <div class="confirm-end-overlay" id="confirm-end-overlay">
+            <div class="confirm-end-modal">
+                <h3>Terminer la conversation ?</h3>
+                <p>Êtes-vous sûr de vouloir terminer la conversation ? Vous passerez au questionnaire de satisfaction.</p>
+                <div class="btn-row">
+                    <button class="btn-cancel" onclick="hideConfirmEndModal()">Annuler</button>
+                    <button class="btn-confirm" onclick="confirmEndAndClose()">Oui, terminer</button>
+                </div>
+            </div>
+        </div>
 
         <!-- ── FEEDBACK ── -->
         <section id="feedback-section">
@@ -1309,9 +1341,15 @@
         async function sendMsg() {
             const inp = document.getElementById('chat-input');
             const text = inp.value.trim();
-            if (!text || !state.conversationId) return;
+            const hasFile = !!attachedFileP2;
+            if ((!text && !hasFile) || !state.conversationId) return;
+            const parts = [];
+            if (hasFile) parts.push('[Fichier: ' + attachedFileP2.name + ']');
+            if (text) parts.push(text);
+            const msg = parts.join('\n\n');
             inp.value = '';
-            await sendMsgText(text);
+            removeAttachmentP2();
+            await sendMsgText(msg);
         }
 
         async function sendMsgText(text) {
@@ -1421,11 +1459,10 @@
             document.getElementById('chat-body').scrollTop = document.getElementById('chat-body').scrollHeight;
         }
 
-        function confirmEndChat() {
-            if (confirm('Êtes-vous sûr de vouloir terminer la conversation ? Vous passerez au questionnaire de satisfaction.')) {
-                endChat();
-            }
-        }
+        function showConfirmEndModal() { document.getElementById('confirm-end-overlay').classList.add('visible'); }
+        function hideConfirmEndModal() { document.getElementById('confirm-end-overlay').classList.remove('visible'); }
+        function confirmEndAndClose() { hideConfirmEndModal(); endChat(); }
+        function confirmEndChat() { showConfirmEndModal(); }
 
         function endChat() {
             clearInterval(state.timerInterval);
@@ -1516,33 +1553,20 @@
             voiceRecognition.onerror = () => { voiceActive = false; btn.classList.remove('active'); btn.textContent = '🎤'; };
             voiceRecognition.start();
         }
-        const MAX_FILE_CONTENT_P2 = 10000;
-        const TEXT_TYPES_P2 = ['text/plain', 'application/json', 'text/csv', 'text/markdown', 'text/xml', 'application/xml'];
-        const TEXT_EXT_P2 = /\.(txt|csv|json|md|xml)$/i;
+        let attachedFileP2 = null;
         function handleFileUpload(event) {
             const file = event.target.files[0]; if (!file) return;
-            const inp = document.getElementById('chat-input');
-            const prefix = '[Fichier: ' + file.name + ']\n\n';
-            if (TEXT_TYPES_P2.includes(file.type) || TEXT_EXT_P2.test(file.name)) {
-                const reader = new FileReader();
-                reader.onload = function() {
-                    let content = (reader.result || '').toString();
-                    if (content.length > MAX_FILE_CONTENT_P2) content = content.slice(0, MAX_FILE_CONTENT_P2) + '\n\n… (tronqué)';
-                    inp.value = prefix + content; inp.focus();
-                };
-                reader.onerror = function() { inp.value = prefix + '(erreur lecture)'; inp.focus(); };
-                reader.readAsText(file, 'UTF-8');
-            } else if (file.type === 'application/pdf') {
-                inp.value = prefix + 'Collez ci-dessous les informations importantes du PDF ou décrivez le contenu pour que le bot en tienne compte.';
-                inp.focus();
-            } else if (file.type.startsWith('image/')) {
-                inp.value = prefix + "Décrivez l'image ou les infos utiles pour votre demande (le bot prendra en compte votre description).";
-                inp.focus();
-            } else {
-                inp.value = prefix + 'Décrivez le contenu ou collez les infos importantes pour votre demande.';
-                inp.focus();
-            }
+            attachedFileP2 = file;
+            const chip = document.getElementById('attachment-chip-p2');
+            const nameEl = document.getElementById('attachment-name-p2');
+            if (chip && nameEl) { nameEl.textContent = file.name; chip.style.display = 'flex'; }
             event.target.value = '';
+        }
+        function removeAttachmentP2() {
+            attachedFileP2 = null;
+            const chip = document.getElementById('attachment-chip-p2');
+            if (chip) chip.style.display = 'none';
+            document.getElementById('file-upload-p2').value = '';
         }
     </script>
 </body>

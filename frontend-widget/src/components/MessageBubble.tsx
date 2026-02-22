@@ -1,10 +1,24 @@
 import React from 'react';
+import { FileText } from 'lucide-react';
 import type { Message } from '../types';
 
 interface MessageBubbleProps {
     message: Message;
     botName: string;
     logoUrl?: string;
+}
+
+const FILE_PATTERN = /\[Fichier joint: ([^\]]+)\]|\[Fichier: ([^\]]+)\]/gi;
+
+function extractFileAttachments(content: string): string[] {
+    const filenames: string[] = [];
+    let m: RegExpExecArray | null;
+    const re = new RegExp(FILE_PATTERN.source, 'gi');
+    while ((m = re.exec(content)) !== null) {
+        const filename = (m[1] || m[2] || '').trim();
+        if (filename) filenames.push(filename);
+    }
+    return filenames;
 }
 
 export const MessageBubble: React.FC<MessageBubbleProps> = ({
@@ -16,6 +30,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     const timeString = message.timestamp
         ? new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         : '';
+
+    const fileFilenames = extractFileAttachments(message.content);
+    const hasFiles = fileFilenames.length > 0;
+    const restContent = message.content.replace(FILE_PATTERN, '').replace(/\n{2,}/g, '\n').trim();
 
     return (
         <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start items-end gap-2.5'} mb-4 animate-fade-in`}>
@@ -62,6 +80,23 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                         backdropFilter: !isUser ? 'blur(8px)' : 'none',
                     }}
                 >
+                    {hasFiles && (
+                        <div className="flex flex-wrap gap-2 mb-2">
+                            {fileFilenames.map((filename, i) => (
+                                <div
+                                    key={i}
+                                    className="inline-flex items-center gap-2 px-2.5 py-1.5 rounded-lg"
+                                    style={{
+                                        background: isUser ? 'rgba(255,255,255,0.2)' : 'rgba(99, 102, 241, 0.12)',
+                                        border: `1px solid ${isUser ? 'rgba(255,255,255,0.3)' : 'rgba(99, 102, 241, 0.25)'}`,
+                                    }}
+                                >
+                                    <FileText size={14} />
+                                    <span className="text-[12px] truncate max-w-[140px]">{filename}</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                     {(() => {
                         const techTags = [
                             'email_notification_queued', 'conversation_qualified',
@@ -77,7 +112,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                             '📧 Email notifié',
                             '✅ Qualifié',
                         ];
-                        let raw = message.content
+                        let raw = restContent
                             .replace(/<br\s*\/?>/gi, '\n')
                             .replace(/<\/?[a-z][a-z0-9]*[^>]*>/gi, '')
                             .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1');
@@ -85,6 +120,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                         techLabels.forEach(label => { raw = raw.replace(new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), ''); });
                         raw = raw.replace(/\n{2,}/g, '\n').trim();
 
+                        if (!raw && !hasFiles) return null;
                         return raw.split('\n').map((line, i, arr) => (
                             <React.Fragment key={i}>
                                 {line}

@@ -138,11 +138,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                         <ChevronDown size={18} />
                     </button>
                     <button
-                        onClick={() => {
-                            if (window.confirm('Êtes-vous sûr de vouloir terminer la conversation ?')) {
-                                setShowEndModal(true);
-                            }
-                        }}
+                        onClick={() => setShowEndModal(true)}
                         className="c4l-header-btn c4l-header-btn--danger p-2 rounded-xl transition-all duration-200 active:scale-90"
                         style={{
                             color: isDarkMode ? '#94a3b8' : '#64748b',

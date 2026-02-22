@@ -76,8 +76,11 @@ export const MessageList: React.FC<MessageListProps> = ({
                 const lastMsg = messages[messages.length - 1];
                 if (!lastMsg || lastMsg.role !== 'assistant') return null;
 
-                // 1. Time Slot Picker
-                if (lastMsg.content.includes("Quel créneau vous arrange pour être recontacté ?")) {
+                // 1. Time Slot Picker (créneau de recontact)
+                const showTimeSlotPicker = lastMsg.content.includes("Quel créneau vous arrange pour être recontacté ?")
+                    || lastMsg.content.includes("À quel moment préférez-vous être recontacté ?")
+                    || lastMsg.content.includes("À quel moment est-il le plus disponible pour être recontacté ?");
+                if (showTimeSlotPicker) {
                     return (
                         <div className="px-4 pb-2">
                             <TimeSlotPicker onSelect={(slot) => handleOptionClick(slot)} />

@@ -3,3 +3,7 @@ dist/
 .env
 logs/
 *.log
+
+# Build outputs
+*.js.map
+*.d.ts
