@@ -148,6 +148,64 @@ router.post(
 );
 
 // ══════════════════════════════════════════════
+//  2b. POST /api/conversation/:conversationId/message/stream
+//      Même logique que /message mais en Server-Sent Events (SSE)
+//      → vitesse perçue maximale : le premier token arrive en ~300ms
+// ══════════════════════════════════════════════
+
+router.post(
+    '/:conversationId/message/stream',
+    requireApiKey,
+    async (req: Request, res: Response) => {
+        const { conversationId } = ConversationIdParamSchema.parse(req.params);
+        const { message } = SendMessageSchema.parse(req.body);
+        const entrepriseId = req.entreprise!.id;
+
+        // Vérifier ownership
+        const conversation = await conversationService.getConversation(conversationId);
+        if (conversation.entrepriseId !== entrepriseId) {
+            return res.status(403).json({ error: 'Access denied' });
+        }
+
+        // En-têtes SSE
+        res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, no-transform');
+        res.setHeader('Connection', 'keep-alive');
+        res.setHeader('X-Accel-Buffering', 'no');
+        res.flushHeaders();
+
+        const sendEvent = (data: object) => {
+            res.write(`data: ${JSON.stringify(data)}\n\n`);
+            // Flush si disponible (compression middleware)
+            if (typeof (res as any).flush === 'function') (res as any).flush();
+        };
+
+        try {
+            const result = await messageHandler.handleUserMessageStream({
+                conversationId,
+                entrepriseId,
+                message,
+                onChunk: (chunk) => sendEvent({ type: 'text', c: chunk }),
+            });
+
+            // Événement final avec métadonnées
+            sendEvent({
+                type: 'done',
+                score: result.score,
+                leadData: result.leadData,
+                actions: result.actions,
+                metadata: result.metadata,
+            });
+        } catch (error) {
+            logger.error('SSE stream error', { error, conversationId });
+            sendEvent({ type: 'error', message: 'Erreur serveur' });
+        } finally {
+            res.end();
+        }
+    }
+);
+
+// ══════════════════════════════════════════════
 //  3.  GET /api/conversation/:conversationId
 //      Récupère une conversation complète
 // ══════════════════════════════════════════════

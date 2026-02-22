@@ -50,11 +50,11 @@ export class MessageHandler {
                 timestamp: new Date().toISOString()
             });
 
-            // ── 1.  Récupérer le contexte ────────────────
-            const context = await this.getFullContext(conversationId, entrepriseId);
-
-            // ── 2.  Sauvegarder le message utilisateur IMMEDIATEMENT ──
-            await contextManager.saveMessage(conversationId, RoleMessage.user, message);
+            // ── 1+2. Paralléliser : récupérer le contexte ET sauvegarder le message simultanément ──
+            const [context] = await Promise.all([
+                this.getFullContext(conversationId, entrepriseId),
+                contextManager.saveMessage(conversationId, RoleMessage.user, message),
+            ]);
 
             // ── 3.  Extraction préliminaire ──
             const existingProjetData = (context.lead?.projetData as Record<string, any>) || {};
@@ -182,6 +182,123 @@ export class MessageHandler {
                 reply: "Désolé, j'ai rencontré un problème technique. Pouvez-vous reformuler votre message ?",
                 actions: [],
                 metadata: { error: true }
+            };
+        }
+    }
+
+    /**
+     * Variante streaming de handleUserMessage.
+     * Appelle onChunk pour chaque chunk de texte visible (sans bloc DATA).
+     * Retourne les métadonnées finales (score, leadData, actions) après la fin du stream.
+     */
+    async handleUserMessageStream(
+        input: MessageHandlerInput & { onChunk: (chunk: string) => void }
+    ): Promise<MessageHandlerOutput> {
+        const startTime = Date.now();
+        const { conversationId, entrepriseId, message, onChunk } = input;
+
+        try {
+            // ── 1+2. Parallèle : contexte + sauvegarde message ──
+            const [context] = await Promise.all([
+                this.getFullContext(conversationId, entrepriseId),
+                contextManager.saveMessage(conversationId, RoleMessage.user, message),
+            ]);
+
+            // ── 3. Extraction préliminaire ──
+            const existingProjetData = (context.lead?.projetData as Record<string, any>) || {};
+            const preliminaryEntities = this.extractEntities(message, '', existingProjetData);
+
+            let currentLead = context.lead;
+            if (currentLead && Object.keys(preliminaryEntities).length > 0) {
+                currentLead = await this.updateLead(currentLead.id, preliminaryEntities);
+            }
+
+            // ── 4. Prompt ──
+            const systemPrompt = buildPromptDemenagement(
+                {
+                    nom: context.entreprise.nom,
+                    nomBot: context.entreprise.nomBot,
+                    zonesIntervention: context.config.zonesIntervention,
+                    tarifsCustom: context.config.tarifsCustom,
+                    specificites: context.config.specificites,
+                    documentsCalcul: (context.config.documentsCalcul as string[]) || [],
+                    consignesPersonnalisees: context.config.consignesPersonnalisees || '',
+                },
+                {
+                    prenom: currentLead?.prenom || undefined,
+                    nom: currentLead?.nom || undefined,
+                    email: currentLead?.email || undefined,
+                    telephone: currentLead?.telephone || undefined,
+                    creneauRappel: currentLead?.creneauRappel || undefined,
+                    satisfaction: currentLead?.satisfaction || undefined,
+                    satisfactionScore: currentLead?.satisfactionScore || undefined,
+                    projetData: currentLead?.projetData || {},
+                }
+            );
+
+            // ── 5. Messages ──
+            const recentMessages = context.messages.slice(-24);
+            const llmMessages = [
+                ...recentMessages,
+                { role: 'user' as const, content: message },
+            ];
+
+            // ── 6. LLM streaming ──
+            let llmContent = '';
+            let llmMetadata = { tokensUsed: 0, latencyMs: 0 };
+
+            try {
+                const llmResponse = await llmService.streamResponse!(systemPrompt, llmMessages, onChunk);
+                llmContent = llmResponse.content;
+                llmMetadata = { tokensUsed: llmResponse.tokensUsed || 0, latencyMs: llmResponse.latencyMs || 0 };
+            } catch (llmError) {
+                logger.error('⚠️ [LLM-Stream] Failure', { error: String(llmError), conversationId });
+                onChunk("Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler ?");
+                llmContent = "Désolé, j'ai rencontré un petit problème technique. Pouvez-vous reformuler ?";
+            }
+
+            // ── 6b. DATA block + sanitize ──
+            const { llmEntities, clean: cleanedContent } = this.parseLLMDataBlock(llmContent);
+            llmContent = this.sanitizeReply(cleanedContent);
+
+            // ── 7. Extraction + merge ──
+            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
+            const finalEntities = { ...regexEntities, ...llmEntities };
+            if (currentLead && Object.keys(finalEntities).length > 0) {
+                currentLead = await this.updateLead(currentLead.id, finalEntities);
+            }
+
+            // ── 8. Score ──
+            const newScore = this.calculateScore(currentLead);
+            if (currentLead) {
+                currentLead = await prisma.lead.update({
+                    where: { id: currentLead.id },
+                    data: { score: newScore, priorite: this.getPriorite(newScore, currentLead) },
+                });
+            }
+
+            // ── 9. Sauvegarde réponse ──
+            await contextManager.saveMessage(conversationId, RoleMessage.assistant, llmContent, llmMetadata);
+
+            // ── 10. Actions ──
+            const actions = currentLead ? await this.triggerActions(currentLead, newScore) : [];
+
+            logger.info('✅ [MessageHandler-Stream] Done', { conversationId, score: newScore, latency: Date.now() - startTime });
+
+            return {
+                reply: llmContent,
+                leadData: currentLead,
+                score: newScore,
+                actions,
+                metadata: { ...llmMetadata, entitiesExtracted: { ...preliminaryEntities, ...finalEntities } },
+            };
+        } catch (error) {
+            logger.error('💥 [MessageHandler-Stream] CRITICAL ERROR', { conversationId, error: String(error) });
+            onChunk("Désolé, j'ai rencontré un problème technique. Pouvez-vous reformuler votre message ?");
+            return {
+                reply: "Désolé, j'ai rencontré un problème technique.",
+                actions: [],
+                metadata: { error: true },
             };
         }
     }

@@ -868,6 +868,8 @@
         .slot-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
         .slot-btn { background:#1a1a1a; border:1px solid var(--border); color:var(--text); padding:8px; border-radius:6px; font-size:.8rem; cursor:pointer; transition:all .2s; }
         .slot-btn:hover { border-color:#6c63ff; color:#6c63ff; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        .stream-cursor { animation: blink 0.8s step-end infinite; color: var(--accent); }
         .widget-container { margin-top:12px; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:12px; padding:12px; }
     </style>
 </head>
@@ -1296,31 +1298,118 @@
         }
 
         async function sendMsg() {
-            if (state.sending) return;
             const inp = document.getElementById('chat-input');
             const text = inp.value.trim();
             if (!text || !state.conversationId) return;
-
             inp.value = '';
+            await sendMsgText(text);
+        }
+
+        async function sendMsgText(text) {
+            if (state.sending || !state.conversationId) return;
             state.sending = true;
             document.getElementById('send-btn').disabled = true;
 
             addUserMsg(text);
-            showTyping();
+
+            const chatBody = document.getElementById('chat-body');
+            const bubble = document.createElement('div');
+            bubble.className = 'msg bot';
+            const bubbleTxt = document.createElement('div');
+            bubble.appendChild(bubbleTxt);
+            const cursor = document.createElement('span');
+            cursor.className = 'stream-cursor';
+            cursor.textContent = '▋';
+            bubble.appendChild(cursor);
+            chatBody.appendChild(bubble);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            let accText = '';
 
             try {
-                const res = await apiCall('POST', `/conversation/${state.conversationId}/message`, { message: text });
-                hideTyping();
-                addBotMsg(res.reply || '…', res.actions);
+                const response = await fetch(API_BASE + `/conversation/${state.conversationId}/message/stream`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY },
+                    body: JSON.stringify({ message: text }),
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let sseBuffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    sseBuffer += decoder.decode(value, { stream: true });
+                    const lines = sseBuffer.split('\n');
+                    sseBuffer = lines.pop();
+
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        try {
+                            const evt = JSON.parse(line.slice(6));
+                            if (evt.type === 'text') {
+                                accText += evt.c;
+                                let display = accText;
+                                systemActions.forEach(t => { display = display.replace(new RegExp(t, 'g'), ''); });
+                                display = display.trim();
+                                if (display.includes('VOTRE PROJET DE DÉMÉNAGEMENT')) {
+                                    const ls = display.split('\n');
+                                    bubbleTxt.innerHTML = ls.map(l => { const t=l.trim(); if(!t) return '<div style="height:4px;"></div>'; return `<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.07);line-height:1.5;">${t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`; }).join('');
+                                    bubbleTxt.style.cssText = 'border:1px solid rgba(108,99,255,.2);border-radius:10px;padding:12px 14px;background:rgba(108,99,255,.04);margin-top:4px;';
+                                } else {
+                                    bubbleTxt.textContent = display;
+                                }
+                                chatBody.scrollTop = chatBody.scrollHeight;
+                            } else if (evt.type === 'done') {
+                                bubble.removeChild(cursor);
+                                addP2BotWidgets(bubble, accText, evt.actions || []);
+                            }
+                        } catch (_) {}
+                    }
+                }
             } catch (e) {
-                hideTyping();
-                addErrorMsg('Erreur de connexion. Réessayez.');
+                if (cursor.parentNode) bubble.removeChild(cursor);
+                if (!accText) { bubbleTxt.textContent = '⚠️ Erreur de connexion.'; }
                 console.error(e);
             } finally {
                 state.sending = false;
                 document.getElementById('send-btn').disabled = false;
-                inp.focus();
+                document.getElementById('chat-input').focus();
             }
+        }
+
+        function addP2BotWidgets(bubble, cleanText, actions) {
+            systemActions.forEach(t => { cleanText = cleanText.replace(new RegExp(t, 'g'), ''); });
+            cleanText = cleanText.trim();
+            if (cleanText.includes("Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous")) {
+                const w = document.createElement('div'); w.className = 'widget-container';
+                w.innerHTML = `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">Votre choix :</div><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="slot-btn" onclick="sendMsgText('Oui, je souhaite une visite')">✅ Oui, une visite</button><button class="slot-btn" onclick="sendMsgText('Non merci')">❌ Non merci</button></div>`;
+                bubble.appendChild(w);
+            } else if (cleanText.includes("Quel jour vous conviendrait pour cette visite ?")) {
+                const w = document.createElement('div'); w.className = 'widget-container';
+                w.innerHTML = `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">Choisissez un jour :</div><div class="day-grid"><button class="day-btn" onclick="selectDay(this,'Lundi')">Lun</button><button class="day-btn" onclick="selectDay(this,'Mardi')">Mar</button><button class="day-btn" onclick="selectDay(this,'Mercredi')">Mer</button><button class="day-btn" onclick="selectDay(this,'Jeudi')">Jeu</button><button class="day-btn" onclick="selectDay(this,'Vendredi')">Ven</button><button class="day-btn" onclick="selectDay(this,'Samedi')">Sam</button><button class="day-btn" onclick="sendMsgText('Flexible sur le jour')">🔄 Flexible</button></div>`;
+                bubble.appendChild(w);
+            } else if (cleanText.includes("Quel créneau vous arrange pour la visite ?")) {
+                const w = document.createElement('div'); w.className = 'widget-container';
+                w.innerHTML = `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:8px;">Choisissez un créneau :</div><div class="slot-grid"><button class="slot-btn" onclick="sendMsgText('Matin (9h-12h)')">🌅 Matin (9h-12h)</button><button class="slot-btn" onclick="sendMsgText('Après-midi (14h-18h)')">☀️ Après-midi (14h-18h)</button></div>`;
+                bubble.appendChild(w);
+            }
+            if (cleanText.includes('Eco') && cleanText.includes('Standard') && cleanText.includes('Luxe')) {
+                const pw = document.createElement('div'); pw.className = 'widget-container';
+                pw.innerHTML = `<div style="font-size:.75rem;color:var(--text-muted);margin-bottom:10px;">Choisissez votre prestation :</div><div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="slot-btn" onclick="sendMsgText('Eco')" style="flex:1;min-width:80px;text-align:center;">🚚 <strong>Eco</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Transport seul</span></button><button class="slot-btn" onclick="sendMsgText('Standard')" style="flex:1;min-width:80px;text-align:center;">📦 <strong>Standard</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Eco + Protection + Démontage</span></button><button class="slot-btn" onclick="sendMsgText('Luxe')" style="flex:1;min-width:80px;text-align:center;">✨ <strong>Luxe</strong><br><span style="font-size:.72rem;color:var(--text-muted);">Clef en main</span></button></div>`;
+                bubble.appendChild(pw);
+            }
+            if (actions && actions.length > 0) {
+                const userActions = actions.filter(a => !systemActions.includes(a));
+                if (userActions.length > 0) {
+                    const acts = document.createElement('div'); acts.className = 'bot-actions';
+                    userActions.forEach(act => { const btn = document.createElement('button'); btn.className = 'bot-act-btn'; btn.textContent = act; btn.onclick = () => sendMsgText(act); acts.appendChild(btn); });
+                    bubble.appendChild(acts);
+                }
+            }
+            document.getElementById('chat-body').scrollTop = document.getElementById('chat-body').scrollHeight;
         }
 
         function endChat() {
