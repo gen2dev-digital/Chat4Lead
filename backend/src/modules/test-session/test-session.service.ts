@@ -35,6 +35,24 @@ function htmlEsc(s: unknown): string {
         .replace(/\n/g, '<br>');
 }
 
+/** Résout un nom de ville en code postal via l'API Geo Gouv (pour afficher le CP même si le lead ne l'a pas donné). */
+async function resolveVilleToCodePostal(ville: string): Promise<string | null> {
+    if (!ville || !ville.trim()) return null;
+    try {
+        const name = encodeURIComponent(ville.trim());
+        const res = await fetch(
+            `https://geo.api.gouv.fr/communes?nom=${name}&boost=population&limit=1`,
+            { signal: AbortSignal.timeout(3000) }
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        const codes = data?.[0]?.codesPostaux;
+        return Array.isArray(codes) && codes.length > 0 ? codes[0] : null;
+    } catch {
+        return null;
+    }
+}
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 
 export const testSessionService = {
@@ -179,6 +197,16 @@ export const testSessionService = {
         const priorite = lead.priorite || '—';
         const now = new Date().toLocaleString('fr-FR');
 
+        // Toujours afficher un code postal pour départ/arrivée si on a la ville (résolution API si manquant)
+        let codePostalDepart = projet.codePostalDepart;
+        let codePostalArrivee = projet.codePostalArrivee;
+        if (projet.villeDepart && !codePostalDepart) {
+            codePostalDepart = (await resolveVilleToCodePostal(projet.villeDepart)) ?? undefined;
+        }
+        if (projet.villeArrivee && !codePostalArrivee) {
+            codePostalArrivee = (await resolveVilleToCodePostal(projet.villeArrivee)) ?? undefined;
+        }
+
         const exchanges: Array<{ role: string; content: string }> = messages.map((m: any) => ({
             role: m.role === 'user' ? 'user' : 'bot',
             content: m.content || m.text || '',
@@ -203,15 +231,16 @@ export const testSessionService = {
   <tr><td>Nom / Prénom</td><td><strong>${htmlEsc(lead.nom || '')} ${htmlEsc(lead.prenom || '')}</strong></td></tr>
   <tr><td>Email</td><td>${htmlEsc(lead.email || '—')}</td></tr>
   <tr><td>Téléphone</td><td>${htmlEsc(lead.telephone || '—')}</td></tr>
-  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${projet.codePostalDepart ? ' (' + htmlEsc(projet.codePostalDepart) + ')' : ''}</td></tr>
-  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${projet.codePostalArrivee ? ' (' + htmlEsc(projet.codePostalArrivee) + ')' : ''}</td></tr>
+  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${codePostalDepart ? ' (' + htmlEsc(codePostalDepart) + ')' : ''}</td></tr>
+  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${codePostalArrivee ? ' (' + htmlEsc(codePostalArrivee) + ')' : ''}</td></tr>
   <tr><td>🏠 Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
   ${projet.nbPieces ? `<tr><td>🚪 Pièces</td><td>F${projet.nbPieces}</td></tr>` : ''}
   ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³</td></tr>` : ''}
   ${projet.etage ? `<tr><td>🏢 Étage</td><td>${htmlEsc(projet.etage)}</td></tr>` : ''}
   <tr><td>📅 Date souhaitée</td><td>${htmlEsc(projet.dateSouhaitee || '—')}</td></tr>
   <tr><td>📋 Formule</td><td>${htmlEsc(projet.formule || '—')}</td></tr>
-  ${lead.creneauRappel ? `<tr><td>📞 Créneau rappel</td><td>${htmlEsc(lead.creneauRappel)}</td></tr>` : ''}
+  ${projet.creneauVisite ? `<tr><td>📆 Visite technique</td><td>${htmlEsc(projet.creneauVisite)}</td></tr>` : ''}
+  ${!projet.creneauVisite && lead.creneauRappel ? `<tr><td>📞 Créneau rappel</td><td>${htmlEsc(lead.creneauRappel)}</td></tr>` : ''}
   ${lead.satisfaction ? `<tr><td>⭐ Satisfaction</td><td>${htmlEsc(lead.satisfaction)}</td></tr>` : ''}
   ${projet.international ? `<tr><td>🌍 International</td><td style="color:#f59e0b;font-weight:600">Oui — hors France</td></tr>` : ''}
   ${projet.objetSpeciaux && Array.isArray(projet.objetSpeciaux) && projet.objetSpeciaux.length > 0 ? `<tr><td>📦 Objets spéciaux</td><td style="color:#f59e0b">${htmlEsc(projet.objetSpeciaux.join(', '))}</td></tr>` : ''}

@@ -4,7 +4,7 @@ import { logger } from '../../../utils/logger';
 import { LLMMessage, LLMProvider, LLMResponse, StreamChunkCallback } from '../types';
 import { PROMPT_CACHE_SEPARATOR } from '../../prompt/templates/demenagement';
 
-const MAX_TOKENS = 700;
+const MAX_TOKENS = 900;
 
 type SystemBlock = { type: 'text'; text: string; cache_control?: { type: 'ephemeral' } };
 
@@ -69,7 +69,7 @@ export class ClaudeProvider implements LLMProvider {
     private model: string;
 
     constructor() {
-        this.client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY });
+        this.client = new Anthropic({ apiKey: config.ANTHROPIC_API_KEY, timeout: 30000 });
         this.model = config.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
     }
 

@@ -25,7 +25,7 @@ export class ContextManager {
                 where: { id: conversationId },
                 include: {
                     lead: true,
-                    messages: { take: 50, orderBy: { createdAt: 'asc' } },
+                    messages: { take: 24, orderBy: { createdAt: 'asc' } },
                 },
             });
 
@@ -69,6 +69,31 @@ export class ContextManager {
             await cache.del(`context:${conversationId}`);
         } catch (error) {
             logger.error(`Erreur cache:`, error);
+        }
+    }
+
+    /**
+     * Récupère l'entreprise et sa config métier avec un cache Redis TTL 1h.
+     * Les deux requêtes DB sont parallélisées via Promise.all.
+     * Utilisé par getFullContext() dans message.handler pour éviter 2 requêtes DB par message.
+     */
+    async getEntrepriseConfig(entrepriseId: string, metier: Metier | string) {
+        const cacheKey = `empresa:${entrepriseId}:${metier}`;
+        try {
+            const cached = await cache.get<{ entreprise: any; config: any }>(cacheKey);
+            if (cached) return cached;
+
+            const [entreprise, config] = await Promise.all([
+                prisma.entreprise.findUnique({ where: { id: entrepriseId } }),
+                prisma.configMetier.findFirst({ where: { entrepriseId, metier: metier as Metier } }),
+            ]);
+
+            const result = { entreprise, config };
+            await cache.set(cacheKey, result, 3600); // TTL 1h
+            return result;
+        } catch (error) {
+            logger.error(`Erreur getEntrepriseConfig:`, error);
+            throw error;
         }
     }
 }

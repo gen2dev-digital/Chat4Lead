@@ -1,4 +1,5 @@
 import { prisma } from '../../config/database';
+import { cache } from '../../config/redis';
 import { logger } from '../../utils/logger';
 import { contextManager } from './context.manager';
 import { llmService } from '../llm/llm.service';
@@ -56,16 +57,8 @@ export class MessageHandler {
                 contextManager.saveMessage(conversationId, RoleMessage.user, message),
             ]);
 
-            // ── 3.  Extraction préliminaire ──
-            const existingProjetData = (context.lead?.projetData as Record<string, any>) || {};
-            const preliminaryEntities = this.extractEntities(message, '', existingProjetData);
-
-            let currentLead = context.lead;
-            if (currentLead && Object.keys(preliminaryEntities).length > 0) {
-                currentLead = await this.updateLead(currentLead.id, preliminaryEntities);
-            }
-
-            // ── 4.  Construire le prompt ──
+            // ── 3.  Construire le prompt ──
+            const currentLead = context.lead;
             const systemPrompt = buildPromptDemenagement(
                 {
                     nom: context.entreprise.nom,
@@ -126,19 +119,16 @@ export class MessageHandler {
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
             // LLM entities override regex entities (LLM has full context understanding)
             const finalEntities = { ...regexEntities, ...llmEntities };
-            if (currentLead && Object.keys(finalEntities).length > 0) {
-                currentLead = await this.updateLead(currentLead.id, finalEntities);
-            }
 
-            // ── 8.  Recalculer le score et priorité ──────────────
-            const newScore = this.calculateScore(currentLead);
-            if (currentLead) {
-                currentLead = await prisma.lead.update({
+            // ── 8.  Mise à jour lead + score en 1 seule requête ──
+            const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
+            let updatedLead = currentLead;
+            if (currentLead && Object.keys(finalEntities).length > 0) {
+                updatedLead = await this.updateLead(currentLead.id, finalEntities, currentLead, newScore);
+            } else if (currentLead) {
+                updatedLead = await prisma.lead.update({
                     where: { id: currentLead.id },
-                    data: {
-                        score: newScore,
-                        priorite: this.getPriorite(newScore, currentLead),
-                    },
+                    data: { score: newScore, priorite: this.getPriorite(newScore, currentLead) },
                 });
             }
 
@@ -151,7 +141,7 @@ export class MessageHandler {
             );
 
             // ── 10. Actions et résultat ──────────────────────────
-            const actions = currentLead ? await this.triggerActions(currentLead, newScore) : [];
+            const actions = updatedLead ? await this.triggerActions(updatedLead, newScore) : [];
             const totalLatency = Date.now() - startTime;
 
             logger.info('✅ [MessageHandler] Processing message SUCCESS', {
@@ -162,12 +152,12 @@ export class MessageHandler {
 
             return {
                 reply: llmContent,
-                leadData: currentLead,
+                leadData: updatedLead,
                 score: newScore,
                 actions,
                 metadata: {
                     ...llmMetadata,
-                    entitiesExtracted: { ...preliminaryEntities, ...finalEntities },
+                    entitiesExtracted: finalEntities,
                 },
             };
 
@@ -204,16 +194,8 @@ export class MessageHandler {
                 contextManager.saveMessage(conversationId, RoleMessage.user, message),
             ]);
 
-            // ── 3. Extraction préliminaire ──
-            const existingProjetData = (context.lead?.projetData as Record<string, any>) || {};
-            const preliminaryEntities = this.extractEntities(message, '', existingProjetData);
-
-            let currentLead = context.lead;
-            if (currentLead && Object.keys(preliminaryEntities).length > 0) {
-                currentLead = await this.updateLead(currentLead.id, preliminaryEntities);
-            }
-
-            // ── 4. Prompt ──
+            // ── 3. Construire le prompt ──
+            const currentLead = context.lead;
             const systemPrompt = buildPromptDemenagement(
                 {
                     nom: context.entreprise.nom,
@@ -264,14 +246,14 @@ export class MessageHandler {
             // ── 7. Extraction + merge ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
             const finalEntities = { ...regexEntities, ...llmEntities };
-            if (currentLead && Object.keys(finalEntities).length > 0) {
-                currentLead = await this.updateLead(currentLead.id, finalEntities);
-            }
 
-            // ── 8. Score ──
-            const newScore = this.calculateScore(currentLead);
-            if (currentLead) {
-                currentLead = await prisma.lead.update({
+            // ── 8. Mise à jour lead + score en 1 seule requête ──
+            const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
+            let updatedLead = currentLead;
+            if (currentLead && Object.keys(finalEntities).length > 0) {
+                updatedLead = await this.updateLead(currentLead.id, finalEntities, currentLead, newScore);
+            } else if (currentLead) {
+                updatedLead = await prisma.lead.update({
                     where: { id: currentLead.id },
                     data: { score: newScore, priorite: this.getPriorite(newScore, currentLead) },
                 });
@@ -281,16 +263,16 @@ export class MessageHandler {
             await contextManager.saveMessage(conversationId, RoleMessage.assistant, llmContent, llmMetadata);
 
             // ── 10. Actions ──
-            const actions = currentLead ? await this.triggerActions(currentLead, newScore) : [];
+            const actions = updatedLead ? await this.triggerActions(updatedLead, newScore) : [];
 
             logger.info('✅ [MessageHandler-Stream] Done', { conversationId, score: newScore, latency: Date.now() - startTime });
 
             return {
                 reply: llmContent,
-                leadData: currentLead,
+                leadData: updatedLead,
                 score: newScore,
                 actions,
-                metadata: { ...llmMetadata, entitiesExtracted: { ...preliminaryEntities, ...finalEntities } },
+                metadata: { ...llmMetadata, entitiesExtracted: finalEntities },
             };
         } catch (error) {
             logger.error('💥 [MessageHandler-Stream] CRITICAL ERROR', { conversationId, error: String(error) });
@@ -309,25 +291,21 @@ export class MessageHandler {
 
     /**
      * Récupère le contexte complet : conversation, lead, entreprise, config métier.
+     * Entreprise + config sont mis en cache Redis 1h via contextManager.getEntrepriseConfig().
+     * Les deux appels (getContext + getEntrepriseConfig) sont parallélisés.
      */
     private async getFullContext(conversationId: string, entrepriseId: string) {
-        // Messages + lead + metier
-        const context = await contextManager.getContext(conversationId);
+        const metier = Metier.DEMENAGEMENT;
 
-        // Entreprise
-        const entreprise = await prisma.entreprise.findUnique({
-            where: { id: entrepriseId },
-        });
+        // Paralléliser contexte conversation et config entreprise (cache Redis 1h)
+        const [context, { entreprise, config }] = await Promise.all([
+            contextManager.getContext(conversationId),
+            contextManager.getEntrepriseConfig(entrepriseId, metier),
+        ]);
 
         if (!entreprise) {
             throw new Error(`Entreprise ${entrepriseId} non trouvée`);
         }
-
-        // Config métier
-        const metier = (context.metier as Metier) || Metier.DEMENAGEMENT;
-        const config = await prisma.configMetier.findFirst({
-            where: { entrepriseId, metier },
-        });
 
         if (!config) {
             throw new Error(`Config métier ${metier} non trouvée pour l'entreprise ${entrepriseId}`);
@@ -609,7 +587,13 @@ export class MessageHandler {
             if (lowerMsg.includes('pas de préférence') || lowerMsg.includes('peu importe') || lowerMsg.includes("n'importe") || lowerMsg.includes('anytime') || lowerMsg.includes('flexible')) {
                 entities.creneauRappel = 'Pas de préférence';
             } else if (jourTrouve || horaireTrouve) {
-                entities.creneauRappel = [jourTrouve, horaireTrouve].filter(Boolean).join(' ');
+                const creneauStr = [jourTrouve, horaireTrouve].filter(Boolean).join(' ');
+                // Si le lead a déjà accepté une visite, c'est le créneau de la visite technique (avec le jour), pas un créneau de rappel
+                if (existingProjetData.rdvConseiller === true) {
+                    entities.creneauVisite = creneauStr;
+                } else {
+                    entities.creneauRappel = creneauStr;
+                }
             }
         }
 
@@ -797,12 +781,16 @@ export class MessageHandler {
 
     /**
      * Met à jour le lead avec les nouvelles entités extraites.
-     * Fusionne les données projet existantes avec les nouvelles.
+     * Accepte le lead existant (évite un findUnique) et fusionne le score en 1 seul update.
+     * @param existingLead - lead déjà chargé depuis le contexte (évite findUnique)
+     * @param score - si fourni, inclus dans la même requête update (évite une 2e requête)
      */
-    private async updateLead(leadId: string, entities: Record<string, any>) {
-        const lead = await prisma.lead.findUnique({ where: { id: leadId } });
-        if (!lead) throw new Error(`Lead ${leadId} non trouvé`);
-
+    private async updateLead(
+        leadId: string,
+        entities: Record<string, any>,
+        existingLead: any,
+        score?: number
+    ) {
         const updates: Record<string, any> = {};
 
         // ── Champs directs ──
@@ -811,8 +799,8 @@ export class MessageHandler {
         if (entities.email) updates.email = entities.email;
         if (entities.telephone) updates.telephone = entities.telephone;
 
-        // ── Fusion projetData ──
-        const projetData = { ...(lead.projetData as Record<string, any>) };
+        // ── Fusion projetData (à partir du lead déjà en mémoire) ──
+        const projetData = { ...(existingLead.projetData as Record<string, any>) };
 
         const projetFields = [
             'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
@@ -827,14 +815,20 @@ export class MessageHandler {
             }
         }
 
-        // champs directs supplementaires
+        // champs directs supplémentaires
         if (entities.creneauRappel) updates.creneauRappel = entities.creneauRappel;
         if (entities.satisfaction) updates.satisfaction = entities.satisfaction;
         if (entities.satisfactionScore) updates.satisfactionScore = entities.satisfactionScore;
 
         updates.projetData = projetData;
 
-        // ── Persist ──
+        // ── Score + priorité fusionnés dans le même update ──
+        if (score !== undefined) {
+            updates.score = score;
+            updates.priorite = this.getPriorite(score, { ...existingLead, projetData });
+        }
+
+        // ── Persist : 1 seule requête DB ──
         const updatedLead = await prisma.lead.update({
             where: { id: leadId },
             data: updates,
@@ -956,30 +950,23 @@ export class MessageHandler {
      */
     private async triggerActions(lead: any, score: number): Promise<string[]> {
         const actions: string[] = [];
+        const needsNotif = score >= 70 && !lead.notificationSent;
+        const needsCRM = lead.email && lead.telephone && !lead.pushedToCRM;
 
-        // ── Action 1 : Notification email si lead chaud ──
-        if (score >= 70 && !lead.notificationSent) {
-            // TODO Phase 2 : Envoyer email via SendGrid / Resend
+        if (needsNotif) {
             logger.info('📧 [ACTION] Email notification queued', { leadId: lead.id, score });
             actions.push('email_notification_queued');
-
-            await prisma.lead.update({
-                where: { id: lead.id },
-                data: { notificationSent: true },
-            });
         }
-
-        // ── Action 2 : Push CRM si email + téléphone collectés ──
-        if (lead.email && lead.telephone && !lead.pushedToCRM) {
-            // TODO Phase 3 : Push vers HubSpot / Salesforce
+        if (needsCRM) {
             logger.info('🔗 [ACTION] CRM push queued', { leadId: lead.id });
             actions.push('crm_push_queued');
-
-            await prisma.lead.update({
-                where: { id: lead.id },
-                data: { pushedToCRM: true },
-            });
         }
+
+        // ── Actions 1+2 : mise à jour flags lead en parallèle ──
+        const leadUpdates: Promise<any>[] = [];
+        if (needsNotif) leadUpdates.push(prisma.lead.update({ where: { id: lead.id }, data: { notificationSent: true } }));
+        if (needsCRM) leadUpdates.push(prisma.lead.update({ where: { id: lead.id }, data: { pushedToCRM: true } }));
+        if (leadUpdates.length > 0) await Promise.all(leadUpdates);
 
         // ── Action 3 : Qualifier la conversation ──
         if (score >= 70) {
@@ -1071,11 +1058,18 @@ export class MessageHandler {
 
     /**
      * Résout un code postal en ville via l'API Geo Gouv.
+     * Cache Redis TTL 24h + timeout 3s pour éviter les blocages.
      */
     private async resolvePostalCode(codePostal: string): Promise<string | null> {
+        const cacheKey = `geo:cp:${codePostal}`;
         try {
+            // Vérifier le cache Redis d'abord
+            const cached = await cache.get<string>(cacheKey);
+            if (cached) return cached;
+
             const response = await fetch(
-                `https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=nom,population&format=json`
+                `https://geo.api.gouv.fr/communes?codePostal=${codePostal}&fields=nom,population&format=json`,
+                { signal: AbortSignal.timeout(3000) }
             );
             if (!response.ok) return null;
 
@@ -1084,7 +1078,11 @@ export class MessageHandler {
 
             // Trier par population décroissante → ville principale en premier
             communes.sort((a, b) => (b.population || 0) - (a.population || 0));
-            return communes[0].nom;
+            const ville = communes[0].nom;
+
+            // Mettre en cache 24h (les codes postaux ne changent pas)
+            await cache.set(cacheKey, ville, 86400);
+            return ville;
         } catch (error) {
             logger.warn('⚠️ Geo API error', { codePostal, error: String(error) });
             return null;
