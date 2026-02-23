@@ -231,8 +231,8 @@ export const testSessionService = {
   <tr><td>Nom / Prénom</td><td><strong>${htmlEsc(lead.nom || '')} ${htmlEsc(lead.prenom || '')}</strong></td></tr>
   <tr><td>Email</td><td>${htmlEsc(lead.email || '—')}</td></tr>
   <tr><td>Téléphone</td><td>${htmlEsc(lead.telephone || '—')}</td></tr>
-  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${codePostalDepart ? ' (' + htmlEsc(codePostalDepart) + ')' : ''}</td></tr>
-  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${codePostalArrivee ? ' (' + htmlEsc(codePostalArrivee) + ')' : ''}</td></tr>
+  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${codePostalDepart ? ' (' + htmlEsc(codePostalDepart) + ')' : ''}${projet.typeHabitationDepart ? ' — ' + htmlEsc(projet.typeHabitationDepart) : ''}${projet.stationnementDepart ? ' — Accès: ' + htmlEsc(projet.stationnementDepart) : ''}</td></tr>
+  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${codePostalArrivee ? ' (' + htmlEsc(codePostalArrivee) + ')' : ''}${projet.typeHabitationArrivee ? ' — ' + htmlEsc(projet.typeHabitationArrivee) : ''}${projet.stationnementArrivee ? ' — Accès: ' + htmlEsc(projet.stationnementArrivee) : ''}</td></tr>
   <tr><td>🏠 Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
   ${projet.nbPieces ? `<tr><td>🚪 Pièces</td><td>F${projet.nbPieces}</td></tr>` : ''}
   ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³</td></tr>` : ''}

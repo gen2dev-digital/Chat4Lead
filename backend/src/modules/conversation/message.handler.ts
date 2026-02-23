@@ -117,10 +117,9 @@ export class MessageHandler {
             // ── 6c. Nettoyage du texte LLM ──
             llmContent = this.sanitizeReply(llmContent);
 
-            // ── 7.  Extraction regex (fallback) + merge (LLM a priorité) ──
+            // ── 7.  Extraction regex + merge avec LLM (LLM prioritaire sauf valeurs invalides) ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
-            // LLM entities override regex entities (LLM has full context understanding)
-            const finalEntities = { ...regexEntities, ...llmEntities };
+            const finalEntities = this.mergeEntities(regexEntities, llmEntities);
 
             // ── 8.  Mise à jour lead + score en 1 seule requête ──
             const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
@@ -249,7 +248,7 @@ export class MessageHandler {
 
             // ── 7. Extraction + merge ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
-            const finalEntities = { ...regexEntities, ...llmEntities };
+            const finalEntities = this.mergeEntities(regexEntities, llmEntities);
 
             // ── 8. Mise à jour lead + score en 1 seule requête ──
             const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
@@ -507,7 +506,7 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ Date extraction failed', e); }
 
-        // ── Villes (si mentionnées avec "de", "à", "vers", "d'", "de l'", "de la") ──
+        // ── Villes (pattern "X a/à Y" ou "de X à Y" avec villes multi-mots) ──
         try {
             const CITY_STOP = new Set([
                 'déménagement', 'demenagement', 'estimation', 'standard', 'formule',
@@ -515,16 +514,27 @@ export class MessageHandler {
                 'surface', 'volume', 'budget', 'environ', 'contact', 'client',
                 'bonjour', 'merci', 'parfait', 'projet', 'arrivée', 'départ',
                 'mon', 'ton', 'son', 'notre', 'votre', 'leur', 'un', 'une', 'le', 'la',
-                'quel', 'quelle', 'créneau',
+                'quel', 'quelle', 'créneau', 'vous', 'affiner',
             ]);
+            const isValidCity = (s: string) => s && s.length > 1 && !CITY_STOP.has(s.toLowerCase().trim());
+
+            // Pattern "X a/à Y" ou "de X a/à Y" avec villes multi-mots (ex: "Boissy saint leger a Perpignan 25m3")
+            const trajetMatch = combined.match(/(?:de\s+)?([A-Za-zÀ-ÿ\s-]+?)\s+(?:a|à)\s+([A-Za-zÀ-ÿ\s-]+?)(?:\s+\d+[\s]*(?:m³|m3)?|\s*$)/i);
+            if (trajetMatch && (!entities.villeDepart && !existingProjetData.villeDepart || !entities.villeArrivee && !existingProjetData.villeArrivee)) {
+                const v1 = this.capitalizeFirst(trajetMatch[1].trim().replace(/[,.!?;]/g, ''));
+                const v2 = this.capitalizeFirst(trajetMatch[2].trim().replace(/[,.!?;]/g, ''));
+                if (isValidCity(v1) && isValidCity(v2) && v1 !== v2) {
+                    if (!entities.villeDepart && !existingProjetData.villeDepart) entities.villeDepart = v1;
+                    if (!entities.villeArrivee && !existingProjetData.villeArrivee) entities.villeArrivee = v2;
+                }
+            }
+
+            // Fallback: mots avec "de", "à", "a", "vers"
             const words = combined.split(/\s+/);
             for (let i = 0; i < words.length - 1; i++) {
                 const rawWord = words[i].toLowerCase().replace(/[:]/g, '');
-                // Handle contractions: "d'Avignon" → split to ["d'", "Avignon"] or check if starts with d'/vers/à
-                let prep = rawWord;
                 let nextWord = words[i + 1];
 
-                // Handle contraction "d'Avignon" as a single token
                 const contractionMatch = rawWord.match(/^d[''](.+)/i);
                 if (contractionMatch) {
                     const cityCandidate = contractionMatch[1];
@@ -537,11 +547,12 @@ export class MessageHandler {
                     }
                 }
 
-                if (['de', 'from', 'vers', 'à', 'to', "de l'", "de la", "d'"].includes(prep) && /^[A-ZÀ-Üa-zà-ü]/i.test(nextWord)) {
+                const prepList = ['de', 'from', 'vers', 'à', 'a', 'to', "de l'", "de la", "d'"];
+                if (prepList.includes(rawWord) && /^[A-ZÀ-Üa-zà-ü]/i.test(nextWord)) {
                     const city = this.capitalizeFirst(nextWord.replace(/[,.!?;]/g, ''));
                     if (CITY_STOP.has(city.toLowerCase())) continue;
-                    if (['de', 'from'].includes(prep) && !entities.villeDepart && !existingProjetData.villeDepart) entities.villeDepart = city;
-                    if (['vers', 'à', 'to'].includes(prep) && !entities.villeArrivee && !existingProjetData.villeArrivee) {
+                    if (['de', 'from'].includes(rawWord) && !entities.villeDepart && !existingProjetData.villeDepart) entities.villeDepart = city;
+                    if (['vers', 'à', 'a', 'to'].includes(rawWord) && !entities.villeArrivee && !existingProjetData.villeArrivee) {
                         entities.villeArrivee = city;
                     }
                 }
@@ -637,8 +648,8 @@ export class MessageHandler {
             // Réponses courantes
             'oui', 'non', 'ok', 'okay', 'ouais', 'nope', 'yes', 'no',
 
-            // Logement
-            'appart', 'appartement', 'maison', 'studio', 'logement',
+            // Logement (plain, pied = configuration maison, jamais des noms)
+            'plain', 'pied', 'appart', 'appartement', 'maison', 'studio', 'logement',
             'immeuble', 'bureaux', 'bureau', 'batiment', 'villa', 'chambre', 'piece', 'pièce', 'etage', 'étage',
 
             // Villes FR
@@ -808,6 +819,7 @@ export class MessageHandler {
 
         const projetFields = [
             'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
+            'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
             'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
             'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'autorisationStationnementDepart', 'autorisationStationnementArrivee', 'caveOuStockage', 'international', 'contraintes',
             'rdvConseiller', 'creneauVisite',
@@ -1098,6 +1110,26 @@ export class MessageHandler {
     // ──────────────────────────────────────────────
 
     /**
+     * Fusionne les entités regex et LLM. Le LLM a priorité SAUF pour les valeurs invalides
+     * (ex: "Vous", "Affiner" pour des villes) qui sont filtrées.
+     */
+    private mergeEntities(regexEntities: Record<string, any>, llmEntities: Record<string, any>): Record<string, any> {
+        const INVALID_VILLE = new Set(['vous', 'affiner', 'inconnu', 'null', '']);
+        const isInvalidVille = (v: unknown) => typeof v !== 'string' || v.length < 2 || INVALID_VILLE.has(v.toLowerCase().trim());
+        const result = { ...regexEntities };
+        for (const [k, v] of Object.entries(llmEntities)) {
+            if (v === null || v === undefined) continue;
+            if ((k === 'villeDepart' || k === 'villeArrivee') && isInvalidVille(v)) continue;
+            if (k === 'codePostalDepart' || k === 'codePostalArrivee') {
+                const s = String(v).trim();
+                if (!/^\d{5}$/.test(s)) continue;
+            }
+            result[k] = v;
+        }
+        return result;
+    }
+
+    /**
      * Parse le bloc <!--DATA:{...}--> inséré par le LLM à la fin de chaque réponse.
      * Ce bloc contient toutes les données structurées extraites par le LLM (fiabilité > regex).
      * Retourne les entités parsées + le texte nettoyé (sans le bloc).
@@ -1126,6 +1158,7 @@ export class MessageHandler {
             // Champs projetData — on garde uniquement les valeurs non-vides
             const projetFields = [
                 'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
+                'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
                 'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'formule',
                 'contraintes',
             ];
