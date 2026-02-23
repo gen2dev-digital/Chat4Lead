@@ -117,6 +117,7 @@ export class MessageHandler {
             // ── 6c. Nettoyage du texte LLM ──
             llmContent = this.sanitizeReply(llmContent);
             llmContent = this.filterRepeatedCreneauQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedVisitQuestion(llmContent, currentLead);
 
             // ── 7.  Extraction regex + merge avec LLM (LLM prioritaire sauf valeurs invalides) ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
@@ -247,6 +248,7 @@ export class MessageHandler {
             const { llmEntities, clean: cleanedContent } = this.parseLLMDataBlock(llmContent);
             llmContent = this.sanitizeReply(cleanedContent);
             llmContent = this.filterRepeatedCreneauQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedVisitQuestion(llmContent, currentLead);
 
             // ── 7. Extraction + merge ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
@@ -604,12 +606,18 @@ export class MessageHandler {
             if (lowerMsg.includes('pas de préférence') || lowerMsg.includes('peu importe') || lowerMsg.includes("n'importe") || lowerMsg.includes('anytime') || lowerMsg.includes('flexible')) {
                 entities.creneauRappel = 'Pas de préférence';
             } else if (jourTrouve || horaireTrouve) {
-                const creneauStr = [jourTrouve, horaireTrouve].filter(Boolean).join(' ');
-                // Si le lead a déjà accepté une visite, c'est le créneau de la visite technique (avec le jour), pas un créneau de rappel
+                // Si le lead a déjà accepté une visite, c'est le créneau de la visite technique (jour + horaire)
                 if (existingProjetData.rdvConseiller === true) {
-                    entities.creneauVisite = creneauStr;
+                    // Fusionner avec l'existant : "Mardi" + "Matin (9h-12h)" → "Mardi Matin (9h-12h)"
+                    const existing = (existingProjetData.creneauVisite || '') as string;
+                    const existingJour = /^(Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche|Demain)/.exec(existing)?.[1] || '';
+                    const existingHoraire = /(Matin|Après-midi|Soir|Midi)\s*\([^)]+\)/.exec(existing)?.[0] || '';
+                    const jour = jourTrouve || existingJour;
+                    const horaire = horaireTrouve || existingHoraire;
+                    const creneauStr = [jour, horaire].filter(Boolean).join(' ');
+                    if (creneauStr) entities.creneauVisite = creneauStr;
                 } else {
-                    entities.creneauRappel = creneauStr;
+                    entities.creneauRappel = [jourTrouve, horaireTrouve].filter(Boolean).join(' ');
                 }
             }
         }
@@ -1082,6 +1090,28 @@ export class MessageHandler {
         const patterns = [
             /Quel créneau vous arrange pour être recontacté\s*\?[^.\n]*(?:Matin|Après-midi|Soir|Indifférent)?[^.\n]*\.?/gi,
             /Quel créneau vous arrange pour être recontacté\s*\?/gi,
+        ];
+        let cleaned = text;
+        for (const p of patterns) {
+            cleaned = cleaned.replace(p, '').trim();
+        }
+        return cleaned.replace(/\n{2,}/g, '\n').trim();
+    }
+
+    /**
+     * Supprime les questions répétées sur le jour/créneau de visite si creneauVisite déjà complet (anti-répétition).
+     */
+    private filterRepeatedVisitQuestion(text: string, lead: any): string {
+        const creneauVisite = lead?.projetData?.creneauVisite as string | undefined;
+        if (!creneauVisite || !lead?.projetData?.rdvConseiller) return text;
+        const hasJour = /^(Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche|Demain)/i.test(creneauVisite);
+        const hasHoraire = /(Matin|Après-midi|Soir|Midi)\s*\([^)]+\)/i.test(creneauVisite);
+        if (!hasJour || !hasHoraire) return text;
+        const patterns = [
+            /Quel jour vous conviendrait pour cette visite\s*\?[^.\n]*\.?/gi,
+            /Quel créneau vous arrange pour la visite\s*\?[^.\n]*\.?/gi,
+            /Quel jour précisément[^.\n]*\?[^.\n]*\.?/gi,
+            /Quel jour de la semaine vous arrange\s*\?[^.\n]*\.?/gi,
         ];
         let cleaned = text;
         for (const p of patterns) {

@@ -115,6 +115,7 @@ Détecter et répondre dans la langue du lead (FR par défaut, EN/ES/AR si déte
 
 # ANTI-RÉPÉTITION
 - Ne JAMAIS répéter une question déjà posée. Si le lead a répondu (même "Non"), considérer la question comme traitée et passer à la suivante.
+- Si creneauVisite complet (jour + créneau) → NE PLUS redemander jour ou créneau de visite.
 - Si creneauRappel ET satisfaction sont déjà collectés → message de clôture UNIQUEMENT. NE JAMAIS redemander le créneau.
 - Si le lead dit "passe à la suite", "tu bloques", "next", "arrête", "continue", "vas-y" → avancer immédiatement sans redemander.
 
@@ -147,8 +148,10 @@ Dès le volume confirmé :
 "Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous pour affiner l'estimation et finaliser votre devis ?"
 
 ### FLUX VISITE (A) — Lead accepte
+CRÉNEAU VISITE = jour + horaire pour la visite technique (ex: "Mardi matin (9h-12h)") — à confirmer par le conseiller.
 A1. "Quel jour vous conviendrait pour cette visite ?"
-A2. "Quel créneau vous arrange pour la visite ?" (préciser reconfirmation par le conseiller)
+A2. "Quel créneau vous arrange pour la visite ? (Matin 9h-12h, Après-midi 14h-18h, etc.)"
+→ Une seule fois. Si le lead a déjà donné jour ET créneau → NE PAS redemander.
 A3. Créneau confirmé → "Pour finaliser, j'ai besoin de vos coordonnées."
     → prénom + nom (ensemble), puis téléphone + email (en un seul message).
     → Lead qualifié. Continuer avec les questions complémentaires.
@@ -158,8 +161,8 @@ A4. Questions complémentaires (non encore obtenues) :
     - Objets lourds/encombrants (piano, moto, scooter...).
     - Date souhaitée du déménagement.
     - Prestation souhaitée (Eco / Standard / Luxe).
-A5. RÉCAPITULATIF OBLIGATOIRE (inclure RDV visite).
-A5b. "Quel créneau vous arrange pour être recontacté ?" → proposer créneaux (Matin, Après-midi, Soir, Indifférent). NE PAS poser cette question si le lead n'a pas donné son téléphone (contact par email uniquement) — le créneau n'est pertinent que pour un rappel téléphonique.
+A5. RÉCAPITULATIF OBLIGATOIRE (inclure RDV visite). FAIRE LE RÉCAP AVANT toute autre question.
+A5b. CRÉNEAU RAPPEL = quand le commercial peut recontacter le lead (Matin, Après-midi, Soir, Indifférent). "Quel créneau vous arrange pour être recontacté ?" — NE PAS confondre avec le créneau de visite. NE PAS poser si pas de téléphone.
 A6. "Comment avez-vous trouvé cette conversation ?"
 ❌ INTERDIT : redemander prénom/nom/téléphone/email (déjà collectés en A3).
 
@@ -171,17 +174,18 @@ B4. Date souhaitée du déménagement.
 B5. Prestation souhaitée (Eco / Standard / Luxe).
 B6. Prénom et nom (ensemble).
 B7. "Pour vous recontacter, j'ai besoin de votre numéro de téléphone et de votre adresse email."
-B8. RÉCAPITULATIF OBLIGATOIRE avec estimation tarifaire.
-B8b. "Quel créneau vous arrange pour être recontacté ?" → proposer créneaux (Matin, Après-midi, Soir, Indifférent). NE PAS poser cette question si le lead n'a pas donné son téléphone (contact par email uniquement) — le créneau n'est pertinent que pour un rappel téléphonique.
+B8. RÉCAPITULATIF OBLIGATOIRE avec estimation tarifaire. FAIRE LE RÉCAP AVANT toute autre question.
+B8b. CRÉNEAU RAPPEL = quand le commercial peut recontacter le lead. "Quel créneau vous arrange pour être recontacté ?" — NE PAS confondre avec le créneau de visite. NE PAS poser si pas de téléphone.
 B9. "Comment avez-vous trouvé cette conversation ?"
 
 # AFFICHAGE PRIX
 - INTERDIT : montrer la formule de calcul.
 - FORMAT : "💰 Estimation : [min] à [max] € (indicatif — affinage avec le service commercial)".
 
-# VOLUME
-- Si inconnu : proposer Surface / 2 ET demander validation.
-- Si connu : valider ("C'est noté, XX m³").
+# VOLUME (OBLIGATOIRE avant estimation)
+- TOUJOURS demander le volume ou une validation. La surface seule ne suffit pas.
+- Si inconnu : proposer "Avec XX m², on estime ~YY m³. Confirmez-vous ?" et attendre la validation.
+- Si connu : valider ("C'est noté, XX m³") puis continuer.
 
 # RÉFÉRENCE VOLUMES MEUBLES
 ${JSON.stringify(VOLUME_CALCULATOR.meubles)}
@@ -251,7 +255,8 @@ stationnementDepart/stationnementArrivee = détail complet si donné (ex: "Facil
 "autorisationStationnement" = true UNIQUEMENT si le client dit qu'une autorisation est requise.
 "autorisationStationnementDepart" / "autorisationStationnementArrivee" = true si précisé.
 "rdvConseiller" = true si le lead confirme vouloir une visite.
-"creneauVisite" = créneau de la visite technique avec le JOUR obligatoire (ex: "Lundi matin (9h-12h)") ; null sinon. Ne jamais mettre le créneau de visite dans creneauRappel.
+"creneauVisite" = jour + créneau horaire pour la visite technique (ex: "Mardi matin (9h-12h)") ; null sinon. NE JAMAIS mettre dans creneauRappel.
+"creneauRappel" = créneau pour que le commercial recontacte le lead (Matin, Après-midi, Soir, Indifférent) — question distincte, posée APRÈS le récap.
 "monteMeuble" = true UNIQUEMENT si le client mentionne EXPLICITEMENT un monte-meuble. NE JAMAIS déduire depuis les étages ou l'absence d'ascenseur.
 
 <!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"rdvConseiller":false,"creneauVisite":null}-->`;
@@ -268,7 +273,8 @@ function buildDynamicSection(
 
     if (estimation) {
         parts.push(`# ESTIMATION CALCULÉE (OBLIGATOIRE)
-Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} € (formule ${estimation.formule}, distance prise en compte).`);
+Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} € (formule ${estimation.formule}, distance prise en compte).
+NE JAMAIS inventer ou modifier cette fourchette. L'inclure dans le récapitulatif.`);
     }
 
     const pasDeTelephone = !leadData.telephone && !!leadData.email;
@@ -277,6 +283,7 @@ Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} €
 - RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}
 ${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}
 ${leadData.creneauRappel ? '- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.' : ''}
+${(leadData.projetData?.creneauVisite) ? '- Créneau visite DÉJÀ collecté (' + leadData.projetData.creneauVisite + ') → NE PAS redemander jour/créneau visite.' : ''}
 ${leadData.satisfaction ? '- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.' : ''}`);
 
     parts.push(`# PARCOURS DE QUALIFICATION
@@ -307,7 +314,8 @@ function extractCollectedInfo(leadData: LeadData): string[] {
     if (p.typeHabitationArrivee) collected.push('type arrivée');
     if (p.stationnementDepart) collected.push('accès départ');
     if (p.stationnementArrivee) collected.push('accès arrivée');
-    if (p.volumeEstime || p.surface) collected.push('volume');
+    // Volume = uniquement si explicitement donné ou validé (surface seule ne suffit pas)
+    if (p.volumeEstime && (typeof p.volumeEstime === 'number' || parseFloat(String(p.volumeEstime)) > 0)) collected.push('volume');
     if (p.dateSouhaitee) collected.push('date');
     if (p.formule) collected.push('formule');
     if (leadData.creneauRappel) collected.push('rappel');
