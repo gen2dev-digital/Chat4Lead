@@ -370,15 +370,29 @@ Utiliser cette valeur dans le récapitulatif : ~${distanceKm} km (dans "📍 Tra
     }
 
     const pasDeTelephone = !leadData.telephone && !!leadData.email;
-    parts.push(`# ÉTAT ACTUEL DU PARCOURS
-- Coordonnées collectées : ${contactDeja ? 'OUI — NE JAMAIS redemander. Afficher dans le récap : 📞 Contact : ' + (leadData.telephone || '') + ' — 📧 Email : ' + (leadData.email || '') : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}
-- RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}
-${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}
-${leadData.creneauRappel ? '- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.' : ''}
-${(leadData.projetData?.creneauVisite) ? '- Créneau visite DÉJÀ collecté (' + leadData.projetData.creneauVisite + ') → NE PAS redemander jour/créneau visite.' : ''}
-${p.stationnementDepart ? '- Stationnement départ DÉJÀ collecté (' + p.stationnementDepart + ') → NE PAS redemander.' : ''}
-${p.stationnementArrivee ? '- Stationnement arrivée DÉJÀ collecté (' + p.stationnementArrivee + ') → NE PAS redemander.' : ''}
-${leadData.satisfaction ? '- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.' : ''}`);
+    const etatLines: string[] = [
+        `# ÉTAT ACTUEL DU PARCOURS`,
+        `- Coordonnées collectées : ${contactDeja ? 'OUI — NE JAMAIS redemander. Afficher dans le récap : 📞 Contact : ' + (leadData.telephone || '') + ' — 📧 Email : ' + (leadData.email || '') : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}`,
+        `- RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}`,
+    ];
+    if (pasDeTelephone) etatLines.push('- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)');
+    if (leadData.creneauRappel) etatLines.push('- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.');
+    if (p.creneauVisite) etatLines.push('- Créneau visite DÉJÀ collecté (' + p.creneauVisite + ') → NE PAS redemander jour/créneau visite.');
+    if (p.stationnementDepart) etatLines.push('- Stationnement départ DÉJÀ collecté (' + p.stationnementDepart + ') → NE PAS redemander.');
+    if (p.stationnementArrivee) etatLines.push('- Stationnement arrivée DÉJÀ collecté (' + p.stationnementArrivee + ') → NE PAS redemander.');
+    if (typeof p.etage === 'number') etatLines.push('- Étage départ DÉJÀ collecté (' + p.etage + ') → NE PAS redemander.');
+    if (p.ascenseur !== undefined) etatLines.push('- Ascenseur départ DÉJÀ collecté (' + (p.ascenseur ? 'Oui' : 'Non') + ') → NE PAS redemander.');
+    if (p.typeEscalierDepart) etatLines.push('- Type escalier départ DÉJÀ collecté (' + p.typeEscalierDepart + ') → NE PAS redemander.');
+    if (p.gabaritAscenseurDepart) etatLines.push('- Gabarit ascenseur départ DÉJÀ collecté (' + p.gabaritAscenseurDepart + ') → NE PAS redemander.');
+    if (p.accesDifficileDepart) etatLines.push('- Accès difficile départ : OUI → noter dans le devis.');
+    if (typeof p.etageArrivee === 'number') etatLines.push('- Étage arrivée DÉJÀ collecté (' + p.etageArrivee + ') → NE PAS redemander.');
+    if (p.ascenseurArrivee !== undefined) etatLines.push('- Ascenseur arrivée DÉJÀ collecté (' + (p.ascenseurArrivee ? 'Oui' : 'Non') + ') → NE PAS redemander.');
+    if (p.typeEscalierArrivee) etatLines.push('- Type escalier arrivée DÉJÀ collecté (' + p.typeEscalierArrivee + ') → NE PAS redemander.');
+    if (p.gabaritAscenseurArrivee) etatLines.push('- Gabarit ascenseur arrivée DÉJÀ collecté (' + p.gabaritAscenseurArrivee + ') → NE PAS redemander.');
+    if (p.accesDifficileArrivee) etatLines.push('- Accès difficile arrivée : OUI → noter dans le devis.');
+    if (p.objetSpeciaux && p.objetSpeciaux.length > 0) etatLines.push('- Objets spéciaux DÉJÀ collectés (' + p.objetSpeciaux.join(', ') + ') → NE PAS redemander.');
+    if (leadData.satisfaction) etatLines.push('- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.');
+    parts.push(etatLines.join('\n'));
 
     parts.push(`# PARCOURS DE QUALIFICATION
 ${generateQualificationFlow(leadData, infosCollectees)}`);
@@ -429,15 +443,36 @@ function generateQualificationFlow(leadData: LeadData, infos: string[]): string 
     const p = leadData.projetData ?? {};
     const rdvRefused = p.rdvConseiller === false;
 
+    // Accès départ complet = stationnement + (si étage > 0 : escalier OU gabarit OU accès difficile répondu)
+    const etageDepart = typeof p.etage === 'number' ? p.etage : null;
+    const needsEscalierDepart = etageDepart !== null && etageDepart > 0;
+    const escalierDepartOk = !needsEscalierDepart ||
+        !!p.typeEscalierDepart ||
+        !!p.gabaritAscenseurDepart ||
+        p.accesDifficileDepart !== undefined;
+    const accesDepartOk = !!p.stationnementDepart && escalierDepartOk;
+
+    // Accès arrivée complet = type + stationnement + (si étageArrivee > 0 : escalier OU gabarit OU accès difficile répondu)
+    const etageArr = typeof p.etageArrivee === 'number' ? p.etageArrivee : null;
+    const needsEscalierArrivee = etageArr !== null && etageArr > 0;
+    const escalierArriveeOk = !needsEscalierArrivee ||
+        !!p.typeEscalierArrivee ||
+        !!p.gabaritAscenseurArrivee ||
+        p.accesDifficileArrivee !== undefined;
+    const accesArriveeOk = !!(p.typeHabitationArrivee && p.stationnementArrivee && escalierArriveeOk);
+
+    // Objets spéciaux = question traitée si valeur explicite (tableau avec items OU champ présent comme non-undefined)
+    const objetSpeciauxDone = Array.isArray(p.objetSpeciaux) && p.objetSpeciaux.length > 0;
+
     const steps: Array<{ label: string; done: boolean; skip?: boolean }> = [
         { label: '1. Trajet (départ + arrivée)', done: !!(p.villeDepart && p.villeArrivee) },
         { label: '2. Type logement + surface/pièces', done: !!(p.typeHabitationDepart && (p.surface || p.nbPieces)) },
-        { label: '3. Configuration + accès départ', done: !!p.stationnementDepart },
+        { label: '3. Configuration + accès départ (étage, ascenseur, escalier, stationnement)', done: accesDepartOk },
         { label: '4. Volume estimé (validé)', done: !!(p.volumeEstime && Number(p.volumeEstime) > 0) },
         { label: '5. Visite conseiller (proposée)', done: typeof p.rdvConseiller === 'boolean' },
         { label: '6. Créneau visite', done: !!p.creneauVisite, skip: rdvRefused },
-        { label: '7. Configuration + accès arrivée', done: !!(p.typeHabitationArrivee && p.stationnementArrivee) },
-        { label: '8. Objets spéciaux (vérifiés)', done: Array.isArray(p.objetSpeciaux) },
+        { label: '7. Configuration + accès arrivée (étage, ascenseur, escalier, stationnement)', done: accesArriveeOk },
+        { label: '8. Objets spéciaux (piano, moto, scooter…)', done: objetSpeciauxDone },
         { label: '9. Date souhaitée', done: !!p.dateSouhaitee },
         { label: '10. Prestation (Eco/Standard/Luxe)', done: !!p.formule },
         { label: '11. Identité (prénom + nom)', done: !!(leadData.prenom && leadData.nom) },
