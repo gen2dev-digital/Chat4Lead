@@ -188,6 +188,12 @@ Détecter et répondre dans la langue du lead (FR par défaut, EN/ES/AR si déte
 - Si creneauRappel ET satisfaction sont déjà collectés → message de clôture UNIQUEMENT. NE JAMAIS redemander le créneau.
 - Si le lead dit "passe à la suite", "tu bloques", "next", "arrête", "continue", "vas-y" → avancer immédiatement sans redemander.
 
+# AVANT CHAQUE QUESTION — VÉRIFICATION OBLIGATOIRE
+Avant de poser UNE question, consulter # ÉTAT DU PARCOURS dans la section dynamique.
+Si l'information y apparaît avec ✅ → NE PAS poser la question, passer directement à la suivante.
+Si l'information n'y apparaît PAS → poser la question.
+Cette vérification est OBLIGATOIRE à chaque message, sans exception.
+
 # FICHIERS JOINTS
 - Si "[Fichier: nom.ext]" avec "Contenu:" dans le message → LIRE le contenu fourni et extraire les infos utiles (meubles, volume, etc.). Avancer sans redemander.
 - Si seul "[Fichier: nom.ext]" sans contenu → demander au lead de coller le contenu ou de décrire les meubles.
@@ -223,8 +229,9 @@ Dès le volume confirmé :
 
 ### FLUX VISITE (A) — Lead accepte
 CRÉNEAU VISITE = jour + horaire pour la visite technique (ex: "Mardi matin (9h-12h)") — à confirmer par le conseiller.
-A1. "Quel jour vous conviendrait pour cette visite ?"
-A2. "Quel créneau vous arrange pour la visite ? (Matin 9h-12h, Après-midi 14h-18h, etc.)"
+A1. "Pour la visite, merci de sélectionner une date parmi nos disponibilités :"
+    [CALENDRIER] — le front-end affiche automatiquement le widget de sélection de date.
+A2. Une fois la date choisie : "Quel créneau vous convient ? (Matin 9h-12h / Après-midi 14h-18h)"
 → Une seule fois. Si le lead a déjà donné jour ET créneau → NE PAS redemander.
 A3. Créneau confirmé → "Pour finaliser, j'ai besoin de vos coordonnées."
     → prénom + nom (ensemble), puis téléphone + email (en un seul message).
@@ -259,8 +266,10 @@ B9. "Comment avez-vous trouvé cette conversation ?"
 - FORMAT : "💰 Estimation : [min] à [max] € (indicatif — affinage avec le service commercial)".
 
 # VOLUME (OBLIGATOIRE avant estimation)
-- TOUJOURS demander le volume ou une validation. La surface seule ne suffit pas.
-- Si inconnu : proposer "Avec XX m², on estime ~YY m³. Confirmez-vous ?" et attendre la validation.
+- RÈGLE DE CALCUL : volume m³ ≈ surface m² ÷ 2. Exemples : 50m² → ~25m³, 80m² → ~40m³, 100m² → ~50m³.
+- NE JAMAIS utiliser d'autre ratio. NE JAMAIS estimer 65-75m³ pour 78m².
+- TOUJOURS proposer une estimation et demander validation : "Avec XX m², on estime ~YY m³. Confirmez-vous ?"
+- Si volume déjà validé (✅ dans l'état du parcours) → NE PAS redemander.
 - Si connu : valider ("C'est noté, XX m³") puis continuer.
 
 # RÉFÉRENCE VOLUMES MEUBLES
@@ -371,27 +380,60 @@ Utiliser cette valeur dans le récapitulatif : ~${distanceKm} km (dans "📍 Tra
 
     const pasDeTelephone = !leadData.telephone && !!leadData.email;
     const etatLines: string[] = [
-        `# ÉTAT ACTUEL DU PARCOURS`,
-        `- Coordonnées collectées : ${contactDeja ? 'OUI — NE JAMAIS redemander. Afficher dans le récap : 📞 Contact : ' + (leadData.telephone || '') + ' — 📧 Email : ' + (leadData.email || '') : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}`,
-        `- RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}`,
+        `# \u00c9TAT DU PARCOURS \u2014 NE PAS REDEMANDER CES \u00c9L\u00c9MENTS`,
     ];
-    if (pasDeTelephone) etatLines.push('- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)');
-    if (leadData.creneauRappel) etatLines.push('- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.');
-    if (p.creneauVisite) etatLines.push('- Créneau visite DÉJÀ collecté (' + p.creneauVisite + ') → NE PAS redemander jour/créneau visite.');
-    if (p.stationnementDepart) etatLines.push('- Stationnement départ DÉJÀ collecté (' + p.stationnementDepart + ') → NE PAS redemander.');
-    if (p.stationnementArrivee) etatLines.push('- Stationnement arrivée DÉJÀ collecté (' + p.stationnementArrivee + ') → NE PAS redemander.');
-    if (typeof p.etage === 'number') etatLines.push('- Étage départ DÉJÀ collecté (' + p.etage + ') → NE PAS redemander.');
-    if (p.ascenseur !== undefined) etatLines.push('- Ascenseur départ DÉJÀ collecté (' + (p.ascenseur ? 'Oui' : 'Non') + ') → NE PAS redemander.');
-    if (p.typeEscalierDepart) etatLines.push('- Type escalier départ DÉJÀ collecté (' + p.typeEscalierDepart + ') → NE PAS redemander.');
-    if (p.gabaritAscenseurDepart) etatLines.push('- Gabarit ascenseur départ DÉJÀ collecté (' + p.gabaritAscenseurDepart + ') → NE PAS redemander.');
-    if (p.accesDifficileDepart) etatLines.push('- Accès difficile départ : OUI → noter dans le devis.');
-    if (typeof p.etageArrivee === 'number') etatLines.push('- Étage arrivée DÉJÀ collecté (' + p.etageArrivee + ') → NE PAS redemander.');
-    if (p.ascenseurArrivee !== undefined) etatLines.push('- Ascenseur arrivée DÉJÀ collecté (' + (p.ascenseurArrivee ? 'Oui' : 'Non') + ') → NE PAS redemander.');
-    if (p.typeEscalierArrivee) etatLines.push('- Type escalier arrivée DÉJÀ collecté (' + p.typeEscalierArrivee + ') → NE PAS redemander.');
-    if (p.gabaritAscenseurArrivee) etatLines.push('- Gabarit ascenseur arrivée DÉJÀ collecté (' + p.gabaritAscenseurArrivee + ') → NE PAS redemander.');
-    if (p.accesDifficileArrivee) etatLines.push('- Accès difficile arrivée : OUI → noter dans le devis.');
-    if (p.objetSpeciaux && p.objetSpeciaux.length > 0) etatLines.push('- Objets spéciaux DÉJÀ collectés (' + p.objetSpeciaux.join(', ') + ') → NE PAS redemander.');
-    if (leadData.satisfaction) etatLines.push('- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.');
+    // Trajet
+    if (p.villeDepart) etatLines.push(`- Ville d\u00e9part : ${p.villeDepart} \u2705`);
+    if (p.villeArrivee) etatLines.push(`- Ville arriv\u00e9e : ${p.villeArrivee} \u2705`);
+    // Logement
+    if (p.typeHabitationDepart) etatLines.push(`- Type d\u00e9part : ${p.typeHabitationDepart} \u2705`);
+    if (p.typeHabitationArrivee) etatLines.push(`- Type arriv\u00e9e : ${p.typeHabitationArrivee} \u2705`);
+    if (p.surface || p.nbPieces) etatLines.push(`- Surface/pi\u00e8ces : ${p.surface ? p.surface + 'm\u00b2' : ''}${p.nbPieces ? ' / ' + p.nbPieces + ' pi\u00e8ces' : ''} \u2705`);
+    // Acc\u00e8s d\u00e9part
+    if (typeof p.etage === 'number') etatLines.push(`- \u00c9tage d\u00e9part : ${p.etage} \u2705`);
+    if (p.ascenseur !== undefined) etatLines.push(`- Ascenseur d\u00e9part : ${p.ascenseur ? 'Oui' : 'Non'} \u2705`);
+    if (p.stationnementDepart) etatLines.push(`- Stationnement d\u00e9part : ${p.stationnementDepart} \u2705 \u2192 NE PAS REDEMANDER`);
+    if (p.typeEscalierDepart) etatLines.push(`- Escalier d\u00e9part : ${p.typeEscalierDepart} \u2705`);
+    if (p.gabaritAscenseurDepart) etatLines.push(`- Gabarit ascenseur d\u00e9part : ${p.gabaritAscenseurDepart} \u2705`);
+    if (p.accesDifficileDepart) etatLines.push(`- Acc\u00e8s difficile d\u00e9part : OUI \u2705`);
+    // Triggers \u26a0\ufe0f d\u00e9part (escalier/gabarit manquants)
+    if (typeof p.etage === 'number' && p.etage > 0) {
+        if (!p.typeEscalierDepart)
+            etatLines.push(`- \u26a0\ufe0f Escalier d\u00e9part non renseign\u00e9 \u2192 demander type (droit/colima\u00e7on, large/\u00e9troit)`);
+        if (p.ascenseur && !p.gabaritAscenseurDepart)
+            etatLines.push(`- \u26a0\ufe0f Gabarit ascenseur d\u00e9part non renseign\u00e9 \u2192 demander (petit/moyen/grand)`);
+    }
+    // Acc\u00e8s arriv\u00e9e
+    if (typeof p.etageArrivee === 'number') etatLines.push(`- \u00c9tage arriv\u00e9e : ${p.etageArrivee} \u2705`);
+    if (p.ascenseurArrivee !== undefined) etatLines.push(`- Ascenseur arriv\u00e9e : ${p.ascenseurArrivee ? 'Oui' : 'Non'} \u2705`);
+    if (p.stationnementArrivee) etatLines.push(`- Stationnement arriv\u00e9e : ${p.stationnementArrivee} \u2705 \u2192 NE PAS REDEMANDER`);
+    if (p.typeEscalierArrivee) etatLines.push(`- Escalier arriv\u00e9e : ${p.typeEscalierArrivee} \u2705`);
+    if (p.gabaritAscenseurArrivee) etatLines.push(`- Gabarit ascenseur arriv\u00e9e : ${p.gabaritAscenseurArrivee} \u2705`);
+    if (p.accesDifficileArrivee) etatLines.push(`- Acc\u00e8s difficile arriv\u00e9e : OUI \u2705`);
+    // Triggers \u26a0\ufe0f arriv\u00e9e
+    if (typeof p.etageArrivee === 'number' && p.etageArrivee > 0) {
+        if (!p.typeEscalierArrivee)
+            etatLines.push(`- \u26a0\ufe0f Escalier arriv\u00e9e non renseign\u00e9 \u2192 demander type (droit/colima\u00e7on, large/\u00e9troit)`);
+        if (p.ascenseurArrivee && !p.gabaritAscenseurArrivee)
+            etatLines.push(`- \u26a0\ufe0f Gabarit ascenseur arriv\u00e9e non renseign\u00e9 \u2192 demander (petit/moyen/grand)`);
+    }
+    // Volume & projet
+    if (p.volumeEstime && Number(p.volumeEstime) > 0) etatLines.push(`- Volume estim\u00e9 : ${p.volumeEstime} m\u00b3 \u2705`);
+    if (p.objetSpeciaux && p.objetSpeciaux.length > 0) etatLines.push(`- Objets sp\u00e9ciaux : ${p.objetSpeciaux.join(', ')} \u2705 \u2192 NE PAS REDEMANDER`);
+    if (p.dateSouhaitee) etatLines.push(`- Date souhait\u00e9e : ${p.dateSouhaitee} \u2705`);
+    if (p.formule) etatLines.push(`- Prestation : ${p.formule} \u2705`);
+    // Identit\u00e9 & contact
+    if (leadData.prenom) etatLines.push(`- Pr\u00e9nom : ${leadData.prenom} \u2705`);
+    if (leadData.nom) etatLines.push(`- Nom : ${leadData.nom} \u2705`);
+    if (leadData.telephone) etatLines.push(`- T\u00e9l\u00e9phone : ${leadData.telephone} \u2705`);
+    if (leadData.email) etatLines.push(`- Email : ${leadData.email} \u2705`);
+    // RDV & cr\u00e9neaux
+    if (p.rdvConseiller !== undefined)
+        etatLines.push(`- RDV visite : ${p.rdvConseiller ? 'accept\u00e9' : 'refus\u00e9'} \u2705 \u2192 NE PLUS PROPOSER`);
+    if (p.creneauVisite) etatLines.push(`- Cr\u00e9neau visite : ${p.creneauVisite} \u2705 \u2192 NE PAS REDEMANDER`);
+    if (leadData.creneauRappel) etatLines.push(`- Cr\u00e9neau rappel : ${leadData.creneauRappel} \u2705 \u2192 NE PAS REDEMANDER`);
+    if (pasDeTelephone) etatLines.push(`- Pas de t\u00e9l\u00e9phone \u2192 NE PAS demander cr\u00e9neau rappel`);
+    if (leadData.satisfaction) etatLines.push(`- Satisfaction : ${leadData.satisfaction} \u2705 \u2192 CL\u00d4TURE UNIQUEMENT`);
     parts.push(etatLines.join('\n'));
 
     parts.push(`# PARCOURS DE QUALIFICATION

@@ -79,7 +79,7 @@ export class MessageHandler {
                     creneauRappel: currentLead?.creneauRappel || undefined,
                     satisfaction: currentLead?.satisfaction || undefined,
                     satisfactionScore: currentLead?.satisfactionScore || undefined,
-                    projetData: currentLead?.projetData || {},
+                    projetData: (currentLead?.projetData || {}) as import('../prompt/templates/demenagement').ProjetDemenagementData,
                 }
             );
 
@@ -222,7 +222,7 @@ export class MessageHandler {
                     creneauRappel: currentLead?.creneauRappel || undefined,
                     satisfaction: currentLead?.satisfaction || undefined,
                     satisfactionScore: currentLead?.satisfactionScore || undefined,
-                    projetData: currentLead?.projetData || {},
+                    projetData: (currentLead?.projetData || {}) as import('../prompt/templates/demenagement').ProjetDemenagementData,
                 }
             );
 
@@ -1345,8 +1345,8 @@ export class MessageHandler {
                 e.objetSpeciaux = data.objetSpeciaux;
             }
 
-            // RDV visite conseiller
-            if (data.rdvConseiller === true) e.rdvConseiller = true;
+            // RDV visite conseiller (true ET false persistés — le refus doit être mémorisé)
+            if (data.rdvConseiller === true || data.rdvConseiller === false) e.rdvConseiller = data.rdvConseiller;
             if (data.creneauVisite && typeof data.creneauVisite === 'string') e.creneauVisite = data.creneauVisite;
 
             logger.info('✅ [LLM-DATA] Block parsed', { fields: Object.keys(e) });
