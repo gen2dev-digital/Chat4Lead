@@ -460,6 +460,40 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ Pieces extraction failed', e); }
 
+        // ── Étage et ascenseur (départ) — ex: "3e étage", "3ème avec ascenseur", "sans ascenseur" ──
+        try {
+            const lower = combined.toLowerCase();
+            if (!existingProjetData.etage && existingProjetData.etage !== 0) {
+                const etagePatterns = [
+                    /(\d+)(?:e|ème|er)\s*étage/i,
+                    /(?:au\s+|étage\s+)(\d+)/i,
+                    /(\d+)\s*étages?/i,
+                    /(?:rez|rdc|plain[\s-]?pied)/i,
+                ];
+                for (const re of etagePatterns) {
+                    const m = combined.match(re);
+                    if (m) {
+                        if (/rez|rdc|plain/i.test(m[0])) {
+                            entities.etage = 0;
+                            break;
+                        }
+                        const num = parseInt(m[1], 10);
+                        if (!Number.isNaN(num) && num >= 0 && num <= 50) {
+                            entities.etage = num;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (existingProjetData.ascenseur === undefined || existingProjetData.ascenseur === null) {
+                if (/\b(avec|avec un?)\s+ascenseur\b/i.test(combined) || /\bascenseur\s+(pré?sent|oui|disponible)/i.test(combined)) {
+                    entities.ascenseur = true;
+                } else if (/\bsans\s+ascenseur\b/i.test(combined) || /\bpas\s+d'?ascenseur\b/i.test(combined)) {
+                    entities.ascenseur = false;
+                }
+            }
+        } catch (e) { logger.error('❌ Etage/ascenseur extraction failed', e); }
+
         // ── Volume explicite (m³ / m3 / mètres cubes) — gère les décimales (ex: 62,5 m³) ──
         try {
             const volumeRegex = /(\d+(?:[.,]\d+)?)\s*(?:m³|m3|mètres?\s*cubes?)/gi;
@@ -1279,7 +1313,7 @@ export class MessageHandler {
                 'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
                 'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
                 'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'formule',
-                'contraintes',
+                'contraintes', 'etage',
                 'typeEscalierDepart', 'typeEscalierArrivee',
                 'gabaritAscenseurDepart', 'gabaritAscenseurArrivee',
             ];
@@ -1288,6 +1322,11 @@ export class MessageHandler {
                     e[f] = data[f];
                 }
             }
+            if (data.etage !== null && data.etage !== undefined) {
+                const etageNum = typeof data.etage === 'number' ? data.etage : parseInt(String(data.etage), 10);
+                if (!Number.isNaN(etageNum) && etageNum >= 0) e.etage = etageNum;
+            }
+            if (data.ascenseur === true || data.ascenseur === false) e.ascenseur = data.ascenseur;
 
             // Champs booléens (on garde true seulement)
             if (data.monteMeuble === true) e.monteMeuble = true;

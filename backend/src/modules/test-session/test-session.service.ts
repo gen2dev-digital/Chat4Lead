@@ -278,7 +278,11 @@ export const testSessionService = {
   <tr><td>🏠 Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
   ${projet.nbPieces ? `<tr><td>🚪 Pièces</td><td>F${projet.nbPieces}</td></tr>` : ''}
   ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³${projet.volumeCalcule ? ' (calculé via liste de meubles)' : ' (donné par le client)'}</td></tr>` : ''}
-  ${projet.etage ? `<tr><td>🏢 Étage</td><td>${htmlEsc(projet.etage)}</td></tr>` : ''}
+  ${projet.etage != null ? `<tr><td>🏢 Étage (départ)</td><td>${htmlEsc(String(projet.etage))}</td></tr>` : ''}
+  ${projet.typeEscalierDepart || projet.typeEscalierArrivee ? `<tr><td>🪜 Type escalier</td><td>${htmlEsc([projet.typeEscalierDepart, projet.typeEscalierArrivee].filter(Boolean).join(' / ') || '—')}</td></tr>` : ''}
+  ${projet.gabaritAscenseurDepart || projet.gabaritAscenseurArrivee ? `<tr><td>🛗 Gabarit ascenseur</td><td>${htmlEsc([projet.gabaritAscenseurDepart, projet.gabaritAscenseurArrivee].filter(Boolean).join(' / ') || '—')}</td></tr>` : ''}
+  ${(projet.accesDifficileDepart || projet.accesDifficileArrivee) ? `<tr><td>⚠️ Accès difficile</td><td style="color:#f59e0b">${projet.accesDifficileDepart && projet.accesDifficileArrivee ? 'Départ et arrivée' : projet.accesDifficileDepart ? 'Départ' : 'Arrivée'}</td></tr>` : ''}
+  ${(projet.monteMeubleDepart || projet.monteMeubleArrivee) ? `<tr><td>🏗️ Monte-meuble</td><td style="color:#f59e0b;font-weight:600">${projet.monteMeubleDepart && projet.monteMeubleArrivee ? 'Départ et arrivée' : projet.monteMeubleDepart ? 'Départ' : 'Arrivée'}</td></tr>` : projet.monteMeuble ? `<tr><td>🏗️ Monte-meuble</td><td style="color:#f59e0b;font-weight:600">Requis</td></tr>` : ''}
   <tr><td>📅 Date souhaitée</td><td>${htmlEsc(projet.dateSouhaitee || '—')}</td></tr>
   <tr><td>📋 Formule</td><td>${htmlEsc(projet.formule || '—')}</td></tr>
   ${projet.creneauVisite ? `<tr><td>📆 Visite technique</td><td>${htmlEsc(projet.creneauVisite)}</td></tr>` : ''}
@@ -286,7 +290,6 @@ export const testSessionService = {
   ${lead.satisfaction ? `<tr><td>⭐ Satisfaction</td><td>${htmlEsc(lead.satisfaction)}</td></tr>` : ''}
   ${projet.international ? `<tr><td>🌍 International</td><td style="color:#f59e0b;font-weight:600">Oui — hors France</td></tr>` : ''}
   ${projet.objetSpeciaux && Array.isArray(projet.objetSpeciaux) && projet.objetSpeciaux.length > 0 ? `<tr><td>📦 Objets spéciaux</td><td style="color:#f59e0b">${htmlEsc(projet.objetSpeciaux.join(', '))}</td></tr>` : ''}
-  ${projet.monteMeuble ? `<tr><td>🏗️ Monte-meuble</td><td style="color:#f59e0b;font-weight:600">Requis</td></tr>` : ''}
   ${(projet.autorisationStationnementDepart || projet.autorisationStationnementArrivee) ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise (${projet.autorisationStationnementDepart && projet.autorisationStationnementArrivee ? 'départ et arrivée' : projet.autorisationStationnementDepart ? 'départ' : 'arrivée'})</td></tr>` : projet.autorisationStationnement ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise</td></tr>` : ''}
   ${projet.caveOuStockage ? `<tr><td>📦 Cave / stockage</td><td style="color:#f59e0b">Oui</td></tr>` : ''}
   ${projet.contraintes ? `<tr><td>⚠️ Contraintes</td><td style="color:#f59e0b">${htmlEsc(projet.contraintes)}</td></tr>` : ''}

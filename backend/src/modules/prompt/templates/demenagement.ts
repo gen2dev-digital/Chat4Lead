@@ -65,6 +65,14 @@ export async function buildPromptDemenagement(
     const formuleRaw = (p.formule || '').toString().toLowerCase();
     const formule = ['eco', 'standard', 'luxe'].includes(formuleRaw) ? formuleRaw as 'eco' | 'standard' | 'luxe' : 'standard';
     const distanceKm = await getDistanceKmWithFallback(villeDepart, villeArrivee);
+    const monteDep = p.monteMeubleDepart === true;
+    const monteArr = p.monteMeubleArrivee === true;
+    let supplementMonteMeuble = 0;
+    if (monteDep && monteArr) supplementMonteMeuble = 350;
+    else if (monteDep || monteArr || p.monteMeuble === true) supplementMonteMeuble = 180;
+    const hasObjetsLourds = Array.isArray(p.objetSpeciaux) && p.objetSpeciaux.length > 0;
+    const supplementObjetsLourds = hasObjetsLourds ? 150 : 0;
+
     const estimation = volume > 0 && distanceKm >= 0 && villeDepart && villeArrivee
         ? calculerEstimation({
             volume,
@@ -72,6 +80,8 @@ export async function buildPromptDemenagement(
             formule,
             etageChargement: typeof p.etage === 'number' ? p.etage : undefined,
             ascenseurChargement: p.ascenseur === true || p.ascenseur === 1 ? 1 : 0,
+            supplementMonteMeuble,
+            supplementObjetsLourds,
         })
         : null;
 
@@ -267,13 +277,15 @@ stationnementDepart/stationnementArrivee = détail si donné. "Oui" → "Facile"
 "gabaritAscenseurDepart" / "gabaritAscenseurArrivee" = "petit", "moyen" ou "grand" si précisé.
 "accesDifficileDepart" / "accesDifficileArrivee" = true si le client indique que le mobilier ne passe pas ou passe difficilement par les accès (escalier/ascenseur).
 "monteMeubleDepart" / "monteMeubleArrivee" = true si un monte-meuble est explicitement prévu au départ et/ou à l'arrivée.
+"etage" = numéro d'étage au départ (0 = RDC, 1 = 1er, 2 = 2e…). Ne remplir que pour le logement de départ sauf si un seul logement décrit.
+"ascenseur" = true si ascenseur présent au départ, false sinon.
 "rdvConseiller" = true si le lead confirme vouloir une visite.
 "creneauVisite" = jour + créneau horaire pour la visite technique (ex: "Mardi matin (9h-12h)") ; null sinon. NE JAMAIS mettre dans creneauRappel.
 "creneauRappel" = créneau pour que le commercial recontacte le lead (Matin, Après-midi, Soir, Indifférent) — question distincte, posée APRÈS le récap.
 "monteMeuble" = true UNIQUEMENT si le client mentionne EXPLICITEMENT un monte-meuble. NE JAMAIS déduire depuis les étages ou l'absence d'ascenseur.
 "volumeCalcule" = true UNIQUEMENT si le client a donné la liste détaillée des meubles et que tu as calculé le volume à partir de cette liste (en utilisant le tableau de volumes). false ou absent dans tous les autres cas (volume donné directement par le lead ou estimé depuis la surface sans liste détaillée).
 
-<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"accesDifficileDepart":false,"accesDifficileArrivee":false,"monteMeubleDepart":false,"monteMeubleArrivee":false,"rdvConseiller":false,"creneauVisite":null}-->`;
+<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"etage":null,"ascenseur":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"accesDifficileDepart":false,"accesDifficileArrivee":false,"monteMeubleDepart":false,"monteMeubleArrivee":false,"rdvConseiller":false,"creneauVisite":null}-->`;
 }
 
 function buildDynamicSection(
