@@ -510,15 +510,39 @@ export class MessageHandler {
             const lowerBot = ((lastBotMessage || '') + ' ' + (llmContent || '')).toLowerCase();
             const isOuiFacile = /\b(oui|ouais|yes|facile|pas de souci|pas de problème|c'est bon|ok)\b/i.test(lowerMsg) && !/\b(non|difficile|compliqué)\b/i.test(lowerMsg);
             const isNonDifficile = /\b(non|difficile|compliqué|pas facile)\b/i.test(lowerMsg);
+
             if (isOuiFacile || isNonDifficile) {
                 const valeur = isOuiFacile ? 'Facile' : 'Difficile';
-                if (lowerBot.includes('côté départ') || lowerBot.includes('cote depart') || lowerBot.includes('stationnement départ') || (lowerBot.includes('départ') && lowerBot.includes('stationnement'))) {
-                    if (!existingProjetData.stationnementDepart) entities.stationnementDepart = valeur;
-                } else if (lowerBot.includes('côté arrivée') || lowerBot.includes('cote arrivee') || lowerBot.includes('stationnement arrivée') || (lowerBot.includes('arrivée') && lowerBot.includes('stationnement'))) {
-                    if (!existingProjetData.stationnementArrivee) entities.stationnementArrivee = valeur;
+                const isStationnementQuestion = lowerBot.includes('stationnement') || lowerBot.includes('garer') || lowerBot.includes('parking') || lowerBot.includes('accès camion');
+
+                if (isStationnementQuestion) {
+                    if (lowerBot.includes('départ') || lowerBot.includes('depart') || lowerBot.includes('ancien')) {
+                        if (!existingProjetData.stationnementDepart) entities.stationnementDepart = valeur;
+                    } else if (lowerBot.includes('arrivée') || lowerBot.includes('arrivee') || lowerBot.includes('nouveau')) {
+                        if (!existingProjetData.stationnementArrivee) entities.stationnementArrivee = valeur;
+                    }
                 }
             }
         } catch (e) { logger.error('❌ Stationnement extraction failed', e); }
+
+        // ── Type d'habitation (Maison / Appartement) ──
+        try {
+            const lowerMsg = message.toLowerCase();
+            const lowerBot = ((lastBotMessage || '') + ' ' + (llmContent || '')).toLowerCase();
+            const isMaison = /\b(maison|pavillon|villa)\b/i.test(lowerMsg);
+            const isAppart = /\b(appartement|appart|studio|f\d|t\d)\b/i.test(lowerMsg);
+
+            if (isMaison || isAppart) {
+                const type = isMaison ? 'Maison' : 'Appartement';
+                if (lowerBot.includes('départ') || lowerBot.includes('depart')) {
+                    if (!existingProjetData.typeHabitationDepart) entities.typeHabitationDepart = type;
+                } else if (lowerBot.includes('arrivée') || lowerBot.includes('arrivee')) {
+                    if (!existingProjetData.typeHabitationArrivee) entities.typeHabitationArrivee = type;
+                } else if (!existingProjetData.typeHabitationDepart) {
+                    entities.typeHabitationDepart = type; // Défaut au départ si non précisé
+                }
+            }
+        } catch (e) { logger.error('❌ Type habitation extraction failed', e); }
 
         // ── Date (JJ/MM/YYYY ou JJ-MM-YYYY ou "15 mars") ──
         try {

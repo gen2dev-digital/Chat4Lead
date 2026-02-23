@@ -146,8 +146,55 @@ export async function buildPromptDemenagement(
 
     const staticPart = buildStaticSection(entreprise);
     const dynamicPart = buildDynamicSection(leadData, infosCollectees, estimation, rdvVisite, contactDeja, distanceKm);
+    const dataBlock = buildDataBlock(p, leadData);
 
-    return staticPart + PROMPT_CACHE_SEPARATOR + dynamicPart;
+    return staticPart + PROMPT_CACHE_SEPARATOR + dynamicPart + '\n\n# DONNÉES ACTUELLES (À REPORTER DANS TON BLOC DATA)\n' + dataBlock;
+}
+
+function buildDataBlock(p: ProjetDemenagementData, lead: LeadData): string {
+    const data = {
+        villeDepart: p.villeDepart || null,
+        villeArrivee: p.villeArrivee || null,
+        codePostalDepart: p.codePostalDepart || null,
+        codePostalArrivee: p.codePostalArrivee || null,
+        typeHabitationDepart: p.typeHabitationDepart || null,
+        typeHabitationArrivee: p.typeHabitationArrivee || null,
+        stationnementDepart: p.stationnementDepart || null,
+        stationnementArrivee: p.stationnementArrivee || null,
+        surface: p.surface || null,
+        nbPieces: p.nbPieces || null,
+        volumeEstime: p.volumeEstime || null,
+        volumeCalcule: p.volumeCalcule || null,
+        etage: p.etage || null,
+        ascenseur: p.ascenseur ?? null,
+        dateSouhaitee: p.dateSouhaitee || null,
+        formule: p.formule || null,
+        prenom: lead.prenom || null,
+        nom: lead.nom || null,
+        telephone: lead.telephone || null,
+        email: lead.email || null,
+        creneauRappel: lead.creneauRappel || null,
+        satisfaction: lead.satisfaction || null,
+        objetSpeciaux: p.objetSpeciaux || [],
+        monteMeuble: p.monteMeuble || false,
+        autorisationStationnement: p.autorisationStationnement || false,
+        autorisationStationnementDepart: p.autorisationStationnementDepart || false,
+        autorisationStationnementArrivee: p.autorisationStationnementArrivee || false,
+        caveOuStockage: p.caveOuStockage || false,
+        international: p.international || false,
+        contraintes: p.contraintes || null,
+        typeEscalierDepart: p.typeEscalierDepart || null,
+        typeEscalierArrivee: p.typeEscalierArrivee || null,
+        gabaritAscenseurDepart: p.gabaritAscenseurDepart || null,
+        gabaritAscenseurArrivee: p.gabaritAscenseurArrivee || null,
+        accesDifficileDepart: p.accesDifficileDepart || false,
+        accesDifficileArrivee: p.accesDifficileArrivee || false,
+        monteMeubleDepart: p.monteMeubleDepart || false,
+        monteMeubleArrivee: p.monteMeubleArrivee || false,
+        rdvConseiller: p.rdvConseiller ?? false,
+        creneauVisite: p.creneauVisite || null
+    };
+    return `<!--DATA:${JSON.stringify(data)}-->`;
 }
 
 function formatContactCloture(entreprise: EntrepriseConfig): string {
@@ -217,11 +264,6 @@ Pour chaque adresse (départ ET arrivée), collecter OBLIGATOIREMENT : ville, co
    - MAISON : "Plain-pied ou avec étage(s) ?" (pas d'ascenseur).
 4. Stationnement au départ : "Y a-t-il un stationnement facile pour le camion côté départ ?"
 5. VOLUME ESTIMÉ (obligatoire avant de continuer).
-6. Si au départ OU à l'arrivée il y a un ou plusieurs étages (etage > 0) :
-   - Demander si tout le mobilier passe facilement par la cage d'escalier ou l'ascenseur.
-   - Demander le type de cage d'escalier : droite ou en colimaçon, large ou étroite.
-   - Si ascenseur présent : demander le gabarit de l'ascenseur (petit, moyen, grand).
-   - Si le client indique que le mobilier ne passe pas ou passe difficilement → noter un accès difficile pour l'adresse concernée.
 
 ## ÉTAPE 2 — PROPOSITION VISITE CONSEILLER
 Dès le volume confirmé :
@@ -239,6 +281,11 @@ A3. Créneau confirmé → "Pour finaliser, j'ai besoin de vos coordonnées."
 A4. Questions complémentaires (non encore obtenues) :
     - Configuration à l'arrivée.
     - Stationnement à l'arrivée.
+    - Si au départ OU à l'arrivée il y a un ou plusieurs étages (etage > 0) :
+        - Demander si tout le mobilier passe facilement par la cage d'escalier ou l'ascenseur.
+        - Demander le type de cage d'escalier : droite ou en colimaçon, large ou étroite.
+        - Si ascenseur présent : demander le gabarit de l'ascenseur (petit, moyen, grand).
+        - Si le client indique que le mobilier ne passe pas ou passe difficilement → noter un accès difficile pour l'adresse concernée.
     - Objets lourds/encombrants (piano, moto, scooter...).
     - Date souhaitée du déménagement.
     - Prestation souhaitée (Eco / Standard / Luxe).
@@ -353,7 +400,9 @@ stationnementDepart/stationnementArrivee = détail si donné. "Oui" → "Facile"
 "monteMeuble" = true UNIQUEMENT si le client mentionne EXPLICITEMENT un monte-meuble. NE JAMAIS déduire depuis les étages ou l'absence d'ascenseur.
 "volumeCalcule" = true UNIQUEMENT si le client a donné la liste détaillée des meubles et que tu as calculé le volume à partir de cette liste (en utilisant le tableau de volumes). false ou absent dans tous les autres cas (volume donné directement par le lead ou estimé depuis la surface sans liste détaillée).
 
-<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"etage":null,"ascenseur":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"accesDifficileDepart":false,"accesDifficileArrivee":false,"monteMeubleDepart":false,"monteMeubleArrivee":false,"rdvConseiller":false,"creneauVisite":null}-->`;
+# RÈGLES DE VALIDATION VISITE
+- NE JAMAIS accepter "demain", "dans deux jours" ou "prochainement" comme date de visite sans demander la date réelle (ex: Lundi 24 février).
+- Le bloc DATA ci-dessous contient les informations ACTUELLES stockées en base de données. Tu DOIS les reporter fidèlement dans ton extraction JSON à la fin de chaque réponse.`;
 }
 
 function buildDynamicSection(

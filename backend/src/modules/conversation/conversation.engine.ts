@@ -47,8 +47,8 @@ export class ConversationEngine {
                     email: conversation.entreprise.email,
                     telephone: conversation.entreprise.telephone ?? undefined,
                     zonesIntervention: configMetier.zonesIntervention,
-                    tarifsCustom: configMetier.tarifsCustom,
-                    specificites: configMetier.specificites,
+                    tarifsCustom: (configMetier.tarifsCustom as Record<string, unknown>) || undefined,
+                    specificites: (configMetier.specificites as Record<string, unknown>) || undefined,
                     documentsCalcul: (configMetier.documentsCalcul as string[]) || [],
                     consignesPersonnalisees: configMetier.consignesPersonnalisees || ''
                 },
@@ -57,7 +57,7 @@ export class ConversationEngine {
                     nom: conversation.lead?.nom || undefined,
                     email: conversation.lead?.email || undefined,
                     telephone: conversation.lead?.telephone || undefined,
-                    projetData: conversation.lead?.projetData || {}
+                    projetData: (conversation.lead?.projetData as any) || {}
                 }
             );
 
