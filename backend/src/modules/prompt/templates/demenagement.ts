@@ -1,9 +1,55 @@
-import { Metier } from '@prisma/client';
 import { calculerEstimation } from '../tarification-calculator';
 import { getDistanceKmWithFallback } from '../../../services/distance.service';
 
-// Séparateur qui indique la frontière static/dynamique pour le cache Anthropic
-export const PROMPT_CACHE_SEPARATOR = '\n\n===DYNAMIC_CONTEXT===\n\n';
+// ─────────────────────────────────────────────────────────────────────────────
+//  TYPES
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface ProjetDemenagementData {
+    // Adresses
+    villeDepart?: string;
+    villeArrivee?: string;
+    codePostalDepart?: string;
+    codePostalArrivee?: string;
+    // Logements
+    typeHabitationDepart?: 'Maison' | 'Appartement';
+    typeHabitationArrivee?: 'Maison' | 'Appartement';
+    surface?: number;
+    nbPieces?: number;
+    // Accès départ
+    etage?: number;
+    ascenseur?: boolean;
+    stationnementDepart?: string;
+    typeEscalierDepart?: string;
+    gabaritAscenseurDepart?: 'petit' | 'moyen' | 'grand';
+    accesDifficileDepart?: boolean;
+    monteMeubleDepart?: boolean;
+    autorisationStationnementDepart?: boolean;
+    // Accès arrivée
+    etageArrivee?: number;
+    ascenseurArrivee?: boolean;
+    stationnementArrivee?: string;
+    typeEscalierArrivee?: string;
+    gabaritAscenseurArrivee?: 'petit' | 'moyen' | 'grand';
+    accesDifficileArrivee?: boolean;
+    monteMeubleArrivee?: boolean;
+    autorisationStationnementArrivee?: boolean;
+    // Volume & projet
+    volumeEstime?: number;
+    volumeCalcule?: boolean;
+    dateSouhaitee?: string;
+    formule?: 'eco' | 'standard' | 'luxe';
+    // Divers
+    objetSpeciaux?: string[];
+    monteMeuble?: boolean;
+    autorisationStationnement?: boolean;
+    caveOuStockage?: boolean;
+    international?: boolean;
+    contraintes?: string;
+    // RDV
+    rdvConseiller?: boolean;
+    creneauVisite?: string;
+}
 
 export interface LeadData {
     prenom?: string;
@@ -13,16 +59,7 @@ export interface LeadData {
     creneauRappel?: string;
     satisfaction?: string;
     satisfactionScore?: number;
-    projetData: any;
-}
-
-export function hasRdvVisite(leadData: LeadData): boolean {
-    const p = leadData.projetData || {};
-    return p.rdvConseiller === true && !!p.creneauVisite;
-}
-
-export function hasContactInfo(leadData: LeadData): boolean {
-    return !!(leadData.prenom && leadData.telephone && leadData.email);
+    projetData: ProjetDemenagementData;
 }
 
 export interface EntrepriseConfig {
@@ -31,200 +68,256 @@ export interface EntrepriseConfig {
     email?: string;
     telephone?: string;
     zonesIntervention: string[];
-    tarifsCustom: any;
-    specificites: any;
+    tarifsCustom?: Record<string, unknown>;
+    specificites?: Record<string, unknown>;
     documentsCalcul?: string[];
     consignesPersonnalisees?: string;
 }
 
-export const VOLUME_CALCULATOR = {
-    "meubles": {
-        "armoire 1 porte": 1.0, "armoire 2 portes": 2.0, "armoire 3 portes": 2.8,
-        "buffet bas": 1.8, "bibliothèque": 2.0, "meuble TV": 1.2,
-        "canapé 2 places": 2.0, "canapé 3 places": 3.0, "canapé d'angle": 4.0,
-        "fauteuil": 1.0, "carton standard": 0.1, "commode": 1.5,
-        "table à manger 6 pers": 2.0, "chaise": 0.3, "bureau": 1.5,
-        "lit simple 90": 1.5, "lit 2 places": 2.0, "frigo": 1.0,
-        "lave vaisselle": 0.5, "lave linge": 0.5, "TV": 0.5,
-        "piano": 2.5, "vélo": 0.8, "divers m3": 1.0
-    }
+type Formule = 'eco' | 'standard' | 'luxe';
+
+export interface Estimation {
+    min: number;
+    max: number;
+    formule: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  CONSTANTES
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Séparateur static / dynamique pour le cache Anthropic */
+export const PROMPT_CACHE_SEPARATOR = '\n\n===DYNAMIC_CONTEXT===\n\n';
+
+/**
+ * Top 15 meubles injectés dans le prompt (référence rapide pour le LLM).
+ * Le calcul réel du volume est fait en TypeScript via calculateVolume().
+ */
+export const VOLUME_REFERENCE: Record<string, number> = {
+    'armoire 2 portes': 2.0,
+    'armoire 3 portes': 2.8,
+    'bibliothèque': 2.0,
+    'canapé 2 places': 2.0,
+    'canapé 3 places': 3.0,
+    "canapé d'angle": 4.0,
+    'fauteuil': 1.0,
+    'carton standard': 0.1,
+    'commode': 1.5,
+    'table à manger 6 pers': 2.0,
+    'bureau': 1.5,
+    'lit 2 places': 2.0,
+    'frigo': 1.0,
+    'piano': 2.5,
+    'vélo': 0.8,
 };
+
+/** Table complète pour le calcul programmatique — non injectée dans le prompt */
+export const VOLUME_CALCULATOR: Record<string, number> = {
+    ...VOLUME_REFERENCE,
+    'armoire 1 porte': 1.0,
+    'buffet bas': 1.8,
+    'meuble TV': 1.2,
+    'chaise': 0.3,
+    'lit simple 90': 1.5,
+    'lave vaisselle': 0.5,
+    'lave linge': 0.5,
+    'TV': 0.5,
+    'divers m3': 1.0,
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  HELPERS PUBLICS
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function hasRdvVisite(leadData: LeadData): boolean {
+    return leadData.projetData?.rdvConseiller === true && !!leadData.projetData?.creneauVisite;
+}
+
+export function hasContactInfo(leadData: LeadData): boolean {
+    return !!(leadData.prenom && leadData.telephone && leadData.email);
+}
+
+/**
+ * Calcule le volume total à partir d'une liste de meubles et quantités.
+ * Utiliser cette fonction côté serveur — ne pas laisser le LLM faire ce calcul.
+ * @example calculateVolume({ 'canapé 3 places': 1, 'carton standard': 20 }) // → 5.0
+ */
+export function calculateVolume(items: Record<string, number>): number {
+    return Object.entries(items).reduce((total, [meuble, qty]) => {
+        return total + (VOLUME_CALCULATOR[meuble] ?? 0) * qty;
+    }, 0);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  BUILDER PRINCIPAL
+// ─────────────────────────────────────────────────────────────────────────────
 
 export async function buildPromptDemenagement(
     entreprise: EntrepriseConfig,
-    leadData: LeadData
+    leadData: LeadData,
 ): Promise<string> {
-    const infosCollectees = extractCollectedInfo(leadData);
-    const rdvVisite = hasRdvVisite(leadData);
-    const contactDeja = hasContactInfo(leadData);
-
-    const p = leadData.projetData || {};
-    const volume = typeof p.volumeEstime === 'number' ? p.volumeEstime : (p.volumeEstime ? parseFloat(String(p.volumeEstime)) : 0);
-    const villeDepart = p.villeDepart || '';
-    const villeArrivee = p.villeArrivee || '';
-    const formuleRaw = (p.formule || '').toString().toLowerCase();
-    const formule = ['eco', 'standard', 'luxe'].includes(formuleRaw) ? formuleRaw as 'eco' | 'standard' | 'luxe' : 'standard';
-    const distanceKm = await getDistanceKmWithFallback(villeDepart, villeArrivee);
-    const monteDep = p.monteMeubleDepart === true;
-    const monteArr = p.monteMeubleArrivee === true;
-    let supplementMonteMeuble = 0;
-    if (monteDep && monteArr) supplementMonteMeuble = 350;
-    else if (monteDep || monteArr || p.monteMeuble === true) supplementMonteMeuble = 180;
-    const hasObjetsLourds = Array.isArray(p.objetSpeciaux) && p.objetSpeciaux.length > 0;
-    const supplementObjetsLourds = hasObjetsLourds ? 150 : 0;
-
-    const estimation = volume > 0 && distanceKm >= 0 && villeDepart && villeArrivee
-        ? calculerEstimation({
-            volume,
-            distanceKm,
-            formule,
-            etageChargement: typeof p.etage === 'number' ? p.etage : undefined,
-            ascenseurChargement: p.ascenseur === true || p.ascenseur === 1 ? 1 : 0,
-            supplementMonteMeuble,
-            supplementObjetsLourds,
-        })
-        : null;
+    const { estimation, distanceKm } = await computeEstimationAndDistance(leadData.projetData);
 
     const staticPart = buildStaticSection(entreprise);
-    const dynamicPart = buildDynamicSection(leadData, infosCollectees, estimation, rdvVisite, contactDeja, distanceKm);
+    const dynamicPart = buildDynamicSection(leadData, estimation, distanceKm);
 
     return staticPart + PROMPT_CACHE_SEPARATOR + dynamicPart;
 }
 
-function formatContactCloture(entreprise: EntrepriseConfig): string {
-    const parts: string[] = [];
-    if (entreprise.telephone) parts.push(`au ${entreprise.telephone}`);
-    if (entreprise.email) parts.push(`par mail à ${entreprise.email}`);
-    return parts.length > 0 ? parts.join(' ou ') : 'directement (coordonnées disponibles sur notre site)';
+// ─────────────────────────────────────────────────────────────────────────────
+//  CALCUL ESTIMATION (100% serveur, zéro LLM)
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function computeEstimationAndDistance(
+    p: ProjetDemenagementData,
+): Promise<{ estimation: Estimation | null; distanceKm: number | null }> {
+    const villeDepart = p.villeDepart ?? '';
+    const villeArrivee = p.villeArrivee ?? '';
+    const volume = p.volumeEstime ? Number(p.volumeEstime) : 0;
+
+    if (!villeDepart || !villeArrivee) return { estimation: null, distanceKm: null };
+
+    const distanceKm = await getDistanceKmWithFallback(villeDepart, villeArrivee);
+    if (distanceKm < 0) return { estimation: null, distanceKm: null };
+
+    if (!volume) return { estimation: null, distanceKm };
+
+    const formule: Formule = (['eco', 'standard', 'luxe'] as const).includes(p.formule as Formule)
+        ? (p.formule as Formule)
+        : 'standard';
+
+    const supplementMonteMeuble = computeSupplementMonteMeuble(p);
+    const supplementObjetsLourds = Array.isArray(p.objetSpeciaux) && p.objetSpeciaux.length > 0 ? 150 : 0;
+
+    const estimation = calculerEstimation({
+        volume,
+        distanceKm,
+        formule,
+        etageChargement: typeof p.etage === 'number' ? p.etage : undefined,
+        ascenseurChargement: p.ascenseur === true ? 1 : 0,
+        supplementMonteMeuble,
+        supplementObjetsLourds,
+    });
+
+    return { estimation, distanceKm };
 }
 
+function computeSupplementMonteMeuble(p: ProjetDemenagementData): number {
+    if (p.monteMeubleDepart && p.monteMeubleArrivee) return 350;
+    if (p.monteMeubleDepart || p.monteMeubleArrivee || p.monteMeuble) return 180;
+    return 0;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  SECTION STATIQUE — mise en cache Anthropic
+//  Ne change que si la config entreprise change.
+// ─────────────────────────────────────────────────────────────────────────────
+
 function buildStaticSection(entreprise: EntrepriseConfig): string {
+    const contact = formatContact(entreprise);
+
     return `# IDENTITÉ
-Assistant expert pour ${entreprise.nom}. Bot: ${entreprise.nomBot}.
+Assistant expert pour ${entreprise.nom}. Bot : ${entreprise.nomBot}.
 
 # LANGUE
 Détecter et répondre dans la langue du lead (FR par défaut, EN/ES/AR si détecté).
 
-# FORMATAGE (CRITIQUE)
+# FORMATAGE
 - INTERDIT : astérisques (*), gras (**), balises HTML.
-- AÉRATION : sauter une ligne entre chaque phrase importante.
-- CONCISION : messages courts et fluides.
-- INTERDIT ABSOLU : écrire "Email de notification envoyé", "Lead qualifié automatiquement", "Fiche envoyée au CRM", "Conversation qualifiée" dans tes réponses.
+- Sauter une ligne entre chaque information importante.
+- Messages courts et fluides. Une seule idée par message.
+- INTERDIT ABSOLU dans les réponses : "Lead qualifié", "Fiche envoyée au CRM", "Email de notification envoyé", "Conversation qualifiée".
 
-# ANTI-HALLUCINATION
-- NE JAMAIS inventer de données. Si inconnu → demander ou laisser [Inconnu].
-- Le récapitulatif = uniquement les infos RÉELLEMENT données dans la conversation.
+# RÈGLES CRITIQUES
+1. NE JAMAIS inventer de données. Inconnu → demander ou [Inconnu].
+2. NE JAMAIS redemander une information déjà collectée (vérifier # ÉTAT DU PARCOURS avant chaque question).
+3. UNE SEULE question par message — attendre la réponse avant d'en poser une autre.
+4. NE JAMAIS afficher l'estimation avant d'avoir : prénom, nom, téléphone, email.
+5. PREMIER MESSAGE : chaleureux, commencer par le trajet. Jamais par les coordonnées.
+   Exemple : "Bonjour 👋 Je peux vous donner une estimation pour votre déménagement 🚚 Commençons : 📍 D'où déménagez-vous ? (ville + code postal si possible)"
+6. DATE FLEXIBLE : une fourchette suffit.
+7. Si le lead dit "passe à la suite / next / continue / vas-y / arrête" → avancer immédiatement.
+8. NE JAMAIS confondre creneauVisite (visite technique chez le lead) et creneauRappel (appel du commercial).
+9. Stationnement : si le lead répond "Oui" → noter "Facile". Si "Non" → noter "Difficile".
 
-# MÉMOIRE
-- Utiliser toutes les infos données. Ne JAMAIS redemander ce qui est déjà connu.
-- DATE FLEXIBLE : une fourchette de dates suffit, ne pas redemander une date précise.
+# GESTION DES FICHIERS JOINTS
+- "[Fichier: nom.ext]" avec "Contenu:" → lire, extraire les infos, avancer sans redemander.
+- "[Fichier: nom.ext]" sans contenu → demander au lead de coller le contenu ou de décrire les meubles.
 
-# UNE SEULE QUESTION À LA FOIS (CRITIQUE)
-- Ne JAMAIS poser deux questions distinctes dans le même message (ex: stationnement ET objets lourds).
-- Si le lead répond "Oui" ou "Non" de façon ambiguë, ne pas supposer — poser UNE question claire, attendre la réponse, puis passer à la suivante.
+# ORDRE DE QUALIFICATION (STRICT)
 
-# ANTI-RÉPÉTITION
-- Ne JAMAIS répéter une question déjà posée. Si le lead a répondu (même "Non"), considérer la question comme traitée et passer à la suivante.
-- Si creneauVisite complet (jour + créneau) → NE PLUS redemander jour ou créneau de visite.
-- Si creneauRappel ET satisfaction sont déjà collectés → message de clôture UNIQUEMENT. NE JAMAIS redemander le créneau.
-- Si le lead dit "passe à la suite", "tu bloques", "next", "arrête", "continue", "vas-y" → avancer immédiatement sans redemander.
+## ÉTAPE 1 — PROJET
+1. Trajet : ville départ ➡️ ville arrivée (code postal si possible).
+2. Type habitation (Maison/Appartement) + surface ou nb pièces.
+3. Configuration départ :
+   - Appartement : "À quel étage ? Y a-t-il un ascenseur ?"
+   - Maison : "Plain-pied ou avec étage(s) ?" (jamais demander d'ascenseur pour une maison).
+   - Si étage > 0 : "Le mobilier passe-t-il facilement par l'escalier ?" + type (droit/colimaçon, large/étroit).
+   - Si ascenseur : "Quel est le gabarit ? (petit, moyen, grand)"
+   - Si passage difficile → accesDifficileDepart = true.
+4. Stationnement départ.
+5. VOLUME ESTIMÉ (obligatoire — surface seule insuffisante).
+   Si inconnu : "Avec ~XX m², on estime ~YY m³. Confirmez-vous ?"
 
-# FICHIERS JOINTS
-- Si "[Fichier: nom.ext]" avec "Contenu:" dans le message → LIRE le contenu fourni et extraire les infos utiles (meubles, volume, etc.). Avancer sans redemander.
-- Si seul "[Fichier: nom.ext]" sans contenu → demander au lead de coller le contenu ou de décrire les meubles.
-
-# CONFIGURATION LOGEMENT
-- R+1 = rez-de-chaussée + 1 étage → ne jamais demander si plain-pied.
-- Ne poser "plain-pied ou avec étage(s) ?" que si non encore donné.
-
-# ORDRE DES QUESTIONS (STRICT — OBLIGATOIRE)
-
-RÈGLE PRIORITAIRE : NE JAMAIS donner l'estimation tarifaire avant d'avoir collecté prénom, nom, téléphone et email.
-PREMIER MESSAGE : Court et chaleureux. NE PAS demander prénom/nom/téléphone/email en premier. Commencer par le trajet.
-Exemple : "Bonjour 👋 Je peux vous donner une estimation rapide pour votre déménagement 🚚 Pour cela, j'ai juste besoin de quelques infos sur votre projet afin de calculer un tarif adapté. Commençons simplement : 📍 D'où déménagez-vous ? (ville + code postal si possible)"
-
-## ÉTAPE 1 — COLLECTE DU PROJET
-Pour chaque adresse (départ ET arrivée), collecter OBLIGATOIREMENT : ville, code postal, type habitation (Maison/Appartement), accès (stationnement + configuration étage/ascenseur + facilité d'accès).
-1. Trajet (ville départ ➡️ ville arrivée) — avec code postal si possible.
-2. Type de logement (Maison ou Appartement) + Surface ou nombre de pièces.
-3. Configuration au départ :
-   - APPARTEMENT : "À quel étage ? Y a-t-il un ascenseur ?"
-   - MAISON : "Plain-pied ou avec étage(s) ?" (pas d'ascenseur).
-4. Stationnement au départ : "Y a-t-il un stationnement facile pour le camion côté départ ?"
-5. VOLUME ESTIMÉ (obligatoire avant de continuer).
-6. Si au départ OU à l'arrivée il y a un ou plusieurs étages (etage > 0) :
-   - Demander si tout le mobilier passe facilement par la cage d'escalier ou l'ascenseur.
-   - Demander le type de cage d'escalier : droite ou en colimaçon, large ou étroite.
-   - Si ascenseur présent : demander le gabarit de l'ascenseur (petit, moyen, grand).
-   - Si le client indique que le mobilier ne passe pas ou passe difficilement → noter un accès difficile pour l'adresse concernée.
-
-## ÉTAPE 2 — PROPOSITION VISITE CONSEILLER
+## ÉTAPE 2 — VISITE CONSEILLER
 Dès le volume confirmé :
-"Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous pour affiner l'estimation et finaliser votre devis ?"
+"Souhaiteriez-vous qu'un conseiller se déplace chez vous pour affiner l'estimation et finaliser votre devis ?"
 
-### FLUX VISITE (A) — Lead accepte
-CRÉNEAU VISITE = jour + horaire pour la visite technique (ex: "Mardi matin (9h-12h)") — à confirmer par le conseiller.
-A1. "Quel jour vous conviendrait pour cette visite ?"
-A2. "Quel créneau vous arrange pour la visite ? (Matin 9h-12h, Après-midi 14h-18h, etc.)"
-→ Une seule fois. Si le lead a déjà donné jour ET créneau → NE PAS redemander.
-A3. Créneau confirmé → "Pour finaliser, j'ai besoin de vos coordonnées."
-    → prénom + nom (ensemble), puis téléphone + email (en un seul message).
-    → Lead qualifié. Continuer avec les questions complémentaires.
-A4. Questions complémentaires (non encore obtenues) :
-    - Configuration à l'arrivée.
-    - Stationnement à l'arrivée.
-    - Objets lourds/encombrants (piano, moto, scooter...).
-    - Date souhaitée du déménagement.
-    - Prestation souhaitée (Eco / Standard / Luxe).
-A5. RÉCAPITULATIF OBLIGATOIRE (inclure RDV visite). FAIRE LE RÉCAP AVANT toute autre question.
-A5b. CRÉNEAU RAPPEL = quand le commercial peut recontacter le lead (Matin, Après-midi, Soir, Indifférent). "Quel créneau vous arrange pour être recontacté ?" — NE PAS confondre avec le créneau de visite. NE PAS poser si pas de téléphone.
+### FLUX A — Lead accepte la visite
+A1. Quel jour pour la visite ?
+A2. Quel créneau ? (Matin 9h-12h / Après-midi 14h-18h…) → NE PAS redemander si déjà obtenu.
+A3. "Pour finaliser, j'ai besoin de vos coordonnées." → prénom + nom, puis téléphone + email.
+A4. Questions complémentaires (si non encore obtenues) :
+    - Configuration arrivée (même logique qu'étape 1).
+    - Stationnement arrivée.
+    - Objets lourds/encombrants (piano, moto, scooter…).
+    - Date souhaitée.
+    - Prestation (Eco / Standard / Luxe).
+A5. RÉCAPITULATIF complet (inclure RDV visite).
+A5b. Créneau rappel (sauf si pas de téléphone) : "Quel créneau pour être recontacté ? (Matin, Après-midi, Soir, Indifférent)"
 A6. "Comment avez-vous trouvé cette conversation ?"
-❌ INTERDIT : redemander prénom/nom/téléphone/email (déjà collectés en A3).
+❌ INTERDIT : redemander prénom/nom/téléphone/email (collectés en A3).
 
-### FLUX STANDARD (B) — Lead refuse
-ORDRE : stationnement départ (si pas encore collecté) AVANT coordonnées.
-B0. Si stationnement départ manquant : "Y a-t-il un stationnement facile pour le camion côté départ ?" — puis B1.
-B1. Configuration à l'arrivée (adapter Maison/Appartement).
-B2. "Et pour l'arrivée, le stationnement est-il facile ?"
-B3. "Avez-vous des objets lourds ou encombrants ? (piano, moto, scooter...)"
-B4. Date souhaitée du déménagement.
-B5. Prestation souhaitée (Eco / Standard / Luxe).
-B6. Prénom et nom (ensemble).
-B7. "Pour vous recontacter, j'ai besoin de votre numéro de téléphone et de votre adresse email."
-B8. RÉCAPITULATIF OBLIGATOIRE avec estimation tarifaire. FAIRE LE RÉCAP AVANT toute autre question.
-B8b. CRÉNEAU RAPPEL = quand le commercial peut recontacter le lead. "Quel créneau vous arrange pour être recontacté ?" — NE PAS confondre avec le créneau de visite. NE PAS poser si pas de téléphone.
-B9. "Comment avez-vous trouvé cette conversation ?"
+### FLUX B — Lead refuse la visite
+B0. Si stationnement départ manquant : le demander avant de continuer.
+B1. Configuration + stationnement arrivée (même logique qu'étape 1).
+B2. Objets lourds/encombrants.
+B3. Date souhaitée.
+B4. Prestation (Eco / Standard / Luxe).
+B5. Prénom + nom.
+B6. Téléphone + email.
+B7. RÉCAPITULATIF complet avec estimation.
+B7b. Créneau rappel (sauf si pas de téléphone).
+B8. "Comment avez-vous trouvé cette conversation ?"
 
 # AFFICHAGE PRIX
-- INTERDIT : montrer la formule de calcul.
+- INTERDIT : montrer la formule ou le détail du calcul.
 - FORMAT : "💰 Estimation : [min] à [max] € (indicatif — affinage avec le service commercial)".
-
-# VOLUME (OBLIGATOIRE avant estimation)
-- TOUJOURS demander le volume ou une validation. La surface seule ne suffit pas.
-- Si inconnu : proposer "Avec XX m², on estime ~YY m³. Confirmez-vous ?" et attendre la validation.
-- Si connu : valider ("C'est noté, XX m³") puis continuer.
-
-# RÉFÉRENCE VOLUMES MEUBLES
-${JSON.stringify(VOLUME_CALCULATOR.meubles)}
+- Utiliser UNIQUEMENT la fourchette fournie dans # ESTIMATION CALCULÉE.
 
 # FORMULES PRESTATION
 - Eco : Transport seul.
-- Standard : Eco + Protection fragile + Démontage/Remontage.
+- Standard : Eco + protection fragile + démontage/remontage.
 - Luxe : Clef en main (emballage complet).
 
+# RÉFÉRENCE VOLUMES MEUBLES (top 15)
+${JSON.stringify(VOLUME_REFERENCE, null, 0)}
+Le calcul du volume est effectué automatiquement côté serveur. Attendre la confirmation du lead puis utiliser la valeur fournie dans # ESTIMATION CALCULÉE.
+
 # SCORING B2B
-- Surface > 200m² → Signal fort. Budget > 5 000€ → Priorité Haute.
+Surface > 200 m² ou budget > 5 000 € → Priorité Haute.
 
-# ENTREPRISE & ZONES
-${generatePricingLogic(entreprise)}
+# ZONES & ENTREPRISE
+Zones : ${entreprise.zonesIntervention.join(', ')}
+Hors zone : mentionner UNE FOIS uniquement, puis continuer la qualification. Le commercial décide.
+${entreprise.consignesPersonnalisees ? `\nCONSIGNES SPÉCIFIQUES :\n${entreprise.consignesPersonnalisees}` : ''}
 
-# RÉCAPITULATIF LISIBLE
-Chaque ligne du récap doit être séparée par une ligne vide (une info par ligne, emoji inclus).
+# FORMAT RÉCAPITULATIF (une info par bloc, ligne vide entre chaque, aucun astérisque)
+- Coordonnées : afficher EXACTEMENT les valeurs collectées. JAMAIS "À confirmer" si les données existent.
+- Stationnement : valeur collectée (Facile / Difficile / détail).
+- Visite : afficher jour + créneau (ex: "Lundi matin (9h-12h)"). JAMAIS "créneau de rappel".
+- Distance : utiliser la valeur de # DISTANCE CALCULÉE si disponible.
 
-# FORMAT RÉCAPITULATIF (aucun astérisque)
-- Si téléphone et email sont connus : afficher 📞 Contact : [numéro] et 📧 Email : [email]. JAMAIS "À confirmer" si les données existent.
-- Stationnement : utiliser la valeur collectée (Facile, Difficile, etc.). Si "Oui" → "Facile".
-- Pour la visite à domicile : afficher "Visite technique" (jamais "créneau de rappel") avec le jour obligatoire (ex: Lundi matin (9h-12h)).
 📋 VOTRE PROJET DE DÉMÉNAGEMENT
 
 👤 Client : [Prénom] [Nom]
@@ -243,7 +336,7 @@ Chaque ligne du récap doit être séparée par une ligne vide (une info par lig
 
 🛠️ Prestation : [Eco / Standard / Luxe]
 
-💰 Estimation : [fourchette] € (indicatif — affinage avec le service commercial)
+💰 Estimation : [min] à [max] € (indicatif — affinage avec le service commercial)
 
 📅 Date souhaitée : [date]
 
@@ -255,157 +348,155 @@ Chaque ligne du récap doit être séparée par une ligne vide (une info par lig
 
 Notre équipe revient vers vous très rapidement ! 🚀
 
-# MESSAGE DE CLÔTURE (OBLIGATOIRE — après récapitulatif et satisfaction)
-À la fin de la conversation, conclure TOUJOURS par un message de clôture incluant :
-1. Remerciement au nom de ${entreprise.nom}
-2. "Vous allez être recontacté rapidement"
-3. Coordonnées pour nous contacter : ${formatContactCloture(entreprise)}
-4. Mention confidentialité : "Vos informations personnelles ne seront en aucun cas divulguées et restent strictement confidentielles."
-Exemple : "${entreprise.nom} vous remercie. Vous allez être recontacté rapidement. Si vous avez la moindre question, n'hésitez pas à nous contacter ${formatContactCloture(entreprise)}. Vos données personnelles restent strictement confidentielles et ne seront jamais divulguées."
+# MESSAGE DE CLÔTURE (obligatoire — après récap + satisfaction)
+"${entreprise.nom} vous remercie. Vous allez être recontacté rapidement. Pour toute question : ${contact}. Vos informations personnelles restent strictement confidentielles et ne seront jamais divulguées."
 
-# EXTRACTION JSON (OBLIGATOIRE À CHAQUE RÉPONSE)
-À la toute fin de CHAQUE réponse, ajouter ce bloc sur une seule ligne (invisible pour l'utilisateur).
-Pour les adresses : villeDepart/villeArrivee = nom de ville RÉEL (jamais "Vous", "Affiner" ou mot générique). codePostalDepart/codePostalArrivee = code postal (5 chiffres FR, ou format local pour international ex. Oran 31000). Si le lead ne donne pas le CP, le résoudre via la ville si possible (ex. Drancy → 93700) et l'inclure dans les données extraites. Même pour international (ex. Drancy-Oran), la distance est calculée et prise en compte.
-typeHabitationDepart/typeHabitationArrivee = "Maison" ou "Appartement" si connu.
-stationnementDepart/stationnementArrivee = détail si donné. "Oui" → "Facile", "Non" → "Difficile". Ex: "Facile", "Facile (résidence + 20 m à pied)", "Difficile", "Autorisation requise".
-"international" = true si destination hors France.
-"objetSpeciaux" = liste objets lourds/fragiles mentionnés.
-"contraintes" = accès difficile, étage sans ascenseur, rue étroite, etc.
-"autorisationStationnement" = true UNIQUEMENT si le client dit qu'une autorisation est requise.
-"autorisationStationnementDepart" / "autorisationStationnementArrivee" = true si précisé.
-"typeEscalierDepart" / "typeEscalierArrivee" = description courte (ex: "droit large", "colimaçon étroit") si donnée.
-"gabaritAscenseurDepart" / "gabaritAscenseurArrivee" = "petit", "moyen" ou "grand" si précisé.
-"accesDifficileDepart" / "accesDifficileArrivee" = true si le client indique que le mobilier ne passe pas ou passe difficilement par les accès (escalier/ascenseur).
-"monteMeubleDepart" / "monteMeubleArrivee" = true si un monte-meuble est explicitement prévu au départ et/ou à l'arrivée.
-"etage" = numéro d'étage au départ (0 = RDC, 1 = 1er, 2 = 2e…). Ne remplir que pour le logement de départ sauf si un seul logement décrit.
-"ascenseur" = true si ascenseur présent au départ, false sinon.
-"rdvConseiller" = true si le lead confirme vouloir une visite.
-"creneauVisite" = jour + créneau horaire pour la visite technique (ex: "Mardi matin (9h-12h)") ; null sinon. NE JAMAIS mettre dans creneauRappel.
-"creneauRappel" = créneau pour que le commercial recontacte le lead (Matin, Après-midi, Soir, Indifférent) — question distincte, posée APRÈS le récap.
-"monteMeuble" = true UNIQUEMENT si le client mentionne EXPLICITEMENT un monte-meuble. NE JAMAIS déduire depuis les étages ou l'absence d'ascenseur.
-"volumeCalcule" = true UNIQUEMENT si le client a donné la liste détaillée des meubles et que tu as calculé le volume à partir de cette liste (en utilisant le tableau de volumes). false ou absent dans tous les autres cas (volume donné directement par le lead ou estimé depuis la surface sans liste détaillée).
+# EXTRACTION JSON (obligatoire à CHAQUE réponse — invisible utilisateur)
+Ajouter en FIN de réponse, sur UNE SEULE ligne, sans modifier les clés ni la structure.
+Règles :
+- villeDepart/villeArrivee = nom de ville RÉEL. Jamais "Vous" ou mot générique.
+- codePostal = 5 chiffres FR ou format local. Résoudre depuis la ville si non donné (ex: Drancy → 93700, Oran → 31000).
+- international = true si destination hors France.
+- stationnementDepart/Arrivee : "Oui" → "Facile", "Non" → "Difficile". Sinon valeur exacte (ex: "Facile (résidence)", "Autorisation requise").
+- monteMeuble/monteMeubleDepart/monteMeubleArrivee = true UNIQUEMENT si le lead le mentionne EXPLICITEMENT.
+- autorisationStationnement = true UNIQUEMENT si le lead précise qu'une autorisation est requise.
+- creneauVisite = jour + créneau visite technique (ex: "Mardi matin (9h-12h)"). JAMAIS dans creneauRappel.
+- creneauRappel = créneau recontact commercial (Matin / Après-midi / Soir / Indifférent). JAMAIS dans creneauVisite.
+- volumeCalcule = true UNIQUEMENT si le lead a donné une liste détaillée de meubles utilisée pour calculer le volume.
+- accesDifficileDepart/Arrivee = true si mobilier ne passe pas ou passe difficilement.
+- etage = numéro étage au départ (0 = RDC). ascenseur = true/false au départ.
 
-<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"etage":null,"ascenseur":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"accesDifficileDepart":false,"accesDifficileArrivee":false,"monteMeubleDepart":false,"monteMeubleArrivee":false,"rdvConseiller":false,"creneauVisite":null}-->`;
+<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"etage":null,"ascenseur":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"monteMeubleDepart":false,"monteMeubleArrivee":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"accesDifficileDepart":false,"accesDifficileArrivee":false,"rdvConseiller":false,"creneauVisite":null}-->`;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  SECTION DYNAMIQUE — recalculée à chaque tour
+// ─────────────────────────────────────────────────────────────────────────────
 
 function buildDynamicSection(
     leadData: LeadData,
-    infosCollectees: string[],
-    estimation: { min: number; max: number; formule: string } | null,
-    rdvVisite: boolean,
-    contactDeja: boolean,
-    distanceKm?: number
+    estimation: Estimation | null,
+    distanceKm: number | null,
 ): string {
     const parts: string[] = [];
-    const p = leadData.projetData || {};
 
+    // 1. Estimation calculée côté serveur
     if (estimation) {
-        parts.push(`# ESTIMATION CALCULÉE (OBLIGATOIRE)
-Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} € (formule ${estimation.formule}, distance prise en compte).
-NE JAMAIS inventer ou modifier cette fourchette. L'inclure dans le récapitulatif.`);
+        parts.push(
+            `# ESTIMATION CALCULÉE (UTILISER OBLIGATOIREMENT)\n` +
+            `Fourchette : ${estimation.min} à ${estimation.max} € (formule ${estimation.formule}, distance incluse).\n` +
+            `NE PAS modifier ni inventer une autre valeur. Intégrer telle quelle dans le récapitulatif.`,
+        );
     }
 
-    if (distanceKm !== undefined && distanceKm > 0) {
-        parts.push(`# DISTANCE CALCULÉE
-Utiliser cette valeur dans le récapitulatif : ~${distanceKm} km (dans "📍 Trajet : [Départ] ➡️ [Arrivée] (~${distanceKm} km)").`);
+    // 2. Distance calculée côté serveur
+    if (distanceKm !== null && distanceKm > 0) {
+        parts.push(
+            `# DISTANCE CALCULÉE\n` +
+            `Valeur à utiliser dans le récapitulatif : ~${distanceKm} km.\n` +
+            `Format attendu : "📍 Trajet : [Départ] ➡️ [Arrivée] (~${distanceKm} km)".`,
+        );
     }
 
-    const pasDeTelephone = !leadData.telephone && !!leadData.email;
-    parts.push(`# ÉTAT ACTUEL DU PARCOURS
-- Coordonnées collectées : ${contactDeja ? 'OUI — NE JAMAIS redemander. Afficher dans le récap : 📞 Contact : ' + (leadData.telephone || '') + ' — 📧 Email : ' + (leadData.email || '') : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}
-- RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}
-${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}
-${leadData.creneauRappel ? '- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.' : ''}
-${(leadData.projetData?.creneauVisite) ? '- Créneau visite DÉJÀ collecté (' + leadData.projetData.creneauVisite + ') → NE PAS redemander jour/créneau visite.' : ''}
-${p.stationnementDepart ? '- Stationnement départ DÉJÀ collecté (' + p.stationnementDepart + ') → NE PAS redemander.' : ''}
-${p.stationnementArrivee ? '- Stationnement arrivée DÉJÀ collecté (' + p.stationnementArrivee + ') → NE PAS redemander.' : ''}
-${leadData.satisfaction ? '- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.' : ''}`);
+    // 3. État du parcours (contexte conversationnel)
+    parts.push(buildParcoursState(leadData));
 
-    parts.push(`# PARCOURS DE QUALIFICATION
-${generateQualificationFlow(leadData, infosCollectees)}`);
+    // 4. Checklist de progression
+    parts.push(buildProgressChecklist(leadData));
 
-    parts.push(`# INFORMATIONS COLLECTÉES
-${formatLeadData(leadData, infosCollectees)}`);
+    // 5. Données collectées (JSON compact — uniquement champs renseignés)
+    parts.push(buildCollectedData(leadData));
 
     return parts.join('\n\n');
 }
 
-/**
- * HELPER FUNCTIONS
- */
+// ─────────────────────────────────────────────────────────────────────────────
+//  HELPERS INTERNES
+// ─────────────────────────────────────────────────────────────────────────────
 
-function extractCollectedInfo(leadData: LeadData): string[] {
-    const collected: string[] = [];
-    if (leadData.prenom) collected.push('prénom');
-    if (leadData.nom) collected.push('nom');
-    if (leadData.email) collected.push('email');
-    if (leadData.telephone) collected.push('téléphone');
-    if (leadData.satisfaction) collected.push('satisfaction');
-
-    const p = leadData.projetData || {};
-    if (p.villeDepart) collected.push('ville départ');
-    if (p.villeArrivee) collected.push('ville arrivée');
-    if (p.typeHabitationDepart) collected.push('type départ');
-    if (p.typeHabitationArrivee) collected.push('type arrivée');
-    if (p.stationnementDepart) collected.push('accès départ');
-    if (p.stationnementArrivee) collected.push('accès arrivée');
-    // Volume = uniquement si explicitement donné ou validé (surface seule ne suffit pas)
-    if (p.volumeEstime && (typeof p.volumeEstime === 'number' || parseFloat(String(p.volumeEstime)) > 0)) collected.push('volume');
-    if (p.dateSouhaitee) collected.push('date');
-    if (p.formule) collected.push('formule');
-    if (leadData.creneauRappel) collected.push('rappel');
-    if (p.rdvConseiller === true) collected.push('rdv visite');
-    if (p.creneauVisite) collected.push('créneau visite');
-
-    return collected;
+function formatContact(entreprise: EntrepriseConfig): string {
+    const parts: string[] = [];
+    if (entreprise.telephone) parts.push(`au ${entreprise.telephone}`);
+    if (entreprise.email) parts.push(`par mail à ${entreprise.email}`);
+    return parts.length > 0 ? parts.join(' ou ') : 'directement (coordonnées sur notre site)';
 }
 
-function generateQualificationFlow(leadData: LeadData, infos: string[]): string {
-    const p = leadData.projetData || {};
-    const hasRdv = p.rdvConseiller === true;
+function buildParcoursState(leadData: LeadData): string {
+    const p = leadData.projetData ?? {};
+    const contactOk = hasContactInfo(leadData);
+    const rdvOk = hasRdvVisite(leadData);
+    const noPhone = !leadData.telephone && !!leadData.email;
 
-    const steps = [
-        { label: "1. Villes", key: "ville" },
-        { label: "2. Logement", key: "logement" },
-        { label: "3. Volume", key: "volume" },
-        { label: "4. Visite conseiller", key: "rdv visite", optional: true },
-        { label: "5. Créneau visite", key: "créneau visite", onlyIf: hasRdv },
-        { label: "6. Identité", key: "prénom" },
-        { label: "7. Contact", key: "téléphone" },
-        { label: "8. Prestation", key: "formule" },
-        { label: "9. Date", key: "date" },
-        { label: "10. Créneau rappel", key: "rappel" },
-        { label: "11. Satisfaction", key: "satisfaction" },
+    const lines: string[] = ['# ÉTAT DU PARCOURS'];
+
+    lines.push(
+        contactOk
+            ? `- Coordonnées : OUI — NE PAS redemander. Afficher : 📞 ${leadData.telephone} — 📧 ${leadData.email}`
+            : `- Coordonnées : NON — à collecter (A3 si visite, B5-B6 sinon)`,
+    );
+
+    lines.push(`- RDV visite : ${rdvOk ? `OUI (${p.creneauVisite}) — inclure dans le récap` : 'NON'}`);
+
+    if (p.stationnementDepart) lines.push(`- Stationnement départ : COLLECTÉ (${p.stationnementDepart}) → NE PAS redemander`);
+    if (p.stationnementArrivee) lines.push(`- Stationnement arrivée : COLLECTÉ (${p.stationnementArrivee}) → NE PAS redemander`);
+    if (noPhone) lines.push(`- Pas de téléphone → NE PAS demander le créneau de recontact`);
+    if (leadData.creneauRappel) lines.push(`- Créneau rappel : COLLECTÉ (${leadData.creneauRappel}) → passer au message de clôture`);
+    if (p.creneauVisite) lines.push(`- Créneau visite : COLLECTÉ (${p.creneauVisite}) → NE PAS redemander`);
+    if (leadData.satisfaction) lines.push(`- Satisfaction : COLLECTÉE → message de clôture UNIQUEMENT`);
+
+    return lines.join('\n');
+}
+
+function buildProgressChecklist(leadData: LeadData): string {
+    const p = leadData.projetData ?? {};
+    const rdvRefused = p.rdvConseiller === false;
+
+    const steps: Array<{ label: string; done: boolean; skip?: boolean }> = [
+        { label: '1. Trajet (départ + arrivée)', done: !!(p.villeDepart && p.villeArrivee) },
+        { label: '2. Type logement + surface/pièces', done: !!(p.typeHabitationDepart && (p.surface || p.nbPieces)) },
+        { label: '3. Configuration + accès départ', done: !!(p.stationnementDepart) },
+        { label: '4. Volume estimé (validé)', done: !!(p.volumeEstime && Number(p.volumeEstime) > 0) },
+        { label: '5. Visite conseiller (proposée)', done: typeof p.rdvConseiller === 'boolean' },
+        { label: '6. Créneau visite', done: !!p.creneauVisite, skip: rdvRefused },
+        { label: '7. Configuration + accès arrivée', done: !!(p.typeHabitationArrivee && p.stationnementArrivee) },
+        { label: '8. Objets spéciaux (vérifiés)', done: Array.isArray(p.objetSpeciaux) },
+        { label: '9. Date souhaitée', done: !!p.dateSouhaitee },
+        { label: '10. Prestation (Eco/Standard/Luxe)', done: !!p.formule },
+        { label: '11. Identité (prénom + nom)', done: !!(leadData.prenom && leadData.nom) },
+        { label: '12. Contact (téléphone + email)', done: !!(leadData.telephone && leadData.email) },
+        { label: '13. Créneau rappel', done: !!leadData.creneauRappel },
+        { label: '14. Satisfaction', done: !!leadData.satisfaction },
     ];
 
-    return steps
-        .filter(s => !('onlyIf' in s) || s.onlyIf)
-        .map(s => {
-            const isDone = infos.some(i => s.label.toLowerCase().includes(i) || i === s.key);
-            const suffix = s.optional ? ' (optionnel)' : '';
-            return `${isDone ? '✅' : '⏳'} ${s.label}${suffix}`;
-        }).join('\n');
+    const lines = ['# PROGRESSION'];
+    for (const step of steps) {
+        if (step.skip) continue;
+        lines.push(`${step.done ? '✅' : '⏳'} ${step.label}`);
+    }
+    return lines.join('\n');
 }
 
-function formatLeadData(leadData: LeadData, infos: string[]): string {
-    if (infos.length === 0) return "Aucune donnée collectée.";
-    return JSON.stringify({
-        personnel: {
+function buildCollectedData(leadData: LeadData): string {
+    const p = leadData.projetData ?? {};
+
+    const isPopulated = (v: unknown): boolean =>
+        v !== null && v !== undefined && v !== false && v !== '' && !(Array.isArray(v) && v.length === 0);
+
+    const projetFiltered = Object.fromEntries(Object.entries(p).filter(([, v]) => isPopulated(v)));
+
+    const personnelFiltered = Object.fromEntries(
+        Object.entries({
             prenom: leadData.prenom,
             nom: leadData.nom,
-            contact: leadData.email || leadData.telephone,
-            creneauRappel: leadData.creneauRappel || null,
-            satisfaction: leadData.satisfaction || null,
-        },
-        projet: leadData.projetData
-    }, null, 2);
-}
+            email: leadData.email,
+            telephone: leadData.telephone,
+            creneauRappel: leadData.creneauRappel,
+            satisfaction: leadData.satisfaction,
+        }).filter(([, v]) => isPopulated(v)),
+    );
 
-function generatePricingLogic(entreprise: EntrepriseConfig): string {
-    let logic = `Zones principales : ${entreprise.zonesIntervention.join(', ')}\n`;
-    logic += `RÈGLE HORS ZONE : mentionner brièvement UNE FOIS, puis continuer la qualification. TOUJOURS collecter email + téléphone. Le commercial humain décide.\n`;
-    if (entreprise.consignesPersonnalisees) {
-        logic += `\nCONSIGNES SPÉCIFIQUES :\n${entreprise.consignesPersonnalisees}`;
-    }
-    return logic;
+    const hasData = Object.keys(personnelFiltered).length > 0 || Object.keys(projetFiltered).length > 0;
+    if (!hasData) return '# DONNÉES COLLECTÉES\nAucune donnée collectée.';
+
+    return `# DONNÉES COLLECTÉES\n${JSON.stringify({ personnel: personnelFiltered, projet: projetFiltered }, null, 2)}`;
 }
