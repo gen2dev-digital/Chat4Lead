@@ -853,7 +853,7 @@ export class MessageHandler {
         const projetFields = [
             'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
             'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
-            'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
+            'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
             'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'autorisationStationnementDepart', 'autorisationStationnementArrivee', 'caveOuStockage', 'international', 'contraintes',
             'rdvConseiller', 'creneauVisite',
         ];
@@ -1274,7 +1274,7 @@ export class MessageHandler {
             const projetFields = [
                 'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
                 'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
-                'surface', 'nbPieces', 'volumeEstime', 'dateSouhaitee', 'formule',
+                'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'formule',
                 'contraintes',
             ];
             for (const f of projetFields) {

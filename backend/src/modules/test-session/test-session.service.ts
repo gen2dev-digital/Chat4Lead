@@ -256,7 +256,7 @@ export const testSessionService = {
   <tr><td>🅿️ Stationnement arrivée</td><td>${htmlEsc(projet.stationnementArrivee || '—')}</td></tr>
   <tr><td>🏠 Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
   ${projet.nbPieces ? `<tr><td>🚪 Pièces</td><td>F${projet.nbPieces}</td></tr>` : ''}
-  ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³</td></tr>` : ''}
+  ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³${projet.volumeCalcule ? ' (calculé via liste de meubles)' : ' (donné par le client)'}</td></tr>` : ''}
   ${projet.etage ? `<tr><td>🏢 Étage</td><td>${htmlEsc(projet.etage)}</td></tr>` : ''}
   <tr><td>📅 Date souhaitée</td><td>${htmlEsc(projet.dateSouhaitee || '—')}</td></tr>
   <tr><td>📋 Formule</td><td>${htmlEsc(projet.formule || '—')}</td></tr>
