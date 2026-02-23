@@ -118,9 +118,12 @@ export class MessageHandler {
             llmContent = this.sanitizeReply(llmContent);
             llmContent = this.filterRepeatedCreneauQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedVisitQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedStationnementQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedContactQuestion(llmContent, currentLead);
 
             // ── 7.  Extraction regex + merge avec LLM (LLM prioritaire sauf valeurs invalides) ──
-            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
+            const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
+            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {}, lastBotMsg);
             const finalEntities = this.mergeEntities(regexEntities, llmEntities);
 
             // ── 8.  Mise à jour lead + score en 1 seule requête ──
@@ -249,9 +252,12 @@ export class MessageHandler {
             llmContent = this.sanitizeReply(cleanedContent);
             llmContent = this.filterRepeatedCreneauQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedVisitQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedStationnementQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedContactQuestion(llmContent, currentLead);
 
             // ── 7. Extraction + merge ──
-            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
+            const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
+            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {}, lastBotMsg);
             const finalEntities = this.mergeEntities(regexEntities, llmEntities);
 
             // ── 8. Mise à jour lead + score en 1 seule requête ──
@@ -334,7 +340,7 @@ export class MessageHandler {
      * Extrait les entités structurées depuis le message utilisateur
      * et la réponse du bot (confirmation de données).
      */
-    private async extractEntities(message: string, llmContent: string, existingProjetData: any): Promise<any> {
+    private async extractEntities(message: string, llmContent: string, existingProjetData: any, lastBotMessage?: string): Promise<any> {
         const entities: any = {};
         // Nettoyage pour faciliter l'extraction (ex: "Dijon (93700)" -> "Dijon 93700")
         const combined = (message + ' ' + (llmContent || '')).replace(/\((\d{5})\)/g, ' $1 ');
@@ -462,6 +468,23 @@ export class MessageHandler {
                 entities.volumeEstime = parseFloat(volumeMatch[1].replace(',', '.'));
             }
         } catch (e) { logger.error('❌ Volume extraction failed', e); }
+
+        // ── Stationnement (Oui/Facile → Facile, Non/Difficile → Difficile) ──
+        // Contexte : la question du bot (lastBotMessage) indique départ ou arrivée
+        try {
+            const lowerMsg = message.toLowerCase().trim();
+            const lowerBot = ((lastBotMessage || '') + ' ' + (llmContent || '')).toLowerCase();
+            const isOuiFacile = /\b(oui|ouais|yes|facile|pas de souci|pas de problème|c'est bon|ok)\b/i.test(lowerMsg) && !/\b(non|difficile|compliqué)\b/i.test(lowerMsg);
+            const isNonDifficile = /\b(non|difficile|compliqué|pas facile)\b/i.test(lowerMsg);
+            if (isOuiFacile || isNonDifficile) {
+                const valeur = isOuiFacile ? 'Facile' : 'Difficile';
+                if (lowerBot.includes('côté départ') || lowerBot.includes('cote depart') || lowerBot.includes('stationnement départ') || (lowerBot.includes('départ') && lowerBot.includes('stationnement'))) {
+                    if (!existingProjetData.stationnementDepart) entities.stationnementDepart = valeur;
+                } else if (lowerBot.includes('côté arrivée') || lowerBot.includes('cote arrivee') || lowerBot.includes('stationnement arrivée') || (lowerBot.includes('arrivée') && lowerBot.includes('stationnement'))) {
+                    if (!existingProjetData.stationnementArrivee) entities.stationnementArrivee = valeur;
+                }
+            }
+        } catch (e) { logger.error('❌ Stationnement extraction failed', e); }
 
         // ── Date (JJ/MM/YYYY ou JJ-MM-YYYY ou "15 mars") ──
         try {
@@ -1083,6 +1106,25 @@ export class MessageHandler {
     }
 
     /**
+     * Supprime les demandes répétées de téléphone/email si déjà collectés (anti-répétition).
+     */
+    private filterRepeatedContactQuestion(text: string, lead: any): string {
+        if (!lead?.telephone || !lead?.email) return text;
+        const patterns = [
+            /Pardon,?\s*j'ai besoin de votre numéro de téléphone[^.\n]*\.?/gi,
+            /[Jj]'ai besoin de votre (?:numéro de )?téléphone[^.\n]*\.?/gi,
+            /[Pp]ouvez-vous (?:me )?donner (?:votre )?(?:numéro |téléphone )[^.\n]*\.?/gi,
+            /[Ee]t votre (?:numéro de )?téléphone\s*\?[^.\n]*\.?/gi,
+            /[Ee]t votre adresse email\s*\?[^.\n]*\.?/gi,
+        ];
+        let cleaned = text;
+        for (const p of patterns) {
+            cleaned = cleaned.replace(p, '').trim();
+        }
+        return cleaned.replace(/\n{2,}/g, '\n').trim();
+    }
+
+    /**
      * Supprime la question "Quel créneau vous arrange pour être recontacté ?" si déjà collecté (anti-répétition).
      */
     private filterRepeatedCreneauQuestion(text: string, lead: any): string {
@@ -1116,6 +1158,31 @@ export class MessageHandler {
         let cleaned = text;
         for (const p of patterns) {
             cleaned = cleaned.replace(p, '').trim();
+        }
+        return cleaned.replace(/\n{2,}/g, '\n').trim();
+    }
+
+    /**
+     * Supprime les questions répétées sur le stationnement si déjà collecté (anti-répétition).
+     */
+    private filterRepeatedStationnementQuestion(text: string, lead: any): string {
+        const p = lead?.projetData || {};
+        const dep = p.stationnementDepart;
+        const arr = p.stationnementArrivee;
+        if (!dep && !arr) return text;
+        const patterns: RegExp[] = [];
+        if (dep) {
+            patterns.push(/Y a-t-il un stationnement facile (?:pour le camion )?côté départ[^?]*\?[^.\n]*\.?/gi);
+            patterns.push(/[Pp]our le stationnement[^?]*départ[^?]*\?[^.\n]*\.?/gi);
+            patterns.push(/[Ll]e stationnement[^?]*départ[^?]*\?[^.\n]*\.?/gi);
+        }
+        if (arr) {
+            patterns.push(/[Ee]t pour l'arrivée[^?]*stationnement[^?]*\?[^.\n]*\.?/gi);
+            patterns.push(/[Pp]our l'arrivée[^?]*stationnement[^?]*\?[^.\n]*\.?/gi);
+        }
+        let cleaned = text;
+        for (const pat of patterns) {
+            cleaned = cleaned.replace(pat, '').trim();
         }
         return cleaned.replace(/\n{2,}/g, '\n').trim();
     }

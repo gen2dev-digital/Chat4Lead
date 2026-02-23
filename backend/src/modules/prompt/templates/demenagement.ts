@@ -76,7 +76,7 @@ export async function buildPromptDemenagement(
         : null;
 
     const staticPart = buildStaticSection(entreprise);
-    const dynamicPart = buildDynamicSection(leadData, infosCollectees, estimation, rdvVisite, contactDeja);
+    const dynamicPart = buildDynamicSection(leadData, infosCollectees, estimation, rdvVisite, contactDeja, distanceKm);
 
     return staticPart + PROMPT_CACHE_SEPARATOR + dynamicPart;
 }
@@ -167,6 +167,8 @@ A6. "Comment avez-vous trouvé cette conversation ?"
 ❌ INTERDIT : redemander prénom/nom/téléphone/email (déjà collectés en A3).
 
 ### FLUX STANDARD (B) — Lead refuse
+ORDRE : stationnement départ (si pas encore collecté) AVANT coordonnées.
+B0. Si stationnement départ manquant : "Y a-t-il un stationnement facile pour le camion côté départ ?" — puis B1.
 B1. Configuration à l'arrivée (adapter Maison/Appartement).
 B2. "Et pour l'arrivée, le stationnement est-il facile ?"
 B3. "Avez-vous des objets lourds ou encombrants ? (piano, moto, scooter...)"
@@ -205,7 +207,9 @@ ${generatePricingLogic(entreprise)}
 Chaque ligne du récap doit être séparée par une ligne vide (une info par ligne, emoji inclus).
 
 # FORMAT RÉCAPITULATIF (aucun astérisque)
-Pour la visite à domicile : afficher "Visite technique" (jamais "créneau de rappel") avec le jour obligatoire (ex: Lundi matin (9h-12h)).
+- Si téléphone et email sont connus : afficher 📞 Contact : [numéro] et 📧 Email : [email]. JAMAIS "À confirmer" si les données existent.
+- Stationnement : utiliser la valeur collectée (Facile, Difficile, etc.). Si "Oui" → "Facile".
+- Pour la visite à domicile : afficher "Visite technique" (jamais "créneau de rappel") avec le jour obligatoire (ex: Lundi matin (9h-12h)).
 📋 VOTRE PROJET DE DÉMÉNAGEMENT
 
 👤 Client : [Prénom] [Nom]
@@ -248,7 +252,7 @@ Exemple : "${entreprise.nom} vous remercie. Vous allez être recontacté rapidem
 À la toute fin de CHAQUE réponse, ajouter ce bloc sur une seule ligne (invisible pour l'utilisateur).
 Pour les adresses : villeDepart/villeArrivee = nom de ville RÉEL (jamais "Vous", "Affiner" ou mot générique). codePostalDepart/codePostalArrivee = code postal (5 chiffres FR, ou format local pour international ex. Oran 31000). Si le lead ne donne pas le CP, le résoudre via la ville si possible (ex. Drancy → 93700) et l'inclure dans les données extraites. Même pour international (ex. Drancy-Oran), la distance est calculée et prise en compte.
 typeHabitationDepart/typeHabitationArrivee = "Maison" ou "Appartement" si connu.
-stationnementDepart/stationnementArrivee = détail complet si donné (ex: "Facile (résidence + 20 m à pied)", "Facile", "Difficile", "Autorisation requise").
+stationnementDepart/stationnementArrivee = détail si donné. "Oui" → "Facile", "Non" → "Difficile". Ex: "Facile", "Facile (résidence + 20 m à pied)", "Difficile", "Autorisation requise".
 "international" = true si destination hors France.
 "objetSpeciaux" = liste objets lourds/fragiles mentionnés.
 "contraintes" = accès difficile, étage sans ascenseur, rue étroite, etc.
@@ -267,9 +271,11 @@ function buildDynamicSection(
     infosCollectees: string[],
     estimation: { min: number; max: number; formule: string } | null,
     rdvVisite: boolean,
-    contactDeja: boolean
+    contactDeja: boolean,
+    distanceKm?: number
 ): string {
     const parts: string[] = [];
+    const p = leadData.projetData || {};
 
     if (estimation) {
         parts.push(`# ESTIMATION CALCULÉE (OBLIGATOIRE)
@@ -277,13 +283,20 @@ Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} €
 NE JAMAIS inventer ou modifier cette fourchette. L'inclure dans le récapitulatif.`);
     }
 
+    if (distanceKm !== undefined && distanceKm > 0) {
+        parts.push(`# DISTANCE CALCULÉE
+Utiliser cette valeur dans le récapitulatif : ~${distanceKm} km (dans "📍 Trajet : [Départ] ➡️ [Arrivée] (~${distanceKm} km)").`);
+    }
+
     const pasDeTelephone = !leadData.telephone && !!leadData.email;
     parts.push(`# ÉTAT ACTUEL DU PARCOURS
-- Coordonnées collectées : ${contactDeja ? 'OUI — NE PAS redemander nom/prénom/téléphone/email' : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}
+- Coordonnées collectées : ${contactDeja ? 'OUI — NE JAMAIS redemander. Afficher dans le récap : 📞 Contact : ' + (leadData.telephone || '') + ' — 📧 Email : ' + (leadData.email || '') : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}
 - RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}
 ${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}
 ${leadData.creneauRappel ? '- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.' : ''}
 ${(leadData.projetData?.creneauVisite) ? '- Créneau visite DÉJÀ collecté (' + leadData.projetData.creneauVisite + ') → NE PAS redemander jour/créneau visite.' : ''}
+${p.stationnementDepart ? '- Stationnement départ DÉJÀ collecté (' + p.stationnementDepart + ') → NE PAS redemander.' : ''}
+${p.stationnementArrivee ? '- Stationnement arrivée DÉJÀ collecté (' + p.stationnementArrivee + ') → NE PAS redemander.' : ''}
 ${leadData.satisfaction ? '- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.' : ''}`);
 
     parts.push(`# PARCOURS DE QUALIFICATION
