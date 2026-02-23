@@ -1344,7 +1344,19 @@
             const hasFile = !!attachedFileP2;
             if ((!text && !hasFile) || !state.conversationId) return;
             const parts = [];
-            if (hasFile) parts.push('[Fichier: ' + attachedFileP2.name + ']');
+            if (hasFile) {
+                try {
+                    const content = await new Promise((resolve, reject) => {
+                        const r = new FileReader();
+                        r.onload = () => resolve(r.result);
+                        r.onerror = () => reject(new Error('Impossible de lire le fichier'));
+                        r.readAsText(attachedFileP2, 'UTF-8');
+                    });
+                    parts.push('[Fichier: ' + attachedFileP2.name + ']\n\nContenu:\n' + content);
+                } catch (e) {
+                    parts.push('[Fichier: ' + attachedFileP2.name + ']');
+                }
+            }
             if (text) parts.push(text);
             const msg = parts.join('\n\n');
             inp.value = '';

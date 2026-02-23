@@ -1385,7 +1385,19 @@
             const hasFile = !!attachedFileP3;
             if (!text && !hasFile) return;
             const parts = [];
-            if (hasFile) parts.push('[Fichier: ' + attachedFileP3.name + ']');
+            if (hasFile) {
+                try {
+                    const content = await new Promise((resolve, reject) => {
+                        const r = new FileReader();
+                        r.onload = () => resolve(r.result);
+                        r.onerror = () => reject(new Error('Impossible de lire le fichier'));
+                        r.readAsText(attachedFileP3, 'UTF-8');
+                    });
+                    parts.push('[Fichier: ' + attachedFileP3.name + ']\n\nContenu:\n' + content);
+                } catch (e) {
+                    parts.push('[Fichier: ' + attachedFileP3.name + ']');
+                }
+            }
             if (text) parts.push(text);
             const msg = parts.join('\n\n');
             input.value = '';

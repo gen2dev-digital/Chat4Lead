@@ -1588,7 +1588,19 @@
             const hasFile = !!attachedFileP1;
             if (!text && !hasFile) return;
             const parts = [];
-            if (hasFile) parts.push('[Fichier: ' + attachedFileP1.name + ']');
+            if (hasFile) {
+                try {
+                    const content = await new Promise((resolve, reject) => {
+                        const r = new FileReader();
+                        r.onload = () => resolve(r.result);
+                        r.onerror = () => reject(new Error('Impossible de lire le fichier'));
+                        r.readAsText(attachedFileP1, 'UTF-8');
+                    });
+                    parts.push('[Fichier: ' + attachedFileP1.name + ']\n\nContenu:\n' + content);
+                } catch (e) {
+                    parts.push('[Fichier: ' + attachedFileP1.name + ']');
+                }
+            }
             if (text) parts.push(text);
             const msg = parts.join('\n\n');
             inp.value = '';
@@ -1772,17 +1784,19 @@
             // Entities
             if (lead) {
                 const proj = lead.projetData || {};
+                const configDep = [proj.typeHabitationDepart, proj.etage != null ? (proj.ascenseur ? proj.etage + 'e étage avec ascenseur' : proj.etage + 'e étage sans ascenseur') : null].filter(Boolean).join(' — ');
                 const rows = [];
                 if (lead.prenom || lead.nom) rows.push(['Identité', [lead.prenom, lead.nom].filter(Boolean).join(' ')]);
                 if (lead.email) rows.push(['Email', lead.email]);
                 if (lead.telephone) rows.push(['Téléphone', lead.telephone]);
-                if (proj.villeDepart) rows.push(['📍 Départ', proj.villeDepart + (proj.codePostalDepart ? ' (' + proj.codePostalDepart + ')' : '')]);
-                if (proj.villeArrivee) rows.push(['📍 Arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' (' + proj.codePostalArrivee + ')' : '')]);
+                if (proj.villeDepart) rows.push(['📍 Départ', proj.villeDepart + (proj.codePostalDepart ? ' (' + proj.codePostalDepart + ')' : '') + (configDep ? ' — ' + configDep : '')]);
+                if (proj.stationnementDepart) rows.push(['🅿️ Stationnement départ', proj.stationnementDepart]);
+                if (proj.villeArrivee) rows.push(['📍 Arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' (' + proj.codePostalArrivee + ')' : '') + (proj.typeHabitationArrivee ? ' — ' + proj.typeHabitationArrivee : '')]);
+                if (proj.stationnementArrivee) rows.push(['🅿️ Stationnement arrivée', proj.stationnementArrivee]);
                 if (proj.surface) rows.push(['🏠 Surface', proj.surface + ' m²']);
                 if (proj.nbPieces) rows.push(['🚪 Pièces', 'F' + proj.nbPieces]);
                 if (proj.volumeEstime) rows.push(['📦 Volume', proj.volumeEstime + ' m³']);
-                if (proj.etage) rows.push(['🏢 Étage', proj.etage]);
-                if (proj.ascenseur != null) rows.push(['🛗 Ascenseur', proj.ascenseur ? 'Oui' : 'Non']);
+                if (proj.objetSpeciaux && proj.objetSpeciaux.length) rows.push(['📦 Objets spéciaux', proj.objetSpeciaux.join(', ')]);
                 if (proj.dateSouhaitee) rows.push(['📅 Date', proj.dateSouhaitee]);
                 if (proj.formule) rows.push(['📋 Formule', proj.formule]);
                 if (lead.creneauRappel) rows.push(['📞 Créneau', lead.creneauRappel]);
@@ -1858,16 +1872,19 @@
             // Entities table
             const lead = state.lastLead;
             const proj = lead?.projetData || {};
+            const configDep = [proj.typeHabitationDepart, proj.etage != null ? (proj.ascenseur ? proj.etage + 'e étage avec ascenseur' : proj.etage + 'e étage sans ascenseur') : null].filter(Boolean).join(' — ');
             const rows = [];
             if (lead?.prenom || lead?.nom) rows.push(['Identité', [lead.prenom, lead.nom].filter(Boolean).join(' ')]);
             if (lead?.email) rows.push(['Email', lead.email]);
             if (lead?.telephone) rows.push(['Téléphone', lead.telephone]);
-            if (proj.villeDepart) rows.push(['📍 Ville départ', proj.villeDepart + (proj.codePostalDepart ? ' (' + proj.codePostalDepart + ')' : '')]);
-            if (proj.villeArrivee) rows.push(['📍 Ville arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' (' + proj.codePostalArrivee + ')' : '')]);
+            if (proj.villeDepart) rows.push(['📍 Départ', proj.villeDepart + (proj.codePostalDepart ? ' (' + proj.codePostalDepart + ')' : '') + (configDep ? ' — ' + configDep : '')]);
+            if (proj.stationnementDepart) rows.push(['🅿️ Stationnement départ', proj.stationnementDepart]);
+            if (proj.villeArrivee) rows.push(['📍 Arrivée', proj.villeArrivee + (proj.codePostalArrivee ? ' (' + proj.codePostalArrivee + ')' : '') + (proj.typeHabitationArrivee ? ' — ' + proj.typeHabitationArrivee : '')]);
+            if (proj.stationnementArrivee) rows.push(['🅿️ Stationnement arrivée', proj.stationnementArrivee]);
             if (proj.surface) rows.push(['🏠 Surface', proj.surface + ' m²']);
             if (proj.nbPieces) rows.push(['🚪 Pièces', 'F' + proj.nbPieces]);
             if (proj.volumeEstime) rows.push(['📦 Volume estimé', proj.volumeEstime + ' m³']);
-            if (proj.etage) rows.push(['🏢 Étage', proj.etage]);
+            if (proj.objetSpeciaux && proj.objetSpeciaux.length) rows.push(['📦 Objets spéciaux', proj.objetSpeciaux.join(', ')]);
             if (proj.dateSouhaitee) rows.push(['📅 Date', proj.dateSouhaitee]);
             if (proj.formule) rows.push(['📋 Formule', proj.formule]);
             if (lead?.creneauRappel) rows.push(['📞 Créneau rappel', lead.creneauRappel]);
