@@ -214,8 +214,16 @@ export const testSessionService = {
             content: m.content || m.text || '',
         }));
 
-        const startMs = session.startTime.getTime();
-        const endMs = session.endTime ? session.endTime.getTime() : Date.now();
+        // Durée basée sur la vraie conversation (du premier au dernier message si timestamps disponibles)
+        const msgs = conversationData?.messages || [];
+        let startMs = session.startTime.getTime();
+        let endMs = session.endTime ? session.endTime.getTime() : Date.now();
+        if (msgs.length > 0) {
+            const firstCreated = msgs[0]?.createdAt ? new Date(msgs[0].createdAt).getTime() : startMs;
+            const lastCreated = msgs[msgs.length - 1]?.createdAt ? new Date(msgs[msgs.length - 1].createdAt).getTime() : endMs;
+            startMs = firstCreated;
+            endMs = lastCreated;
+        }
         const durationSec = Math.round((endMs - startMs) / 1000);
         const durationStr = `${Math.floor(durationSec / 60)}m ${durationSec % 60}s`;
 
@@ -234,6 +242,17 @@ export const testSessionService = {
         const volume = typeof projet.volumeEstime === 'number' ? projet.volumeEstime : (projet.volumeEstime ? parseFloat(String(projet.volumeEstime)) : 0);
         const formuleRaw = (projet.formule || '').toString().toLowerCase();
         const formule = ['eco', 'standard', 'luxe'].includes(formuleRaw) ? formuleRaw : 'standard';
+
+        // Suppléments monte-meuble et objets lourds (règles simplifiées)
+        const monteDep = projet.monteMeubleDepart === true;
+        const monteArr = projet.monteMeubleArrivee === true;
+        let supplementMonteMeuble = 0;
+        if (monteDep && monteArr) supplementMonteMeuble = 350;
+        else if (monteDep || monteArr || projet.monteMeuble === true) supplementMonteMeuble = 180;
+
+        const hasObjetsLourds = Array.isArray(projet.objetSpeciaux) && projet.objetSpeciaux.length > 0;
+        const supplementObjetsLourds = hasObjetsLourds ? 150 : 0;
+
         const estimation = volume > 0 && distanceKm > 0 && projet.villeDepart && projet.villeArrivee
             ? calculerEstimation({
                 volume,
@@ -241,6 +260,8 @@ export const testSessionService = {
                 formule,
                 etageChargement: typeof projet.etage === 'number' ? projet.etage : undefined,
                 ascenseurChargement: projet.ascenseur === true || projet.ascenseur === 1 ? 1 : 0,
+                supplementMonteMeuble,
+                supplementObjetsLourds,
             })
             : null;
 

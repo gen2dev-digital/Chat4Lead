@@ -66,6 +66,8 @@ export interface EstimationInput {
     etageLivraison?: number;
     ascenseurLivraison?: number;
     portageLivraison?: number;
+    supplementMonteMeuble?: number;
+    supplementObjetsLourds?: number;
 }
 
 export interface EstimationResult {
@@ -96,8 +98,10 @@ export function calculerEstimation(input: EstimationInput): EstimationResult | n
     const suppC = calculerSupplementEtage(etageC, ascC, volume);
     const suppL = calculerSupplementEtage(etageL, ascL, volume);
     const suppP = calculerSupplementPortage(portC, portL, volume);
+    const suppM = input.supplementMonteMeuble ?? 0;
+    const suppLourds = input.supplementObjetsLourds ?? 0;
 
-    let totalMin = base + suppC + suppL + suppP;
+    let totalMin = base + suppC + suppL + suppP + suppM + suppLourds;
     let totalMax = totalMin * MULTIPLICATEUR_FOURCHETTE_MAX;
 
     const arrMin = (v: number) => Math.max(PRIX_MINIMUM_ESTIMATION, Math.round(v / 10) * 10);

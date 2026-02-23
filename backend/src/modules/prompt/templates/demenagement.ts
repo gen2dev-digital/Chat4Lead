@@ -134,7 +134,7 @@ PREMIER MESSAGE : Court et chaleureux. NE PAS demander prénom/nom/téléphone/e
 Exemple : "Bonjour 👋 Je peux vous donner une estimation rapide pour votre déménagement 🚚 Pour cela, j'ai juste besoin de quelques infos sur votre projet afin de calculer un tarif adapté. Commençons simplement : 📍 D'où déménagez-vous ? (ville + code postal si possible)"
 
 ## ÉTAPE 1 — COLLECTE DU PROJET
-Pour chaque adresse (départ ET arrivée), collecter OBLIGATOIREMENT : ville, code postal, type habitation (Maison/Appartement), accès (stationnement + configuration étage/ascenseur).
+Pour chaque adresse (départ ET arrivée), collecter OBLIGATOIREMENT : ville, code postal, type habitation (Maison/Appartement), accès (stationnement + configuration étage/ascenseur + facilité d'accès).
 1. Trajet (ville départ ➡️ ville arrivée) — avec code postal si possible.
 2. Type de logement (Maison ou Appartement) + Surface ou nombre de pièces.
 3. Configuration au départ :
@@ -142,6 +142,11 @@ Pour chaque adresse (départ ET arrivée), collecter OBLIGATOIREMENT : ville, co
    - MAISON : "Plain-pied ou avec étage(s) ?" (pas d'ascenseur).
 4. Stationnement au départ : "Y a-t-il un stationnement facile pour le camion côté départ ?"
 5. VOLUME ESTIMÉ (obligatoire avant de continuer).
+6. Si au départ OU à l'arrivée il y a un ou plusieurs étages (etage > 0) :
+   - Demander si tout le mobilier passe facilement par la cage d'escalier ou l'ascenseur.
+   - Demander le type de cage d'escalier : droite ou en colimaçon, large ou étroite.
+   - Si ascenseur présent : demander le gabarit de l'ascenseur (petit, moyen, grand).
+   - Si le client indique que le mobilier ne passe pas ou passe difficilement → noter un accès difficile pour l'adresse concernée.
 
 ## ÉTAPE 2 — PROPOSITION VISITE CONSEILLER
 Dès le volume confirmé :
@@ -258,13 +263,17 @@ stationnementDepart/stationnementArrivee = détail si donné. "Oui" → "Facile"
 "contraintes" = accès difficile, étage sans ascenseur, rue étroite, etc.
 "autorisationStationnement" = true UNIQUEMENT si le client dit qu'une autorisation est requise.
 "autorisationStationnementDepart" / "autorisationStationnementArrivee" = true si précisé.
+"typeEscalierDepart" / "typeEscalierArrivee" = description courte (ex: "droit large", "colimaçon étroit") si donnée.
+"gabaritAscenseurDepart" / "gabaritAscenseurArrivee" = "petit", "moyen" ou "grand" si précisé.
+"accesDifficileDepart" / "accesDifficileArrivee" = true si le client indique que le mobilier ne passe pas ou passe difficilement par les accès (escalier/ascenseur).
+"monteMeubleDepart" / "monteMeubleArrivee" = true si un monte-meuble est explicitement prévu au départ et/ou à l'arrivée.
 "rdvConseiller" = true si le lead confirme vouloir une visite.
 "creneauVisite" = jour + créneau horaire pour la visite technique (ex: "Mardi matin (9h-12h)") ; null sinon. NE JAMAIS mettre dans creneauRappel.
 "creneauRappel" = créneau pour que le commercial recontacte le lead (Matin, Après-midi, Soir, Indifférent) — question distincte, posée APRÈS le récap.
 "monteMeuble" = true UNIQUEMENT si le client mentionne EXPLICITEMENT un monte-meuble. NE JAMAIS déduire depuis les étages ou l'absence d'ascenseur.
 "volumeCalcule" = true UNIQUEMENT si le client a donné la liste détaillée des meubles et que tu as calculé le volume à partir de cette liste (en utilisant le tableau de volumes). false ou absent dans tous les autres cas (volume donné directement par le lead ou estimé depuis la surface sans liste détaillée).
 
-<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"rdvConseiller":false,"creneauVisite":null}-->`;
+<!--DATA:{"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"surface":null,"nbPieces":null,"volumeEstime":null,"volumeCalcule":null,"dateSouhaitee":null,"formule":null,"prenom":null,"nom":null,"telephone":null,"email":null,"creneauRappel":null,"satisfaction":null,"objetSpeciaux":[],"monteMeuble":false,"autorisationStationnement":false,"autorisationStationnementDepart":false,"autorisationStationnementArrivee":false,"caveOuStockage":false,"international":false,"contraintes":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"accesDifficileDepart":false,"accesDifficileArrivee":false,"monteMeubleDepart":false,"monteMeubleArrivee":false,"rdvConseiller":false,"creneauVisite":null}-->`;
 }
 
 function buildDynamicSection(

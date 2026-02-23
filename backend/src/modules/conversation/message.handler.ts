@@ -855,6 +855,10 @@ export class MessageHandler {
             'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
             'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
             'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'autorisationStationnementDepart', 'autorisationStationnementArrivee', 'caveOuStockage', 'international', 'contraintes',
+            'typeEscalierDepart', 'typeEscalierArrivee',
+            'gabaritAscenseurDepart', 'gabaritAscenseurArrivee',
+            'accesDifficileDepart', 'accesDifficileArrivee',
+            'monteMeubleDepart', 'monteMeubleArrivee',
             'rdvConseiller', 'creneauVisite',
         ];
 
@@ -1276,6 +1280,8 @@ export class MessageHandler {
                 'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
                 'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'formule',
                 'contraintes',
+                'typeEscalierDepart', 'typeEscalierArrivee',
+                'gabaritAscenseurDepart', 'gabaritAscenseurArrivee',
             ];
             for (const f of projetFields) {
                 if (data[f] !== null && data[f] !== undefined && data[f] !== '' && data[f] !== 0) {
@@ -1290,6 +1296,10 @@ export class MessageHandler {
             if (data.autorisationStationnementArrivee === true) e.autorisationStationnementArrivee = true;
             if (data.caveOuStockage === true) e.caveOuStockage = true;
             if (data.international === true) e.international = true;
+            if (data.accesDifficileDepart === true) e.accesDifficileDepart = true;
+            if (data.accesDifficileArrivee === true) e.accesDifficileArrivee = true;
+            if (data.monteMeubleDepart === true) e.monteMeubleDepart = true;
+            if (data.monteMeubleArrivee === true) e.monteMeubleArrivee = true;
 
             // Tableau d'objets spéciaux (on garde seulement si non vide)
             if (Array.isArray(data.objetSpeciaux) && data.objetSpeciaux.length > 0) {
