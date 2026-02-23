@@ -3,6 +3,8 @@
  * Formule identique au fichier tarification fourni : prend en compte
  * volume (m³), distance (km) départ → arrivée, formule (eco/standard/luxe),
  * et options (étages, ascenseur, portage).
+ *
+ * Les distances sont calculées à la volée via services/distance.service.ts (OpenRouteService).
  */
 
 const MULTIPLICATEUR_FOURCHETTE_MAX = 1.25;
@@ -105,59 +107,4 @@ export function calculerEstimation(input: EstimationInput): EstimationResult | n
     const max = arrMax(totalMax, min);
 
     return { min, max, formule: type.toUpperCase() };
-}
-
-function normalizeVille(name: string): string {
-    return (name || '')
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/\p{Diacritic}/gu, '')
-        .trim();
-}
-
-const DISTANCES_KM: Record<string, number> = {
-    'angers|lyon': 530,
-    'angers|nantes': 90,
-    'angers|paris': 295,
-    'angers|tours': 105,
-    'bordeaux|lyon': 550,
-    'bordeaux|marseille': 645,
-    'bordeaux|nantes': 340,
-    'bordeaux|paris': 585,
-    'bordeaux|toulouse': 245,
-    'lille|lyon': 655,
-    'lille|marseille': 975,
-    'lille|nantes': 595,
-    'lille|paris': 225,
-    'lyon|marseille': 465,
-    'lyon|nantes': 615,
-    'lyon|paris': 465,
-    'marseille|nantes': 985,
-    'marseille|paris': 775,
-    'nantes|paris': 385,
-    'nantes|rennes': 110,
-    'paris|rennes': 350,
-    'paris|toulouse': 680,
-    'paris|tours': 235,
-    'paris|versailles': 20,
-    'toulouse|marseille': 405,
-    'toulouse|paris': 680,
-};
-
-function distanceKey(villeA: string, villeB: string): string {
-    const a = normalizeVille(villeA);
-    const b = normalizeVille(villeB);
-    return [a, b].sort().join('|');
-}
-
-/**
- * Retourne la distance en km entre deux villes (départ → arrivée).
- */
-export function getDistanceKm(villeDepart: string, villeArrivee: string): number {
-    if (!villeDepart?.trim() || !villeArrivee?.trim()) return 0;
-    const key = distanceKey(villeDepart, villeArrivee);
-    const km = DISTANCES_KM[key];
-    if (km !== undefined) return km;
-    if (normalizeVille(villeDepart) === normalizeVille(villeArrivee)) return 0;
-    return 150;
 }

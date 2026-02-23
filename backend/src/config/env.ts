@@ -14,6 +14,7 @@ const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
     JWT_SECRET: z.string().default('temporary_secret_for_build_purposes_only_change_me'),
     ALLOWED_ORIGINS: z.string().default('*'),
+    OPENROUTESERVICE_API_KEY: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

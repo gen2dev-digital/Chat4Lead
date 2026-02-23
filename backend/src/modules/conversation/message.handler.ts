@@ -59,7 +59,7 @@ export class MessageHandler {
 
             // ── 3.  Construire le prompt ──
             const currentLead = context.lead;
-            const systemPrompt = buildPromptDemenagement(
+            const systemPrompt = await buildPromptDemenagement(
                 {
                     nom: context.entreprise.nom,
                     nomBot: context.entreprise.nomBot,
@@ -116,6 +116,7 @@ export class MessageHandler {
 
             // ── 6c. Nettoyage du texte LLM ──
             llmContent = this.sanitizeReply(llmContent);
+            llmContent = this.filterRepeatedCreneauQuestion(llmContent, currentLead);
 
             // ── 7.  Extraction regex + merge avec LLM (LLM prioritaire sauf valeurs invalides) ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
@@ -197,7 +198,7 @@ export class MessageHandler {
 
             // ── 3. Construire le prompt ──
             const currentLead = context.lead;
-            const systemPrompt = buildPromptDemenagement(
+            const systemPrompt = await buildPromptDemenagement(
                 {
                     nom: context.entreprise.nom,
                     nomBot: context.entreprise.nomBot,
@@ -245,6 +246,7 @@ export class MessageHandler {
             // ── 6b. DATA block + sanitize ──
             const { llmEntities, clean: cleanedContent } = this.parseLLMDataBlock(llmContent);
             llmContent = this.sanitizeReply(cleanedContent);
+            llmContent = this.filterRepeatedCreneauQuestion(llmContent, currentLead);
 
             // ── 7. Extraction + merge ──
             const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {});
@@ -1070,6 +1072,22 @@ export class MessageHandler {
         cleaned = cleaned.trim();
 
         return cleaned;
+    }
+
+    /**
+     * Supprime la question "Quel créneau vous arrange pour être recontacté ?" si déjà collecté (anti-répétition).
+     */
+    private filterRepeatedCreneauQuestion(text: string, lead: any): string {
+        if (!lead?.creneauRappel) return text;
+        const patterns = [
+            /Quel créneau vous arrange pour être recontacté\s*\?[^.\n]*(?:Matin|Après-midi|Soir|Indifférent)?[^.\n]*\.?/gi,
+            /Quel créneau vous arrange pour être recontacté\s*\?/gi,
+        ];
+        let cleaned = text;
+        for (const p of patterns) {
+            cleaned = cleaned.replace(p, '').trim();
+        }
+        return cleaned.replace(/\n{2,}/g, '\n').trim();
     }
 
     /**

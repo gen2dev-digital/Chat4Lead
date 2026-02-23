@@ -1,5 +1,7 @@
 import { prisma } from '../../config/database';
 import { logger } from '../../utils/logger';
+import { calculerEstimation } from '../prompt/tarification-calculator';
+import { getDistanceKmWithFallback } from '../../services/distance.service';
 
 // ─── Types (Keeping compatibility) ───────────────────────────────────────────
 
@@ -45,7 +47,7 @@ async function resolveVilleToCodePostal(ville: string): Promise<string | null> {
             { signal: AbortSignal.timeout(3000) }
         );
         if (!res.ok) return null;
-        const data = await res.json();
+        const data = (await res.json()) as Array<{ codesPostaux?: string[] }>;
         const codes = data?.[0]?.codesPostaux;
         return Array.isArray(codes) && codes.length > 0 ? codes[0] : null;
     } catch {
@@ -225,14 +227,33 @@ export const testSessionService = {
 
         const priorityColor = priorite === 'CHAUD' ? '#10b981' : priorite === 'TIEDE' ? '#f59e0b' : '#ef4444';
 
+        const configDepart = [projet.typeHabitationDepart, projet.etage != null ? (projet.ascenseur === true || projet.ascenseur === 1 ? projet.etage + 'e étage avec ascenseur' : projet.etage + 'e étage sans ascenseur') : null].filter(Boolean).join(' — ');
+        const configArrivee = projet.typeHabitationArrivee || (projet.contraintes && projet.contraintes.toLowerCase().includes('arrivée') ? projet.contraintes : null) || null;
+
+        const distanceKm = await getDistanceKmWithFallback(projet.villeDepart || '', projet.villeArrivee || '');
+        const volume = typeof projet.volumeEstime === 'number' ? projet.volumeEstime : (projet.volumeEstime ? parseFloat(String(projet.volumeEstime)) : 0);
+        const formuleRaw = (projet.formule || '').toString().toLowerCase();
+        const formule = ['eco', 'standard', 'luxe'].includes(formuleRaw) ? formuleRaw : 'standard';
+        const estimation = volume > 0 && distanceKm > 0 && projet.villeDepart && projet.villeArrivee
+            ? calculerEstimation({
+                volume,
+                distanceKm,
+                formule,
+                etageChargement: typeof projet.etage === 'number' ? projet.etage : undefined,
+                ascenseurChargement: projet.ascenseur === true || projet.ascenseur === 1 ? 1 : 0,
+            })
+            : null;
+
         const leadDataHtml = `
 <div class="section-title">🔍 Données Extraites du Lead</div>
 <table class="lead-table">
   <tr><td>Nom / Prénom</td><td><strong>${htmlEsc(lead.nom || '')} ${htmlEsc(lead.prenom || '')}</strong></td></tr>
   <tr><td>Email</td><td>${htmlEsc(lead.email || '—')}</td></tr>
   <tr><td>Téléphone</td><td>${htmlEsc(lead.telephone || '—')}</td></tr>
-  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${codePostalDepart ? ' (' + htmlEsc(codePostalDepart) + ')' : ''}${projet.typeHabitationDepart ? ' — ' + htmlEsc(projet.typeHabitationDepart) : ''}${projet.stationnementDepart ? ' — Accès: ' + htmlEsc(projet.stationnementDepart) : ''}</td></tr>
-  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${codePostalArrivee ? ' (' + htmlEsc(codePostalArrivee) + ')' : ''}${projet.typeHabitationArrivee ? ' — ' + htmlEsc(projet.typeHabitationArrivee) : ''}${projet.stationnementArrivee ? ' — Accès: ' + htmlEsc(projet.stationnementArrivee) : ''}</td></tr>
+  <tr><td>📍 Départ</td><td>${htmlEsc(projet.villeDepart || '—')}${codePostalDepart ? ' (' + htmlEsc(codePostalDepart) + ')' : ''}${configDepart ? ' — ' + htmlEsc(configDepart) : ''}</td></tr>
+  <tr><td>🅿️ Stationnement départ</td><td>${htmlEsc(projet.stationnementDepart || '—')}</td></tr>
+  <tr><td>📍 Arrivée</td><td>${htmlEsc(projet.villeArrivee || '—')}${codePostalArrivee ? ' (' + htmlEsc(codePostalArrivee) + ')' : ''}${configArrivee ? ' — ' + htmlEsc(configArrivee) : ''}</td></tr>
+  <tr><td>🅿️ Stationnement arrivée</td><td>${htmlEsc(projet.stationnementArrivee || '—')}</td></tr>
   <tr><td>🏠 Surface</td><td>${projet.surface ? projet.surface + ' m²' : '—'}</td></tr>
   ${projet.nbPieces ? `<tr><td>🚪 Pièces</td><td>F${projet.nbPieces}</td></tr>` : ''}
   ${projet.volumeEstime ? `<tr><td>📦 Volume estimé</td><td>${projet.volumeEstime} m³</td></tr>` : ''}
@@ -248,6 +269,8 @@ export const testSessionService = {
   ${(projet.autorisationStationnementDepart || projet.autorisationStationnementArrivee) ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise (${projet.autorisationStationnementDepart && projet.autorisationStationnementArrivee ? 'départ et arrivée' : projet.autorisationStationnementDepart ? 'départ' : 'arrivée'})</td></tr>` : projet.autorisationStationnement ? `<tr><td>🅿️ Autorisation statio.</td><td style="color:#f59e0b;font-weight:600">Requise</td></tr>` : ''}
   ${projet.caveOuStockage ? `<tr><td>📦 Cave / stockage</td><td style="color:#f59e0b">Oui</td></tr>` : ''}
   ${projet.contraintes ? `<tr><td>⚠️ Contraintes</td><td style="color:#f59e0b">${htmlEsc(projet.contraintes)}</td></tr>` : ''}
+  ${distanceKm > 0 ? `<tr><td>📏 Distance</td><td>~${distanceKm} km</td></tr>` : ''}
+  ${estimation ? `<tr><td>💰 Estimation</td><td><strong>${estimation.min} à ${estimation.max} €</strong> (${estimation.formule})</td></tr>` : ''}
   <tr><td>Priorité calculée</td><td><span style="color:${priorityColor};font-weight:bold;cursor:help;" title="CHAUD=prioritaire, TIÈDE=intéressant, MOYEN=à suivre, FROID=peu qualifié">${priorite}</span></td></tr>
   <tr><td>Score final</td><td><strong style="color:${scoreColor};cursor:help;" title="Complétude (50pts) + Urgence (20pts) + Valeur projet (20pts) + Engagement (10pts)">${score}/100</strong></td></tr>
 </table>`;

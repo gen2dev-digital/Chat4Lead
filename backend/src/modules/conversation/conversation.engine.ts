@@ -40,7 +40,7 @@ export class ConversationEngine {
             const context = await contextManager.getContext(conversationId);
 
             // 4. Construire le Prompt Système (Expert Déménagement)
-            const systemPrompt = buildPromptDemenagement(
+            const systemPrompt = await buildPromptDemenagement(
                 {
                     nom: conversation.entreprise.nom,
                     nomBot: conversation.entreprise.nomBot,

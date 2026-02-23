@@ -1,5 +1,6 @@
 import { Metier } from '@prisma/client';
-import { getDistanceKm, calculerEstimation } from '../tarification-calculator';
+import { calculerEstimation } from '../tarification-calculator';
+import { getDistanceKmWithFallback } from '../../../services/distance.service';
 
 // Séparateur qui indique la frontière static/dynamique pour le cache Anthropic
 export const PROMPT_CACHE_SEPARATOR = '\n\n===DYNAMIC_CONTEXT===\n\n';
@@ -49,10 +50,10 @@ export const VOLUME_CALCULATOR = {
     }
 };
 
-export function buildPromptDemenagement(
+export async function buildPromptDemenagement(
     entreprise: EntrepriseConfig,
     leadData: LeadData
-): string {
+): Promise<string> {
     const infosCollectees = extractCollectedInfo(leadData);
     const rdvVisite = hasRdvVisite(leadData);
     const contactDeja = hasContactInfo(leadData);
@@ -63,7 +64,7 @@ export function buildPromptDemenagement(
     const villeArrivee = p.villeArrivee || '';
     const formuleRaw = (p.formule || '').toString().toLowerCase();
     const formule = ['eco', 'standard', 'luxe'].includes(formuleRaw) ? formuleRaw as 'eco' | 'standard' | 'luxe' : 'standard';
-    const distanceKm = getDistanceKm(villeDepart, villeArrivee);
+    const distanceKm = await getDistanceKmWithFallback(villeDepart, villeArrivee);
     const estimation = volume > 0 && distanceKm >= 0 && villeDepart && villeArrivee
         ? calculerEstimation({
             volume,
@@ -114,10 +115,12 @@ Détecter et répondre dans la langue du lead (FR par défaut, EN/ES/AR si déte
 
 # ANTI-RÉPÉTITION
 - Ne JAMAIS répéter une question déjà posée. Si le lead a répondu (même "Non"), considérer la question comme traitée et passer à la suivante.
+- Si creneauRappel ET satisfaction sont déjà collectés → message de clôture UNIQUEMENT. NE JAMAIS redemander le créneau.
 - Si le lead dit "passe à la suite", "tu bloques", "next", "arrête", "continue", "vas-y" → avancer immédiatement sans redemander.
 
 # FICHIERS JOINTS
-- Si "[Fichier: nom.ext]" dans le message → extraire les infos utiles et avancer sans redemander.
+- Si "[Fichier: nom.ext]" avec "Contenu:" dans le message → LIRE le contenu fourni et extraire les infos utiles (meubles, volume, etc.). Avancer sans redemander.
+- Si seul "[Fichier: nom.ext]" sans contenu → demander au lead de coller le contenu ou de décrire les meubles.
 
 # CONFIGURATION LOGEMENT
 - R+1 = rez-de-chaussée + 1 étage → ne jamais demander si plain-pied.
@@ -126,7 +129,8 @@ Détecter et répondre dans la langue du lead (FR par défaut, EN/ES/AR si déte
 # ORDRE DES QUESTIONS (STRICT — OBLIGATOIRE)
 
 RÈGLE PRIORITAIRE : NE JAMAIS donner l'estimation tarifaire avant d'avoir collecté prénom, nom, téléphone et email.
-Si le lead demande l'estimation en premier, répondre : "Je serai ravi de vous donner une estimation. Pour cela, j'ai d'abord besoin de quelques informations : prénom, nom, téléphone et email. Ensuite je pourrai vous fournir une fourchette indicative."
+PREMIER MESSAGE : Court et chaleureux. NE PAS demander prénom/nom/téléphone/email en premier. Commencer par le trajet.
+Exemple : "Bonjour 👋 Je peux vous donner une estimation rapide pour votre déménagement 🚚 Pour cela, j'ai juste besoin de quelques infos sur votre projet afin de calculer un tarif adapté. Commençons simplement : 📍 D'où déménagez-vous ? (ville + code postal si possible)"
 
 ## ÉTAPE 1 — COLLECTE DU PROJET
 Pour chaque adresse (départ ET arrivée), collecter OBLIGATOIREMENT : ville, code postal, type habitation (Maison/Appartement), accès (stationnement + configuration étage/ascenseur).
@@ -238,9 +242,9 @@ Exemple : "${entreprise.nom} vous remercie. Vous allez être recontacté rapidem
 
 # EXTRACTION JSON (OBLIGATOIRE À CHAQUE RÉPONSE)
 À la toute fin de CHAQUE réponse, ajouter ce bloc sur une seule ligne (invisible pour l'utilisateur).
-Pour les adresses : villeDepart/villeArrivee = nom de ville RÉEL (jamais "Vous", "Affiner" ou mot générique). codePostalDepart/codePostalArrivee = 5 chiffres.
+Pour les adresses : villeDepart/villeArrivee = nom de ville RÉEL (jamais "Vous", "Affiner" ou mot générique). codePostalDepart/codePostalArrivee = code postal (5 chiffres FR, ou format local pour international ex. Oran 31000). Si le lead ne donne pas le CP, le résoudre via la ville si possible (ex. Drancy → 93700) et l'inclure dans les données extraites. Même pour international (ex. Drancy-Oran), la distance est calculée et prise en compte.
 typeHabitationDepart/typeHabitationArrivee = "Maison" ou "Appartement" si connu.
-stationnementDepart/stationnementArrivee = "facile", "difficile" ou "autorisation requise" si connu.
+stationnementDepart/stationnementArrivee = détail complet si donné (ex: "Facile (résidence + 20 m à pied)", "Facile", "Difficile", "Autorisation requise").
 "international" = true si destination hors France.
 "objetSpeciaux" = liste objets lourds/fragiles mentionnés.
 "contraintes" = accès difficile, étage sans ascenseur, rue étroite, etc.
@@ -271,7 +275,9 @@ Utilise EXACTEMENT cette fourchette : ${estimation.min} à ${estimation.max} €
     parts.push(`# ÉTAT ACTUEL DU PARCOURS
 - Coordonnées collectées : ${contactDeja ? 'OUI — NE PAS redemander nom/prénom/téléphone/email' : 'NON — à collecter (A3 si visite, B7-B8 sinon)'}
 - RDV visite confirmé : ${rdvVisite ? 'OUI — inclure dans le récapitulatif' : 'NON — pas encore proposé ou refusé'}
-${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}`);
+${pasDeTelephone ? '- Pas de téléphone (email uniquement) → NE PAS demander le créneau de recontact (A5b/B8b)' : ''}
+${leadData.creneauRappel ? '- Créneau de recontact DÉJÀ collecté (' + leadData.creneauRappel + ') → NE PAS redemander. Passer directement au message de clôture.' : ''}
+${leadData.satisfaction ? '- Satisfaction DÉJÀ collectée → NE PAS redemander. Message de clôture UNIQUEMENT.' : ''}`);
 
     parts.push(`# PARCOURS DE QUALIFICATION
 ${generateQualificationFlow(leadData, infosCollectees)}`);
@@ -292,6 +298,7 @@ function extractCollectedInfo(leadData: LeadData): string[] {
     if (leadData.nom) collected.push('nom');
     if (leadData.email) collected.push('email');
     if (leadData.telephone) collected.push('téléphone');
+    if (leadData.satisfaction) collected.push('satisfaction');
 
     const p = leadData.projetData || {};
     if (p.villeDepart) collected.push('ville départ');
@@ -324,6 +331,8 @@ function generateQualificationFlow(leadData: LeadData, infos: string[]): string 
         { label: "7. Contact", key: "téléphone" },
         { label: "8. Prestation", key: "formule" },
         { label: "9. Date", key: "date" },
+        { label: "10. Créneau rappel", key: "rappel" },
+        { label: "11. Satisfaction", key: "satisfaction" },
     ];
 
     return steps
@@ -338,7 +347,13 @@ function generateQualificationFlow(leadData: LeadData, infos: string[]): string 
 function formatLeadData(leadData: LeadData, infos: string[]): string {
     if (infos.length === 0) return "Aucune donnée collectée.";
     return JSON.stringify({
-        personnel: { prenom: leadData.prenom, nom: leadData.nom, contact: leadData.email || leadData.telephone },
+        personnel: {
+            prenom: leadData.prenom,
+            nom: leadData.nom,
+            contact: leadData.email || leadData.telephone,
+            creneauRappel: leadData.creneauRappel || null,
+            satisfaction: leadData.satisfaction || null,
+        },
         projet: leadData.projetData
     }, null, 2);
 }
