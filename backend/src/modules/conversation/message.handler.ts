@@ -1142,41 +1142,19 @@ export class MessageHandler {
     private sanitizeReply(text: string): string {
         let cleaned = text;
 
-        // 1. Convertir <br>, <br/>, <br />, </br> en \n
+        // 1. Convertir <br>, <br/> en \n
         cleaned = cleaned.replace(/<br\s*\/?>/gi, '\n');
 
-        // 2. Supprimer toute autre balise HTML résiduelle (<p>, </p>, <div>, etc.)
-        cleaned = cleaned.replace(/<\/?[a-z][a-z0-9]*[^>]*>/gi, '');
-
-        // 3. Supprimer les astérisques markdown (* et **)
-        cleaned = cleaned.replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1');
-
-        // 4. Supprimer les # markdown en début de ligne
-        cleaned = cleaned.replace(/^#{1,6}\s+/gm, '');
-
-        // 5. Supprimer les codes d'action techniques
-        for (const code of MessageHandler.TECH_ACTION_CODES) {
-            cleaned = cleaned.replace(new RegExp(code, 'gi'), '');
-        }
-
-        // 6. Supprimer les messages système lisibles que le LLM génère par erreur
+        // 2. Supprimer les résidus techniques du LLM
         for (const pattern of MessageHandler.SYSTEM_NOISE_PATTERNS) {
             cleaned = cleaned.replace(pattern, '');
         }
 
-        // 7. Trim chaque ligne individuellement
-        cleaned = cleaned
-            .split('\n')
-            .map(line => line.trim())
-            .join('\n');
+        // 3. Supprimer les préfixes de type "Bot:" ou "Assistant:"
+        cleaned = cleaned.replace(/^(Bot|Assistant|🤖|AI|System):\s*/i, '');
 
-        // 8. Réduire TOUS les sauts de ligne excessifs à un seul retour à la ligne
-        cleaned = cleaned.replace(/\n{2,}/g, '\n');
-
-        // 9. Trim global (pas de \n en début ou fin)
-        cleaned = cleaned.trim();
-
-        return cleaned;
+        // 4. Nettoyage basique (espaces, multiples retours à la ligne)
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**
