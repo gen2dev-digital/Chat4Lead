@@ -121,10 +121,13 @@ export class MessageHandler {
             llmContent = this.filterRepeatedStationnementQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedContactQuestion(llmContent, currentLead);
 
-            // ── 7.  Extraction regex + merge avec LLM (LLM prioritaire sauf valeurs invalides) ──
+            // ── 7.  Extraction regex + merge avec LLM ──
+            // PRIORITÉ : bloc <!--DATA:--> du LLM est la source de vérité.
+            // Les regex ne complètent que les champs absents du bloc LLM.
             const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
             const regexEntities = await this.extractEntities(message, llmContent, currentLead, lastBotMsg);
-            const finalEntities = this.mergeEntities(regexEntities, llmEntities);
+            // LLM en base → regex comblent uniquement les champs manquants
+            const finalEntities = this.mergeEntities(llmEntities, regexEntities);
 
             // ── 8.  Mise à jour lead + score en 1 seule requête ──
             const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
@@ -256,9 +259,11 @@ export class MessageHandler {
             llmContent = this.filterRepeatedContactQuestion(llmContent, currentLead);
 
             // ── 7. Extraction + merge ──
+            // PRIORITÉ : bloc <!--DATA:--> du LLM est la source de vérité.
             const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
             const regexEntities = await this.extractEntities(message, llmContent, currentLead, lastBotMsg);
-            const finalEntities = this.mergeEntities(regexEntities, llmEntities);
+            // LLM en base → regex comblent uniquement les champs manquants
+            const finalEntities = this.mergeEntities(llmEntities, regexEntities);
 
             // ── 8. Mise à jour lead + score en 1 seule requête ──
             const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
@@ -908,26 +913,9 @@ export class MessageHandler {
         if (entities.email) updates.email = entities.email;
         if (entities.telephone) updates.telephone = entities.telephone;
 
-        // ── Fusion projetData (à partir du lead déjà en mémoire) ──
-        const projetData = { ...(existingLead.projetData as Record<string, any>) };
-
-        const projetFields = [
-            'codePostalDepart', 'codePostalArrivee', 'villeDepart', 'villeArrivee',
-            'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
-            'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'etage', 'ascenseur', 'formule',
-            'objetSpeciaux', 'monteMeuble', 'autorisationStationnement', 'autorisationStationnementDepart', 'autorisationStationnementArrivee', 'caveOuStockage', 'international', 'contraintes',
-            'typeEscalierDepart', 'typeEscalierArrivee',
-            'gabaritAscenseurDepart', 'gabaritAscenseurArrivee',
-            'accesDifficileDepart', 'accesDifficileArrivee',
-            'monteMeubleDepart', 'monteMeubleArrivee',
-            'rdvConseiller', 'creneauVisite',
-        ];
-
-        for (const field of projetFields) {
-            if (entities[field] !== undefined) {
-                projetData[field] = entities[field];
-            }
-        }
+        // ── Fusion projetData non-destructive (jamais écraser une valeur existante avec null/false/'') ──
+        const existingProjet = (existingLead.projetData as Record<string, any>) || {};
+        const projetData = this.mergeProjetDataSafe(existingProjet, entities);
 
         // champs directs supplémentaires
         if (entities.creneauRappel) updates.creneauRappel = entities.creneauRappel;
@@ -1302,21 +1290,72 @@ export class MessageHandler {
     // ──────────────────────────────────────────────
 
     /**
-     * Fusionne les entités regex et LLM. Le LLM a priorité SAUF pour les valeurs invalides
-     * (ex: "Vous", "Affiner" pour des villes) qui sont filtrées.
+     * Fusionne les entités : `primary` est la source de vérité, `fallback` comble uniquement
+     * les champs absent (null/undefined) de primary. Appelé avec (llmEntities, regexEntities)
+     * pour que le LLM soit prioritaire, et les regex servent de backup.
+     *
+     * Valeurs invalides filtrées : null, undefined, et villes incohérentes comme "Vous", "Affiner".
      */
-    private mergeEntities(regexEntities: Record<string, any>, llmEntities: Record<string, any>): Record<string, any> {
+    private mergeEntities(
+        primary: Record<string, any>,
+        fallback: Record<string, any>
+    ): Record<string, any> {
         const INVALID_VILLE = new Set(['vous', 'affiner', 'inconnu', 'null', '']);
-        const isInvalidVille = (v: unknown) => typeof v !== 'string' || v.length < 2 || INVALID_VILLE.has(v.toLowerCase().trim());
-        const result = { ...regexEntities };
-        for (const [k, v] of Object.entries(llmEntities)) {
-            if (v === null || v === undefined) continue;
+        const isInvalidVille = (v: unknown) =>
+            typeof v !== 'string' || v.length < 2 || INVALID_VILLE.has(v.toLowerCase().trim());
+
+        // Filtrer les valeurs invalides de primary (source LLM)
+        const result: Record<string, any> = {};
+        for (const [k, v] of Object.entries(primary)) {
+            if (v === null || v === undefined || v === '') continue;
             if ((k === 'villeDepart' || k === 'villeArrivee') && isInvalidVille(v)) continue;
-            if (k === 'codePostalDepart' || k === 'codePostalArrivee') {
-                const s = String(v).trim();
-                if (!/^\d{5}$/.test(s)) continue;
-            }
+            if ((k === 'codePostalDepart' || k === 'codePostalArrivee') && !/^\d{5}$/.test(String(v).trim())) continue;
             result[k] = v;
+        }
+
+        // Combler avec fallback (regex) uniquement si le champ est absent dans primary
+        for (const [k, v] of Object.entries(fallback)) {
+            if (result[k] !== undefined && result[k] !== null && result[k] !== '') continue; // primary a déjà une valeur
+            if (v === null || v === undefined || v === '') continue;
+            if ((k === 'villeDepart' || k === 'villeArrivee') && isInvalidVille(v)) continue;
+            if ((k === 'codePostalDepart' || k === 'codePostalArrivee') && !/^\d{5}$/.test(String(v).trim())) continue;
+            result[k] = v;
+        }
+
+        return result;
+    }
+
+    /**
+     * Merge non-destructif de projetData.
+     * Règle absolue : on n'écrase JAMAIS une valeur existante par null, undefined, false ou ''.
+     * Exception : rdvConseiller peut être false (refus mémorisé) — on l'accepte si true ou false.
+     */
+    private mergeProjetDataSafe(
+        existing: Record<string, any>,
+        incoming: Record<string, any>
+    ): Record<string, any> {
+        const result = { ...existing };
+        for (const [key, value] of Object.entries(incoming)) {
+            // Exception : rdvConseiller peut être false (refus doit être mémorisé)
+            if (key === 'rdvConseiller') {
+                if (value === true || value === false) result[key] = value;
+                continue;
+            }
+            // Règle générale : n'écraser que si la nouvelle valeur est non-nulle/non-vide
+            // ET si le champ existant est vide (évite d'écraser des données déjà collectées)
+            if (value !== null && value !== undefined && value !== false && value !== '') {
+                // Ne remplace que si inexistant ou si la valeur existante est vide
+                if (result[key] === null || result[key] === undefined || result[key] === '') {
+                    result[key] = value;
+                } else {
+                    // Le champ existant est rempli → on ne touche pas (sauf types complexes)
+                    // Exception : on permet la mise à jour de creneauVisite, contraintes, objetSpeciaux
+                    if (key === 'creneauVisite' || key === 'contraintes' || key === 'objetSpeciaux') {
+                        result[key] = value;
+                    }
+                    // Pour tous les autres : valeur existante conservée
+                }
+            }
         }
         return result;
     }
