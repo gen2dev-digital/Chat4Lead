@@ -275,3 +275,334 @@ body {
 [data-theme="light"] input::placeholder {
   color: #94a3b8 !important;
 }
+
+/* ──────────────────────────────────────────────────────────
+   VISITE MODAL — Composant inline dans le chat
+────────────────────────────────────────────────────────── */
+.c4l-visite-card {
+  width: 100%;
+  border-radius: 20px;
+  border: 1px solid var(--c4l-glass-border);
+  background: var(--c4l-bg-card);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 4px 0 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.c4l-visite-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.c4l-visite-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.c4l-visite-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c4l-text-primary);
+  line-height: 1.2;
+}
+
+.c4l-visite-sub {
+  font-size: 11px;
+  color: var(--c4l-text-tertiary);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.c4l-visite-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  border: 1px solid var(--c4l-glass-border);
+  background: transparent;
+  color: var(--c4l-text-tertiary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.c4l-visite-back:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: #818cf8;
+}
+
+/* ── Boutons de choix (Oui / Pas maintenant / Non) ── */
+.c4l-visite-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.c4l-visite-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1.5px solid var(--c4l-glass-border);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--c4l-font);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+  background: transparent;
+  color: var(--c4l-text-primary);
+}
+
+.c4l-visite-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.c4l-visite-btn:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.c4l-visite-btn:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+.c4l-visite-btn--yes {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+}
+
+.c4l-visite-btn--yes:not(:disabled):hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
+
+.c4l-visite-btn--later {
+  border-color: rgba(99, 102, 241, 0.25);
+  color: #818cf8;
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.c4l-visite-btn--later:not(:disabled):hover {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.c4l-visite-btn--no {
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--c4l-text-tertiary);
+  background: transparent;
+  font-weight: 500;
+}
+
+.c4l-visite-btn--no:not(:disabled):hover {
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.c4l-visite-btn--confirm {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+  margin-top: 4px;
+}
+
+.c4l-visite-btn--confirm:not(:disabled):hover {
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+
+/* ── Calendrier ── */
+.c4l-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.c4l-cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.c4l-cal-month {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c4l-text-primary);
+  text-transform: capitalize;
+}
+
+.c4l-cal-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 1px solid var(--c4l-glass-border);
+  background: transparent;
+  color: var(--c4l-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.c4l-cal-nav-btn:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: #818cf8;
+  border-color: rgba(99, 102, 241, 0.2);
+}
+
+.c4l-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.c4l-cal-dayname {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--c4l-text-tertiary);
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.c4l-cal-day {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c4l-text-primary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--c4l-font);
+}
+
+.c4l-cal-day:hover:not(.c4l-cal-day--past) {
+  background: rgba(99, 102, 241, 0.12);
+  color: #818cf8;
+}
+
+.c4l-cal-day--past {
+  color: var(--c4l-text-tertiary);
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.c4l-cal-day--selected {
+  background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.4);
+  font-weight: 700;
+}
+
+.c4l-cal-selected-display {
+  font-size: 12px;
+  font-weight: 600;
+  color: #818cf8;
+  text-align: center;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+/* ── Créneaux horaires ── */
+.c4l-creneau-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.c4l-creneau-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  border: 1.5px solid var(--c4l-glass-border);
+  background: var(--c4l-bg-card);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  font-family: var(--c4l-font);
+}
+
+.c4l-creneau-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.c4l-creneau-btn:active {
+  transform: scale(0.97);
+}
+
+.c4l-creneau-btn--sel {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.2);
+}
+
+.c4l-creneau-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.c4l-creneau-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c4l-text-primary);
+}
+
+.c4l-creneau-sub {
+  font-size: 11px;
+  color: var(--c4l-text-tertiary);
+}
+
+.c4l-creneau-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.25s ease-out;
+}
