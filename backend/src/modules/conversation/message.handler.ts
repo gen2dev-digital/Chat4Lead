@@ -751,6 +751,12 @@ export class MessageHandler {
             'plain', 'pied', 'appart', 'appartement', 'maison', 'studio', 'logement',
             'immeuble', 'bureaux', 'bureau', 'batiment', 'villa', 'chambre', 'piece', 'pièce', 'etage', 'étage',
 
+            // Mots métier déménagement — JAMAIS des prénoms/noms
+            'estimation', 'tarifaire', 'devis', 'calcul', 'volume', 'déménagement', 'demenagement',
+            'transport', 'emballage', 'prestation', 'formule', 'standard', 'luxe', 'economique',
+            'informatique', 'information', 'informations', 'complement', 'complémentaires',
+            'nos', 'services', 'service', 'contact', 'coordonnees', 'coordonnées',
+
             // Villes FR
             'paris', 'lyon', 'marseille', 'bordeaux', 'lille', 'nantes',
             'strasbourg', 'toulouse', 'nice', 'rennes', 'grenoble',
@@ -773,14 +779,13 @@ export class MessageHandler {
             'merci', 'voila', 'voilà', 'super', 'parfait',
             'bouge', 'partir', 'arriver', 'quitter', 'bientot', 'possible', 'urgent', 'vite',
             'tomber', 'et', 'la', 'le', 'les', 'un', 'une', 'petit', 'grand', 'nouveau', 'ancien', 'vieux',
-            'laissez', 'contacter', 'rappeler', 'confirmer', 'standard', 'luxe', 'eco', 'formule', 'prestation',
+            'laissez', 'contacter', 'rappeler', 'confirmer', 'eco', 'éco',
             'parking', 'ascenseur', 'escalier', 'cest', 'note', 'noté',
-            'jdemenage', 'jdemenag', 'demenage', 'demenagement', 'demenageons', 'demenager', 'moving', 'move', 'immoving', 'deménage', 'démén',
+            'jdemenage', 'jdemenag', 'demenage', 'demenageons', 'demenager', 'moving', 'move', 'immoving', 'deménage', 'démén',
             'midi', 'apres', 'après', 'matin', 'soir', 'heure', 'heures', 'rdv', 'rendez-vous',
             // Mots anglais courants (satisfaction, confirmations) qui ne sont jamais des prénoms
             'its', 'good', 'great', 'excellent', 'perfect', 'wonderful', 'fine', 'nice', 'awesome',
             'thanks', 'thank', 'okay', 'alright', 'done', 'noted', 'confirmed', 'understood',
-            'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
             'tomorrow', 'today', 'yesterday', 'morning', 'afternoon', 'evening', 'night'
         ]);
 
@@ -907,11 +912,13 @@ export class MessageHandler {
     ) {
         const updates: Record<string, any> = {};
 
-        // ── Champs directs ──
-        if (entities.prenom) updates.prenom = entities.prenom;
-        if (entities.nom) updates.nom = entities.nom;
-        if (entities.email) updates.email = entities.email;
-        if (entities.telephone) updates.telephone = entities.telephone;
+        // ── Champs directs : toujours mettre à jour si une nouvelle valeur non-vide est fournie.
+        // Cela permet de corriger un faux prénom/nom capturé par erreur au tour précédent.
+        // Le LLM (via bloc DATA) a la priorité pour corriger une valeur erronée.
+        if (entities.prenom && typeof entities.prenom === 'string') updates.prenom = entities.prenom;
+        if (entities.nom && typeof entities.nom === 'string') updates.nom = entities.nom;
+        if (entities.email && typeof entities.email === 'string') updates.email = entities.email;
+        if (entities.telephone && typeof entities.telephone === 'string') updates.telephone = entities.telephone;
 
         // ── Fusion projetData non-destructive (jamais écraser une valeur existante avec null/false/'') ──
         const existingProjet = (existingLead.projetData as Record<string, any>) || {};
