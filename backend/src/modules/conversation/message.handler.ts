@@ -1368,15 +1368,15 @@ export class MessageHandler {
             // ET si le champ existant est vide (évite d'écraser des données déjà collectées)
             if (value !== null && value !== undefined && value !== false && value !== '') {
                 // Ne remplace que si inexistant ou si la valeur existante est vide
-                if (result[key] === null || result[key] === undefined || result[key] === '') {
+                // EXCEPTION : On autorise l'écrasement pour les corrections (Villes, CP, Accès, Volume)
+                const FORCE_UPDATE_KEYS = [
+                    'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
+                    'volumeEstime', 'creneauVisite', 'contraintes', 'objetSpeciaux',
+                    'surface', 'typeHabitationDepart', 'typeHabitationArrivee'
+                ];
+
+                if (result[key] === null || result[key] === undefined || result[key] === '' || FORCE_UPDATE_KEYS.includes(key)) {
                     result[key] = value;
-                } else {
-                    // Le champ existant est rempli → on ne touche pas (sauf types complexes)
-                    // Exception : on permet la mise à jour de creneauVisite, contraintes, objetSpeciaux
-                    if (key === 'creneauVisite' || key === 'contraintes' || key === 'objetSpeciaux') {
-                        result[key] = value;
-                    }
-                    // Pour tous les autres : valeur existante conservée
                 }
             }
         }
@@ -1408,6 +1408,7 @@ export class MessageHandler {
             if (data.telephone && typeof data.telephone === 'string') e.telephone = data.telephone;
             if (data.creneauRappel && typeof data.creneauRappel === 'string') e.creneauRappel = data.creneauRappel;
             if (data.satisfaction && typeof data.satisfaction === 'string') e.satisfaction = data.satisfaction;
+            if (data.satisfactionScore !== undefined && data.satisfactionScore !== null) e.satisfactionScore = Number(data.satisfactionScore);
 
             // Champs projetData — on garde uniquement les valeurs non-vides
             const projetFields = [

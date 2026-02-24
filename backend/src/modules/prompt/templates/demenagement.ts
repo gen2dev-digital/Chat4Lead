@@ -1,8 +1,51 @@
+export const PROMPT_CACHE_SEPARATOR = '### DYNAMIC_SECTION ###';
 
-import { EntrepriseConfig, LeadData, ProjetDemenagementData } from '../types';
-import { PROMPT_CACHE_SEPARATOR } from '../constants';
-import { getDistanceKmWithFallback } from '../../../services/geo.service';
-import { calculerEstimation } from '../../../services/estimation.service';
+export interface EntrepriseConfig {
+    nom: string;
+    nomBot: string;
+    email?: string;
+    telephone?: string;
+    zonesIntervention?: string;
+    tarifsCustom?: any;
+    specificites?: string;
+    documentsCalcul?: string[];
+    consignesPersonnalisees?: string;
+}
+
+export interface LeadData {
+    prenom?: string;
+    nom?: string;
+    email?: string;
+    telephone?: string;
+    creneauRappel?: string;
+    satisfaction?: string;
+    satisfactionScore?: number | null;
+    projetData?: ProjetDemenagementData;
+}
+
+export interface ProjetDemenagementData {
+    villeDepart?: string;
+    villeArrivee?: string;
+    codePostalDepart?: string;
+    codePostalArrivee?: string;
+    typeHabitationDepart?: string;
+    typeHabitationArrivee?: string;
+    stationnementDepart?: string;
+    stationnementArrivee?: string;
+    volumeEstime?: number | string;
+    dateSouhaitee?: string;
+    formule?: string;
+    rdvConseiller?: boolean | null;
+    creneauVisite?: string;
+    etage?: number;
+    ascenseur?: boolean;
+    monteMeubleDepart?: boolean;
+    monteMeubleArrivee?: boolean;
+    objetSpeciaux?: any[];
+}
+
+import { getDistanceKmWithFallback } from '../../../services/distance.service';
+import { calculerEstimation } from '../tarification-calculator';
 
 const VOLUME_CALCULATOR: Record<string, number> = {
     'canapé 3 places': 3,
