@@ -468,39 +468,58 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ Pieces extraction failed', e); }
 
-        // ── Étage et ascenseur (départ) — ex: "3e étage", "3ème avec ascenseur", "sans ascenseur" ──
+        // ── Étage et ascenseur contextuel (Départ vs Arrivée) ──
         try {
-            const lower = combined.toLowerCase();
-            if (!existingProjetData.etage && existingProjetData.etage !== 0) {
-                const etagePatterns = [
-                    /(\d+)(?:e|ème|er)\s*étage/i,
-                    /(?:au\s+|étage\s+)(\d+)/i,
-                    /(\d+)\s*étages?/i,
-                    /(?:rez|rdc|plain[\s-]?pied)/i,
-                ];
-                for (const re of etagePatterns) {
-                    const m = combined.match(re);
-                    if (m) {
-                        if (/rez|rdc|plain/i.test(m[0])) {
-                            entities.etage = 0;
-                            break;
-                        }
-                        const num = parseInt(m[1], 10);
-                        if (!Number.isNaN(num) && num >= 0 && num <= 50) {
-                            entities.etage = num;
-                            break;
-                        }
+            const lowerBot = ((lastBotMessage || '') + ' ' + (llmContent || '')).toLowerCase();
+            const isArrivee = lowerBot.includes('arrivée') || lowerBot.includes('arrivee') || lowerBot.includes('nouveau') || lowerBot.includes('à massy') || lowerBot.includes('livraison');
+
+            // Extraction étage
+            const etagePatterns = [
+                /(\d+)(?:e|ème|er)\s*étage/i,
+                /(?:au\s+|étage\s+)(\d+)/i,
+                /(\d+)\s*étages?/i,
+                /(?:rez|rdc|plain[\s-]?pied)/i,
+            ];
+            let extractedEtage: number | undefined;
+            for (const re of etagePatterns) {
+                const m = combined.match(re);
+                if (m) {
+                    if (/rez|rdc|plain/i.test(m[0])) {
+                        extractedEtage = 0;
+                        break;
+                    }
+                    const num = parseInt(m[1], 10);
+                    if (!Number.isNaN(num) && num >= 0 && num <= 50) {
+                        extractedEtage = num;
+                        break;
                     }
                 }
             }
-            if (existingProjetData.ascenseur === undefined || existingProjetData.ascenseur === null) {
-                if (/\b(avec|avec un?)\s+ascenseur\b/i.test(combined) || /\bascenseur\s+(pré?sent|oui|disponible)/i.test(combined)) {
-                    entities.ascenseur = true;
-                } else if (/\bsans\s+ascenseur\b/i.test(combined) || /\bpas\s+d'?ascenseur\b/i.test(combined)) {
-                    entities.ascenseur = false;
+
+            if (extractedEtage !== undefined) {
+                if (isArrivee) {
+                    if (existingProjetData.etageArrivee === undefined) entities.etageArrivee = extractedEtage;
+                } else {
+                    if (existingProjetData.etageDepart === undefined && existingProjetData.etage === undefined) entities.etageDepart = extractedEtage;
                 }
             }
-        } catch (e) { logger.error('❌ Etage/ascenseur extraction failed', e); }
+
+            // Extraction ascenseur
+            let extractedAsc: boolean | undefined;
+            if (/\b(avec|avec un?)\s+ascenseur\b/i.test(combined) || /\bascenseur\s+(pré?sent|oui|disponible)/i.test(combined)) {
+                extractedAsc = true;
+            } else if (/\bsans\s+ascenseur\b/i.test(combined) || /\bpas\s+d'?ascenseur\b/i.test(combined)) {
+                extractedAsc = false;
+            }
+
+            if (extractedAsc !== undefined) {
+                if (isArrivee) {
+                    if (existingProjetData.ascenseurArrivee === undefined) entities.ascenseurArrivee = extractedAsc;
+                } else {
+                    if (existingProjetData.ascenseurDepart === undefined && existingProjetData.ascenseur === undefined) entities.ascenseurDepart = extractedAsc;
+                }
+            }
+        } catch (e) { logger.error('❌ contextual floor/elevator extraction failed', e); }
 
         // ── Volume explicite (m³ / m3 / mètres cubes) — gère les décimales (ex: 62,5 m³) ──
         try {
@@ -1350,7 +1369,9 @@ export class MessageHandler {
                 const FORCE_UPDATE_KEYS = [
                     'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
                     'volumeEstime', 'creneauVisite', 'contraintes', 'objetSpeciaux',
-                    'surface', 'typeHabitationDepart', 'typeHabitationArrivee'
+                    'surface', 'typeHabitationDepart', 'typeHabitationArrivee',
+                    'etageDepart', 'etageArrivee', 'ascenseurDepart', 'ascenseurArrivee',
+                    'stationnementDepart', 'stationnementArrivee'
                 ];
 
                 if (result[key] === null || result[key] === undefined || result[key] === '' || FORCE_UPDATE_KEYS.includes(key)) {
@@ -1393,7 +1414,7 @@ export class MessageHandler {
                 'villeDepart', 'villeArrivee', 'codePostalDepart', 'codePostalArrivee',
                 'typeHabitationDepart', 'typeHabitationArrivee', 'stationnementDepart', 'stationnementArrivee',
                 'surface', 'nbPieces', 'volumeEstime', 'volumeCalcule', 'dateSouhaitee', 'formule',
-                'contraintes', 'etage',
+                'contraintes', 'etage', 'etageDepart', 'etageArrivee',
                 'typeEscalierDepart', 'typeEscalierArrivee',
                 'gabaritAscenseurDepart', 'gabaritAscenseurArrivee',
             ];
@@ -1402,11 +1423,21 @@ export class MessageHandler {
                     e[f] = data[f];
                 }
             }
-            if (data.etage !== null && data.etage !== undefined) {
-                const etageNum = typeof data.etage === 'number' ? data.etage : parseInt(String(data.etage), 10);
-                if (!Number.isNaN(etageNum) && etageNum >= 0) e.etage = etageNum;
+
+            // Gestion spécifique des étages (peut être 0)
+            const etageFields = ['etage', 'etageDepart', 'etageArrivee'];
+            for (const f of etageFields) {
+                if (data[f] !== null && data[f] !== undefined) {
+                    const etageNum = typeof data[f] === 'number' ? data[f] : parseInt(String(data[f]), 10);
+                    if (!Number.isNaN(etageNum) && etageNum >= 0) e[f] = etageNum;
+                }
             }
-            if (data.ascenseur === true || data.ascenseur === false) e.ascenseur = data.ascenseur;
+
+            // Gestion spécifique des ascenseurs (booléens)
+            const ascFields = ['ascenseur', 'ascenseurDepart', 'ascenseurArrivee'];
+            for (const f of ascFields) {
+                if (data[f] === true || data[f] === false) e[f] = data[f];
+            }
 
             // Champs booléens (on garde true seulement)
             if (data.monteMeuble === true) e.monteMeuble = true;
