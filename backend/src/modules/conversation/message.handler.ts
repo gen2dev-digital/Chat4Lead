@@ -51,11 +51,11 @@ export class MessageHandler {
                 timestamp: new Date().toISOString()
             });
 
-            // ── 1+2. Paralléliser : récupérer le contexte ET sauvegarder le message simultanément ──
-            const [context] = await Promise.all([
-                this.getFullContext(conversationId, entrepriseId),
-                contextManager.saveMessage(conversationId, RoleMessage.user, message),
-            ]);
+            // ── 1. Sauvegarder le message utilisateur (Await pour vider le cache avant lecture) ──
+            await contextManager.saveMessage(conversationId, RoleMessage.user, message);
+
+            // ── 2. Récupérer le contexte (frais car cache vidé par saveMessage) ──
+            const context = await this.getFullContext(conversationId, entrepriseId);
 
             // ── 3.  Construire le prompt ──
             const currentLead = context.lead;
@@ -123,7 +123,7 @@ export class MessageHandler {
 
             // ── 7.  Extraction regex + merge avec LLM (LLM prioritaire sauf valeurs invalides) ──
             const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
-            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {}, lastBotMsg);
+            const regexEntities = await this.extractEntities(message, llmContent, currentLead, lastBotMsg);
             const finalEntities = this.mergeEntities(regexEntities, llmEntities);
 
             // ── 8.  Mise à jour lead + score en 1 seule requête ──
@@ -194,11 +194,11 @@ export class MessageHandler {
         const { conversationId, entrepriseId, message, onChunk } = input;
 
         try {
-            // ── 1+2. Parallèle : contexte + sauvegarde message ──
-            const [context] = await Promise.all([
-                this.getFullContext(conversationId, entrepriseId),
-                contextManager.saveMessage(conversationId, RoleMessage.user, message),
-            ]);
+            // ── 1. Sauvegarder le message utilisateur (Sequential await pour vider le cache) ──
+            await contextManager.saveMessage(conversationId, RoleMessage.user, message);
+
+            // ── 2. Récupérer le contexte (frais) ──
+            const context = await this.getFullContext(conversationId, entrepriseId);
 
             // ── 3. Construire le prompt ──
             const currentLead = context.lead;
@@ -257,7 +257,7 @@ export class MessageHandler {
 
             // ── 7. Extraction + merge ──
             const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
-            const regexEntities = await this.extractEntities(message, llmContent, (currentLead?.projetData as any) || {}, lastBotMsg);
+            const regexEntities = await this.extractEntities(message, llmContent, currentLead, lastBotMsg);
             const finalEntities = this.mergeEntities(regexEntities, llmEntities);
 
             // ── 8. Mise à jour lead + score en 1 seule requête ──
@@ -340,8 +340,9 @@ export class MessageHandler {
      * Extrait les entités structurées depuis le message utilisateur
      * et la réponse du bot (confirmation de données).
      */
-    private async extractEntities(message: string, llmContent: string, existingProjetData: any, lastBotMessage?: string): Promise<any> {
+    private async extractEntities(message: string, llmContent: string, currentLead: any, lastBotMessage?: string): Promise<any> {
         const entities: any = {};
+        const existingProjetData = (currentLead?.projetData as any) || {};
         // Nettoyage pour faciliter l'extraction (ex: "Dijon (93700)" -> "Dijon 93700")
         const combined = (message + ' ' + (llmContent || '')).replace(/\((\d{5})\)/g, ' $1 ');
         const lowerCombined = combined.toLowerCase();
@@ -353,7 +354,9 @@ export class MessageHandler {
             const emailRegex = /[a-zA-Z0-9._%+\-àâäéèêëîïôùûüç]+@[a-zA-Z0-9.\-àâäéèêëîïôùûüç]+\.[a-zA-Z]{2,}/gi;
             const emails = combined.match(emailRegex);
             if (emails && emails.length > 0) {
-                entities.email = emails[0].toLowerCase();
+                let email = emails[0].toLowerCase().trim();
+                if (email.endsWith('.')) email = email.slice(0, -1);
+                entities.email = email;
                 logger.info('✅ [Extraction] Email found', { email: entities.email });
             }
         } catch (e) { logger.error('❌ Email extraction failed', e); }
@@ -644,13 +647,13 @@ export class MessageHandler {
             }
         } catch (e) { logger.error('❌ City extraction failed', e); }
 
-        // ── Prénom / Nom (Logic Refactored) ──
+        // ── Prénom / Nom ──
         const { prenom, nom } = this.extractName(message);
-        if (prenom && !existingProjetData.prenom) {
+        if (prenom && !currentLead.prenom) {
             entities.prenom = prenom;
             logger.info('✅ Prénom extrait', { prenom });
         }
-        if (nom && !existingProjetData.nom) {
+        if (nom && !currentLead.nom) {
             entities.nom = nom;
             logger.info('✅ Nom extrait', { nom });
         }
@@ -945,6 +948,12 @@ export class MessageHandler {
             data: updates,
         });
 
+        // ── ⚡ Invalidation Cache ⚡ (CRITIQUE pour éviter les répétitions au tour suivant) ──
+        const conversation = await prisma.conversation.findFirst({ where: { leadId } });
+        if (conversation) {
+            await contextManager.clearContextCache(conversation.id);
+        }
+
         return updatedLead;
     }
 
@@ -1077,7 +1086,13 @@ export class MessageHandler {
         const leadUpdates: Promise<any>[] = [];
         if (needsNotif) leadUpdates.push(prisma.lead.update({ where: { id: lead.id }, data: { notificationSent: true } }));
         if (needsCRM) leadUpdates.push(prisma.lead.update({ where: { id: lead.id }, data: { pushedToCRM: true } }));
-        if (leadUpdates.length > 0) await Promise.all(leadUpdates);
+
+        if (leadUpdates.length > 0) {
+            await Promise.all(leadUpdates);
+            // Invalider le cache car les flags notificationSent/pushedToCRM ont changé
+            const conversation = await prisma.conversation.findFirst({ where: { leadId: lead.id } });
+            if (conversation) await contextManager.clearContextCache(conversation.id);
+        }
 
         // ── Action 3 : Qualifier la conversation ──
         if (score >= 70) {
