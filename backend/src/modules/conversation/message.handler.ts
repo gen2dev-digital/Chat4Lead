@@ -783,7 +783,9 @@ export class MessageHandler {
             'parking', 'ascenseur', 'escalier', 'cest', 'note', 'noté',
             'jdemenage', 'jdemenag', 'demenage', 'demenageons', 'demenager', 'moving', 'move', 'immoving', 'deménage', 'démén',
             'midi', 'apres', 'après', 'matin', 'soir', 'heure', 'heures', 'rdv', 'rendez-vous',
-            // Mots anglais courants (satisfaction, confirmations) qui ne sont jamais des prénoms
+            // Mots de description qui parasitent l'extraction
+            'moyen', 'petit', 'grand', 'tres', 'très', 'quelques', 'plusieurs', 'environ', 'estimé',
+            'estime', 'calcule', 'calculé', 'confirme', 'confirmé', 'noté', 'note',
             'its', 'good', 'great', 'excellent', 'perfect', 'wonderful', 'fine', 'nice', 'awesome',
             'thanks', 'thank', 'okay', 'alright', 'done', 'noted', 'confirmed', 'understood',
             'tomorrow', 'today', 'yesterday', 'morning', 'afternoon', 'evening', 'night'
@@ -1307,25 +1309,39 @@ export class MessageHandler {
         primary: Record<string, any>,
         fallback: Record<string, any>
     ): Record<string, any> {
-        const INVALID_VILLE = new Set(['vous', 'affiner', 'inconnu', 'null', '']);
-        const isInvalidVille = (v: unknown) =>
-            typeof v !== 'string' || v.length < 2 || INVALID_VILLE.has(v.toLowerCase().trim());
+        const INVALID_WORDS = new Set([
+            'vous', 'affiner', 'inconnu', 'null', 'undefined', 'moyen', 'petit', 'grand',
+            'estimation', 'tarifaire', 'devis', 'calcul', 'volume', 'quelques', 'plusieurs',
+            'standard', 'luxe', 'economique', 'eco', 'éco', 'confirme', 'confirmé', 'noté',
+            'appartement', 'maison', 'studio', 'logement', 'rez', 'rdc', 'étage', 'etage',
+            'stationnement', 'autorisation', 'mairie'
+        ]);
+
+        const isInvalidValue = (v: unknown) =>
+            typeof v !== 'string' || v.length < 2 || INVALID_WORDS.has(v.toLowerCase().trim());
 
         // Filtrer les valeurs invalides de primary (source LLM)
         const result: Record<string, any> = {};
         for (const [k, v] of Object.entries(primary)) {
             if (v === null || v === undefined || v === '') continue;
-            if ((k === 'villeDepart' || k === 'villeArrivee') && isInvalidVille(v)) continue;
+
+            // Filtre spécifique pour identité et villes
+            if (['prenom', 'nom', 'villeDepart', 'villeArrivee'].includes(k) && isInvalidValue(v)) continue;
+
+            // Filtre CP
             if ((k === 'codePostalDepart' || k === 'codePostalArrivee') && !/^\d{5}$/.test(String(v).trim())) continue;
+
             result[k] = v;
         }
 
         // Combler avec fallback (regex) uniquement si le champ est absent dans primary
         for (const [k, v] of Object.entries(fallback)) {
-            if (result[k] !== undefined && result[k] !== null && result[k] !== '') continue; // primary a déjà une valeur
+            if (result[k] !== undefined && result[k] !== null && result[k] !== '') continue;
             if (v === null || v === undefined || v === '') continue;
-            if ((k === 'villeDepart' || k === 'villeArrivee') && isInvalidVille(v)) continue;
+
+            if (['prenom', 'nom', 'villeDepart', 'villeArrivee'].includes(k) && isInvalidValue(v)) continue;
             if ((k === 'codePostalDepart' || k === 'codePostalArrivee') && !/^\d{5}$/.test(String(v).trim())) continue;
+
             result[k] = v;
         }
 
@@ -1440,6 +1456,62 @@ export class MessageHandler {
             logger.warn('⚠️ [LLM-DATA] Failed to parse DATA block', { error: String(err), raw: match[1].substring(0, 100) });
             return { llmEntities: {}, clean };
         }
+    }
+
+    // ──────────────────────────────────────────────
+    //  FILTRES ANTI-RÉPÉTITION (Regex Post-Processing)
+    // ──────────────────────────────────────────────
+
+    private filterRepeatedContactQuestion(text: string, lead: any): string {
+        if (!lead?.email && !lead?.telephone) return text;
+
+        let cleaned = text;
+        const lower = text.toLowerCase();
+
+        // Si on a l'email ET le téléphone, on vire tout ce qui ressemble à une demande de coordonnées
+        if (lead.email && lead.telephone) {
+            // Supprimer les phrases demandant email OU tel OU coordonnées
+            cleaned = cleaned.replace(/.*(numéro|téléphone|adresse email|coordonnées|contact|recontacter|rappeler).*\?/gi, '');
+        } else if (lead.email) {
+            // On a déjà le mail, on vire les questions sur le mail sans toucher au reste
+            cleaned = cleaned.replace(/.*(adresse email|votre mail|courriel).*\?/gi, '');
+        } else if (lead.telephone) {
+            // On a déjà le tel, on vire les questions sur le tel
+            cleaned = cleaned.replace(/.*(numéro|téléphone|gsm|mobile).*\?/gi, '');
+        }
+
+        // Si le texte est devenu vide, on garde le texte original mais c'est un cas rare
+        return cleaned.trim() || text;
+    }
+
+    private filterRepeatedVisitQuestion(text: string, lead: any): string {
+        const projet = (lead?.projetData as any) || {};
+        // Si le rdv est déjà fixé OU expressément refusé (false)
+        if (projet.rdvConseiller === true || projet.rdvConseiller === false) {
+            return text.replace(/.*(conseiller se déplace|visite à domicile|visite technique|vienne chez vous).*\?/gi, '').trim() || text;
+        }
+        return text;
+    }
+
+    private filterRepeatedCreneauQuestion(text: string, lead: any): string {
+        const projet = (lead?.projetData as any) || {};
+        if (projet.creneauVisite || lead.creneauRappel) {
+            return text.replace(/.*(quel créneau|quel moment|quelle heure|qui vous arrange).*\?/gi, '').trim() || text;
+        }
+        return text;
+    }
+
+    private filterRepeatedStationnementQuestion(text: string, lead: any): string {
+        const projet = (lead?.projetData as any) || {};
+        if (projet.stationnementDepart && text.toLowerCase().includes('stationnement')) {
+            return text.replace(/.*stationnement.*\?/gi, '').trim() || text;
+        }
+        return text;
+    }
+
+    private sanitizeReply(text: string): string {
+        // Enlever les préfixes de type "Bot:" ou "Assistant:" parfois générés par le LLM
+        return text.replace(/^(Bot|Assistant|🤖|AI|System):\s*/i, '').trim();
     }
 }
 
