@@ -1458,62 +1458,6 @@ export class MessageHandler {
             return { llmEntities: {}, clean };
         }
     }
-
-    // ──────────────────────────────────────────────
-    //  FILTRES ANTI-RÉPÉTITION (Regex Post-Processing)
-    // ──────────────────────────────────────────────
-
-    private filterRepeatedContactQuestion(text: string, lead: any): string {
-        if (!lead?.email && !lead?.telephone) return text;
-
-        let cleaned = text;
-        const lower = text.toLowerCase();
-
-        // Si on a l'email ET le téléphone, on vire tout ce qui ressemble à une demande de coordonnées
-        if (lead.email && lead.telephone) {
-            // Supprimer les phrases demandant email OU tel OU coordonnées
-            cleaned = cleaned.replace(/.*(numéro|téléphone|adresse email|coordonnées|contact|recontacter|rappeler).*\?/gi, '');
-        } else if (lead.email) {
-            // On a déjà le mail, on vire les questions sur le mail sans toucher au reste
-            cleaned = cleaned.replace(/.*(adresse email|votre mail|courriel).*\?/gi, '');
-        } else if (lead.telephone) {
-            // On a déjà le tel, on vire les questions sur le tel
-            cleaned = cleaned.replace(/.*(numéro|téléphone|gsm|mobile).*\?/gi, '');
-        }
-
-        // Si le texte est devenu vide, on garde le texte original mais c'est un cas rare
-        return cleaned.trim() || text;
-    }
-
-    private filterRepeatedVisitQuestion(text: string, lead: any): string {
-        const projet = (lead?.projetData as any) || {};
-        // Si le rdv est déjà fixé OU expressément refusé (false)
-        if (projet.rdvConseiller === true || projet.rdvConseiller === false) {
-            return text.replace(/.*(conseiller se déplace|visite à domicile|visite technique|vienne chez vous).*\?/gi, '').trim() || text;
-        }
-        return text;
-    }
-
-    private filterRepeatedCreneauQuestion(text: string, lead: any): string {
-        const projet = (lead?.projetData as any) || {};
-        if (projet.creneauVisite || lead.creneauRappel) {
-            return text.replace(/.*(quel créneau|quel moment|quelle heure|qui vous arrange).*\?/gi, '').trim() || text;
-        }
-        return text;
-    }
-
-    private filterRepeatedStationnementQuestion(text: string, lead: any): string {
-        const projet = (lead?.projetData as any) || {};
-        if (projet.stationnementDepart && text.toLowerCase().includes('stationnement')) {
-            return text.replace(/.*stationnement.*\?/gi, '').trim() || text;
-        }
-        return text;
-    }
-
-    private sanitizeReply(text: string): string {
-        // Enlever les préfixes de type "Bot:" ou "Assistant:" parfois générés par le LLM
-        return text.replace(/^(Bot|Assistant|🤖|AI|System):\s*/i, '').trim();
-    }
 }
 
 // ── Export singleton ──

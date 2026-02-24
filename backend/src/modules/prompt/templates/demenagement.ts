@@ -5,9 +5,9 @@ export interface EntrepriseConfig {
     nomBot: string;
     email?: string;
     telephone?: string;
-    zonesIntervention?: string;
+    zonesIntervention?: string | string[];
     tarifsCustom?: any;
-    specificites?: string;
+    specificites?: any;
     documentsCalcul?: string[];
     consignesPersonnalisees?: string;
 }
