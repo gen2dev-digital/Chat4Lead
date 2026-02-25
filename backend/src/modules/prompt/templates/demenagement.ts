@@ -114,6 +114,31 @@ Aujourd'hui nous sommes le : ${today}.
 3. FORMULE : Si le volume est connu, demande : "Quelle formule préférez-vous : Éco, Standard ou Luxe ?"
 4. RÉCAPITULATIF : Une fois TOUT collecté, fais un résumé rédigé complet incluant le prix TTC.
 
+# ESTIMATION CALCULÉE (NE PAS MODIFIER)
+- Quand une section "# ESTIMATION TARIFAIRE (TTC)" est présente plus bas dans ce prompt, elle contient LA SEULE fourchette autorisée.
+- Tu dois TOUJOURS réutiliser EXACTEMENT cette fourchette (min, max et formule) dans le récapitulatif final.
+- INTERDIT :
+  - de recalculer un autre prix,
+  - de changer la formule (Éco / Standard / Luxe),
+  - d'afficher une autre fourchette ou un montant unique différent.
+- Exemple de ligne de récap attendue (adapter seulement les nombres et la formule depuis la section calculée) :
+  "💰 Estimation : 1320 à 1640 € (indicatif — affinage avec le service commercial)".
+
+# VISITE VS CRÉNEAU RAPPEL
+- CRÉNEAU VISITE (creneauVisite) = jour + horaire pour la visite technique au domicile (ex: "Mardi matin (9h-12h)").
+  - À utiliser quand le lead accepte une visite conseiller.
+  - À afficher dans le récap comme "Visite : Mardi matin (9h-12h)".
+- CRÉNEAU RAPPEL (creneauRappel) = moment où le commercial peut recontacter le lead (Matin, Après-midi, Soir, Indifférent).
+  - À demander APRÈS le récap et UNIQUEMENT si le téléphone est connu.
+  - Ne JAMAIS le confondre avec le créneau de visite.
+
+# ANTI-RÉPÉTITION (COORDONNÉES ET LOGEMENT)
+- Si le NOM, le TÉLÉPHONE et l'EMAIL sont déjà connus :
+  - NE JAMAIS redemander ces informations.
+  - Si le lead dit "tu as déjà ces informations", répondre que tu les as bien et passer à l'étape suivante (récap, créneau rappel, satisfaction...).
+- Si le type de logement (Maison / Appartement) et l'étage/ascenseur sont déjà connus pour une adresse (départ ou arrivée) :
+  - ne plus reposer de question "Maison ou appartement ?" ou "À quel étage ? Y a-t-il un ascenseur ?" pour cette même adresse.
+
 # WIDGETS (NE CHANGE PAS CES PHRASES)
 - Visite : "Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous ?"
 - Créneau rappel : "Quel créneau vous arrange pour être recontacté ?"
@@ -177,7 +202,10 @@ ${p.creneauVisite ? '✅ RDV Visite : ' + p.creneauVisite : '❌ RDV Visite : No
 
     let res = staticPart + '\n\n' + PROMPT_CACHE_SEPARATOR + '\n\n' + dynamicPart;
     if (estimation && hasContact) {
-        res += `\n\n# ESTIMATION TARIFAIRE (TTC)\n${estimation.min} € à ${estimation.max} €\n(Prestation ${estimation.formule})`;
+        res += `\n\n# ESTIMATION TARIFAIRE (TTC)
+- Fourchette à utiliser dans le récapitulatif : ${estimation.min} à ${estimation.max} € TTC.
+- Formule calculée : ${estimation.formule}.
+NE JAMAIS inventer une autre fourchette ou un autre type de formule.`;
     }
 
     return res + '\n\n# DONNÉES TECHNIQUES\n' + dataBlock;

@@ -120,6 +120,8 @@ export class MessageHandler {
             llmContent = this.filterRepeatedVisitQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedStationnementQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedContactQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedIdentityQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedLogementQuestion(llmContent, currentLead);
 
             // ── 7.  Extraction regex + merge avec LLM ──
             // PRIORITÉ : bloc <!--DATA:--> du LLM est la source de vérité.
@@ -257,6 +259,8 @@ export class MessageHandler {
             llmContent = this.filterRepeatedVisitQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedStationnementQuestion(llmContent, currentLead);
             llmContent = this.filterRepeatedContactQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedIdentityQuestion(llmContent, currentLead);
+            llmContent = this.filterRepeatedLogementQuestion(llmContent, currentLead);
 
             // ── 7. Extraction + merge ──
             // PRIORITÉ : bloc <!--DATA:--> du LLM est la source de vérité.
@@ -755,6 +759,7 @@ export class MessageHandler {
 
     /**
      * Extraction robuste du prénom et du nom avec 7 patterns et stop words.
+     * Doit ignorer les mots métier comme "Estimation tarifaire", "Devis", etc.
      */
     private extractName(userMessage: string): { prenom: string | null; nom: string | null } {
         // ── Stop words : mots qui ne sont JAMAIS des prénoms ──
@@ -771,7 +776,7 @@ export class MessageHandler {
             'immeuble', 'bureaux', 'bureau', 'batiment', 'villa', 'chambre', 'piece', 'pièce', 'etage', 'étage',
 
             // Mots métier déménagement — JAMAIS des prénoms/noms
-            'estimation', 'tarifaire', 'devis', 'calcul', 'volume', 'déménagement', 'demenagement',
+            'estimation', 'tarifaire', 'tarif', 'devis', 'calcul', 'volume', 'déménagement', 'demenagement',
             'transport', 'emballage', 'prestation', 'formule', 'standard', 'luxe', 'economique',
             'informatique', 'information', 'informations', 'complement', 'complémentaires',
             'nos', 'services', 'service', 'contact', 'coordonnees', 'coordonnées',
@@ -826,6 +831,13 @@ export class MessageHandler {
             clean = clean.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
         }
 
+        // Helper pour rejeter un couple (prenom, nom) qui contient des mots interdits
+        const isForbiddenName = (candidate: string | null): boolean => {
+            if (!candidate) return false;
+            const parts = candidate.split(/\s+/);
+            return parts.some(p => STOPWORDS.has(p.toLowerCase()));
+        };
+
         // Pattern 1 : "je m'appelle [Prénom] [Nom?]"
         const p1 = clean.match(/je m['']appelle\s+([A-ZÀ-Ÿa-zà-ÿ]+(?:\s+[A-ZÀ-Ÿa-zà-ÿ]+)?)/i);
         if (p1) {
@@ -834,7 +846,7 @@ export class MessageHandler {
             const prenom = this.capitalizeFirst(parts[0]);
             let nom = parts.length >= 2 ? this.capitalizeFirst(parts.slice(1).join(' ')) : null;
             if (nom && NAME_STOPWORDS.has(nom.toLowerCase())) nom = null;
-            if (!STOPWORDS.has(prenom.toLowerCase())) return { prenom, nom };
+            if (!STOPWORDS.has(prenom.toLowerCase()) && !isForbiddenName(nom)) return { prenom, nom };
         }
 
         // Pattern 2 : "je suis [Prénom] [Nom?]"
@@ -845,7 +857,7 @@ export class MessageHandler {
             const prenom = this.capitalizeFirst(parts[0]);
             let nom = parts.length >= 2 ? this.capitalizeFirst(parts.slice(1).join(' ')) : null;
             if (nom && NAME_STOPWORDS.has(nom.toLowerCase())) nom = null;
-            if (!STOPWORDS.has(prenom.toLowerCase())) return { prenom, nom };
+            if (!STOPWORDS.has(prenom.toLowerCase()) && !isForbiddenName(nom)) return { prenom, nom };
         }
 
         // Pattern 3 : EN/ES/FR explicit patterns
@@ -865,7 +877,7 @@ export class MessageHandler {
                 if (nom && NAME_STOPWORDS.has(nom.toLowerCase())) nom = null;
                 // Avoid capturing action words for "I'm moving..."
                 if (prenom.toLowerCase() === 'moving' || prenom.toLowerCase() === 'from') continue;
-                if (!STOPWORDS.has(prenom.toLowerCase())) return { prenom, nom };
+                if (!STOPWORDS.has(prenom.toLowerCase()) && !isForbiddenName(nom)) return { prenom, nom };
             }
         }
 
@@ -875,7 +887,7 @@ export class MessageHandler {
             const prenom = this.capitalizeFirst(p4[1]);
             let nom: string | null = this.capitalizeFirst(p4[2]);
             if (nom && NAME_STOPWORDS.has(nom.toLowerCase())) nom = null;
-            if (!STOPWORDS.has(prenom.toLowerCase())) return { prenom, nom };
+            if (!STOPWORDS.has(prenom.toLowerCase()) && !isForbiddenName(nom)) return { prenom, nom };
         }
 
         // Pattern 5 : "[Prénom] [Nom], email@..." (lead organisé inline)
@@ -884,7 +896,7 @@ export class MessageHandler {
             const prenom = this.capitalizeFirst(p5[1]);
             let nom: string | null = this.capitalizeFirst(p5[2]);
             if (nom && NAME_STOPWORDS.has(nom.toLowerCase())) nom = null;
-            if (!STOPWORDS.has(prenom.toLowerCase())) return { prenom, nom };
+            if (!STOPWORDS.has(prenom.toLowerCase()) && !isForbiddenName(nom)) return { prenom, nom };
         }
 
         // Pattern 6 : "[Prénom] [Nom]" seul sur la ligne (ex: "Marie Dubois")
@@ -893,7 +905,7 @@ export class MessageHandler {
             const prenom = this.capitalizeFirst(p6[1]);
             let nom: string | null = this.capitalizeFirst(p6[2]);
             if (nom && NAME_STOPWORDS.has(nom.toLowerCase())) nom = null;
-            if (!STOPWORDS.has(prenom.toLowerCase()) && (!nom || !STOPWORDS.has(nom.toLowerCase()))) {
+            if (!STOPWORDS.has(prenom.toLowerCase()) && (!nom || !STOPWORDS.has(nom.toLowerCase())) && !isForbiddenName(nom)) {
                 return { prenom, nom };
             }
         }
@@ -1183,14 +1195,58 @@ export class MessageHandler {
         if (!lead?.telephone || !lead?.email) return text;
         const patterns = [
             /Pardon,?\s*j'ai besoin de votre numéro de téléphone[^.\n]*\.?/gi,
-            /[Jj]'ai besoin de votre (?:numéro de )?téléphone[^.\n]*\.?/gi,
+            /[Jj]'ai (?:d'abord\s+)?besoin de votre (?:numéro de )?téléphone[^.\n]*\.?/gi,
             /[Pp]ouvez-vous (?:me )?donner (?:votre )?(?:numéro |téléphone )[^.\n]*\.?/gi,
             /[Ee]t votre (?:numéro de )?téléphone\s*\?[^.\n]*\.?/gi,
             /[Ee]t votre adresse email\s*\?[^.\n]*\.?/gi,
+            /[Ii]l me manque juste votre numéro de téléphone et votre adresse email[^.\n]*\.?/gi,
+            /[Jj]e n'ai pas ces informations dans notre conversation actuelle[^.\n]*\.?/gi,
+            /[Vv]os coordonnées sont importantes[^.\n]*\.?/gi,
         ];
         let cleaned = text;
         for (const p of patterns) {
             cleaned = cleaned.replace(p, '').trim();
+        }
+        return cleaned.replace(/\n{2,}/g, '\n').trim();
+    }
+
+    /**
+     * Supprime les questions d'identité (prénom/nom) si déjà collectées.
+     */
+    private filterRepeatedIdentityQuestion(text: string, lead: any): string {
+        if (!lead?.prenom || !lead?.nom) return text;
+        const patterns = [
+            /Quel est votre prénom et votre nom\s*\?[^.\n]*\.?/gi,
+            /[Pp]ré[nn]om et nom\s*[^?]*\?[^.\n]*\.?/gi,
+            /[Qq]uel est votre nom complet\s*\?[^.\n]*\.?/gi,
+        ];
+        let cleaned = text;
+        for (const p of patterns) {
+            cleaned = cleaned.replace(p, '').trim();
+        }
+        return cleaned.replace(/\n{2,}/g, '\n').trim();
+    }
+
+    /**
+     * Supprime les questions répétées "Maison ou appartement ?" si déjà connu pour l'adresse concernée.
+     */
+    private filterRepeatedLogementQuestion(text: string, lead: any): string {
+        const p = lead?.projetData || {};
+        const hasDepart = !!p.typeHabitationDepart;
+        const hasArrivee = !!p.typeHabitationArrivee;
+        if (!hasDepart && !hasArrivee) return text;
+        const patterns: RegExp[] = [];
+        if (hasDepart) {
+            patterns.push(/[Ee]st-ce (?:un|une)\s+(?:maison|appartement)[^?]*à\s+[^?]*départ[^?]*\?[^.\n]*\.?/gi);
+            patterns.push(/[Mm]aison ou appartement[^?]*départ[^?]*\?[^.\n]*\.?/gi);
+        }
+        if (hasArrivee) {
+            patterns.push(/[Ee]st-ce (?:un|une)\s+(?:maison|appartement)[^?]*à\s+[^?]*arriv[ée]e?[^?]*\?[^.\n]*\.?/gi);
+            patterns.push(/[Mm]aison ou appartement[^?]*arriv[ée]e?[^?]*\?[^.\n]*\.?/gi);
+        }
+        let cleaned = text;
+        for (const ptn of patterns) {
+            cleaned = cleaned.replace(ptn, '').trim();
         }
         return cleaned.replace(/\n{2,}/g, '\n').trim();
     }
@@ -1438,6 +1494,20 @@ export class MessageHandler {
             for (const f of ascFields) {
                 if (data[f] === true || data[f] === false) e[f] = data[f];
             }
+
+            // Normalisation du gabarit d'ascenseur (petit / moyen / grand uniquement)
+            const normalizeGabarit = (raw: any): string | undefined => {
+                if (!raw || typeof raw !== 'string') return undefined;
+                const lower = raw.toLowerCase();
+                if (lower.includes('grand')) return 'grand';
+                if (lower.includes('moyen')) return 'moyen';
+                if (lower.includes('petit')) return 'petit';
+                return undefined;
+            };
+            const gDep = normalizeGabarit(data.gabaritAscenseurDepart);
+            const gArr = normalizeGabarit(data.gabaritAscenseurArrivee);
+            if (gDep) e.gabaritAscenseurDepart = gDep;
+            if (gArr) e.gabaritAscenseurArrivee = gArr;
 
             // Champs booléens (on garde true seulement)
             if (data.monteMeuble === true) e.monteMeuble = true;
