@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MessageBubble } from './MessageBubble.tsx';
-import type { Message } from '../types';
+import type { Message, LeadData } from '../types';
 import { Calculator, Package, Truck } from 'lucide-react';
 import { TimeSlotPicker } from './TimeSlotPicker';
 import { StarRatingWidget } from './StarRatingWidget';
 import { VisiteModal } from './VisiteModal';
+import ProjectSummaryModal from './ProjectSummaryModal';
+import FormulaPicker from './FormulaPicker';
 
 interface MessageListProps {
     messages: Message[];
     botName: string;
     logoUrl?: string;
     onOptionSelect?: (text: string) => void;
+    leadData: LeadData;
 }
 
 /* ── Phrases déclenchant le modal de visite conseiller ── */
@@ -33,10 +36,12 @@ export const MessageList: React.FC<MessageListProps> = ({
     botName,
     logoUrl,
     onOptionSelect,
+    leadData
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     // Track quel message a déclenché le modal (par index) pour le fermer après réponse
     const [answeredVisiteIdx, setAnsweredVisiteIdx] = useState<number | null>(null);
+    const [showSummaryModal, setShowSummaryModal] = useState(false);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -115,6 +120,38 @@ export const MessageList: React.FC<MessageListProps> = ({
 
                 // Ne pas afficher si c'est une question de visite (géré inline ci-dessus)
                 if (isVisiteQuestion(lastMsg.content)) return null;
+
+                // Formula Picker
+                if (lastMsg.content.includes("Quelle formule préférez-vous") || lastMsg.content.includes("choisir une formule")) {
+                    return (
+                        <div className="px-4 pb-2">
+                            <FormulaPicker
+                                currentFormula={leadData.projetData?.formule}
+                                onSelect={(formula) => handleOptionClick(formula)}
+                            />
+                        </div>
+                    );
+                }
+
+                // Summary trigger
+                const isSummary = lastMsg.content.includes("Récapitulatif de votre") || lastMsg.content.includes("récapitulatif de votre");
+                if (isSummary) {
+                    return (
+                        <div className="px-4 pb-4">
+                            <button
+                                onClick={() => setShowSummaryModal(true)}
+                                className="w-full py-3 bg-indigo-50 text-indigo-700 rounded-xl font-semibold border border-indigo-100 hover:bg-indigo-100 transition-colors flex items-center justify-center gap-2"
+                            >
+                                📋 Voir le récapitulatif complet
+                            </button>
+                            <ProjectSummaryModal
+                                isOpen={showSummaryModal}
+                                onClose={() => setShowSummaryModal(false)}
+                                leadData={leadData}
+                            />
+                        </div>
+                    );
+                }
 
                 // Time Slot Picker (créneau de recontact)
                 const showTimeSlotPicker =

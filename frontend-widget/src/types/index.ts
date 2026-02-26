@@ -23,13 +23,30 @@ export interface LeadData {
     nom?: string;
     email?: string;
     telephone?: string;
+    creneauRappel?: string;
+    satisfaction?: string;
+    satisfactionScore?: number | null;
     score?: number;
     projetData?: {
-        adresseDepart?: string;
-        adresseArrivee?: string;
-        surface?: number;
+        villeDepart?: string;
+        villeArrivee?: string;
+        codePostalDepart?: string;
+        codePostalArrivee?: string;
+        typeHabitationDepart?: string;
+        typeHabitationArrivee?: string;
+        etageDepart?: number;
+        etageArrivee?: number;
+        ascenseurDepart?: boolean;
+        ascenseurArrivee?: boolean;
+        typeEscalierDepart?: string;
+        typeEscalierArrivee?: string;
+        gabaritAscenseurDepart?: string;
+        gabaritAscenseurArrivee?: string;
+        stationnementProximiteDepart?: string;
+        stationnementProximiteArrivee?: string;
         volumeEstime?: number;
-        dateSouhaitee?: string;
+        formule?: string;
+        creneauVisite?: string;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [key: string]: any;
     };

@@ -1,0 +1,92 @@
+.formula-picker {
+    margin: 12px 0;
+    width: 100%;
+}
+
+.formula-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.formula-card {
+    background: white;
+    border: 2px solid #edf2f7;
+    border-radius: 16px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.formula-card:hover {
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.formula-card.selected {
+    border-color: #2563eb;
+    background: #f0f7ff;
+}
+
+.formula-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #2563eb;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.formula-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.formula-card h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: #1a202c;
+    font-weight: 700;
+}
+
+.formula-card p {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.4;
+}
+
+.formula-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+}
+
+.formula-features li {
+    font-size: 11px;
+    color: #718096;
+    background: #f7fafc;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+.formula-card.selected .formula-features li {
+    background: #e1effe;
+    color: #1e429f;
+}

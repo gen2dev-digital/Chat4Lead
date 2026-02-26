@@ -523,7 +523,40 @@ export class MessageHandler {
                     if (existingProjetData.ascenseurDepart === undefined && existingProjetData.ascenseur === undefined) entities.ascenseurDepart = extractedAsc;
                 }
             }
-        } catch (e) { logger.error('❌ contextual floor/elevator extraction failed', e); }
+
+            // Extraction type d'escalier
+            const escalierPatterns = [
+                { pattern: /\b(colima[çc]on|h[ée]lico[ïi]dal)\b/i, val: 'Colimaçon' },
+                { pattern: /\b([ée]troit|serr[ée]|difficile|petit)\s+escalier\b/i, val: 'Étroit' },
+                { pattern: /\bescalier\s+([ée]troit|serr[ée]|difficile|petit)\b/i, val: 'Étroit' },
+                { pattern: /\b(large|spacieux|standard|normal)\s+escalier\b/i, val: 'Large' },
+                { pattern: /\bescalier\s+(large|spacieux|standard|normal)\b/i, val: 'Large' },
+            ];
+            for (const ptn of escalierPatterns) {
+                if (ptn.pattern.test(combined)) {
+                    if (isArrivee) entities.typeEscalierArrivee = ptn.val;
+                    else entities.typeEscalierDepart = ptn.val;
+                    break;
+                }
+            }
+
+            // Extraction gabarit ascenseur
+            const ascGabaritPatterns = [
+                { pattern: /\b(petit|1\s*-\s*2|2\s*pers|2\s*personnes)\s+ascenseur\b/i, val: 'Petit' },
+                { pattern: /\bascenseur\s+(petit|1\s*-\s*2|2\s*pers|2\s*personnes)\b/i, val: 'Petit' },
+                { pattern: /\b(moyen|standard|normal|4\s*-\s*6|4\s*pers)\s+ascenseur\b/i, val: 'Moyen' },
+                { pattern: /\bascenseur\s+(moyen|standard|normal|4\s*-\s*6|4\s*pers)\b/i, val: 'Moyen' },
+                { pattern: /\b(large|grand|spacieux|8\s*pers|monte\s*charge)\s+ascenseur\b/i, val: 'Grand' },
+                { pattern: /\bascenseur\s+(large|grand|spacieux|8\s*pers|monte\s*charge)\b/i, val: 'Grand' },
+            ];
+            for (const ptn of ascGabaritPatterns) {
+                if (ptn.pattern.test(combined)) {
+                    if (isArrivee) entities.gabaritAscenseurArrivee = ptn.val;
+                    else entities.gabaritAscenseurDepart = ptn.val;
+                    break;
+                }
+            }
+        } catch (e) { logger.error('❌ contextual floor/elevator/stairs extraction failed', e); }
 
         // ── Volume explicite (m³ / m3 / mètres cubes) — gère les décimales (ex: 62,5 m³) ──
         try {
@@ -552,6 +585,21 @@ export class MessageHandler {
                     } else if (lowerBot.includes('arrivée') || lowerBot.includes('arrivee') || lowerBot.includes('nouveau')) {
                         if (!existingProjetData.stationnementArrivee) entities.stationnementArrivee = valeur;
                     }
+                }
+            }
+
+            // Extraction proximité plus précise
+            const proxPatterns = [
+                { pattern: /\bau pied\b/i, val: 'Au pied' },
+                { pattern: /\b(10|20|30|40|50)\s*m\b/i, val: 'Proche (<50m)' },
+                { pattern: /\b(100|200|plusieurs|loin)\s*m\b/i, val: 'Éloigné (100m+)' },
+            ];
+            for (const ptn of proxPatterns) {
+                if (ptn.pattern.test(combined)) {
+                    const botLower = lowerBot;
+                    if (botLower.includes('départ') || botLower.includes('depart')) entities.stationnementProximiteDepart = ptn.val;
+                    else if (botLower.includes('arrivée') || botLower.includes('arrivee')) entities.stationnementProximiteArrivee = ptn.val;
+                    break;
                 }
             }
         } catch (e) { logger.error('❌ Stationnement extraction failed', e); }

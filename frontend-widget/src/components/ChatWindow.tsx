@@ -4,6 +4,7 @@ import { MessageList } from './MessageList.tsx';
 import { InputBox } from './InputBox.tsx';
 import { TypingIndicator } from './TypingIndicator.tsx';
 import { EndConversationModal } from './EndConversationModal.tsx';
+import { useChatStore } from '../store/chat.store.ts';
 import type { Message } from '../types';
 
 interface ChatWindowProps {
@@ -27,6 +28,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     onSendMessage,
     logoUrl,
 }) => {
+    const { leadData } = useChatStore();
     const [showEndModal, setShowEndModal] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(true);
 
@@ -238,6 +240,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
                         botName={botName}
                         logoUrl={logoUrl}
                         onOptionSelect={onSendMessage}
+                        leadData={leadData as any}
                     />
                 </div>
             </div>

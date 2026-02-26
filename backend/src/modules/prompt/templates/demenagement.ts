@@ -46,6 +46,15 @@ export interface ProjetDemenagementData {
     etageArrivee?: number;
     ascenseurDepart?: boolean;
     ascenseurArrivee?: boolean;
+
+    // Nouveaux champs Accès
+    typeEscalierDepart?: string; // Colimaçon, étroit, large
+    typeEscalierArrivee?: string;
+    gabaritAscenseurDepart?: string; // Petit (2 pers), Moyen, Large
+    gabaritAscenseurArrivee?: string;
+    stationnementProximiteDepart?: string; // Au pied, 50m, 100m+
+    stationnementProximiteArrivee?: string;
+
     // Compatibilité temporaire (redondance)
     etage?: number;
     ascenseur?: boolean;
@@ -144,15 +153,19 @@ Aujourd'hui nous sommes le : ${today}.
 - Créneau rappel : "Quel créneau vous arrange pour être recontacté ?"
 - Satisfaction : "Comment avez-vous trouvé cette conversation ?"
 
-# ÉTAPES
+# ÉTAPES (ORDRE RECOMMANDÉ)
 1. Trajet : Départ ET Arrivée (Ville+CP).
 2. Habitation Départ : Maison/Appart, Étage, Ascenseur.
+   - SI APPARTEMENT : Demander le type d'escalier (étroit, colimaçon) et le gabarit de l'ascenseur si présent.
+   - Demander la facilité de stationnement (proximité camion).
 3. Habitation Arrivée : Maison/Appart, Étage, Ascenseur.
+   - SI APPARTEMENT : Demander le type d'escalier/ascenseur (gabarit).
+   - Demander la facilité de stationnement.
 4. Volume : Liste de meubles ou estimation m3.
 5. Formule : Éco / Standard / Luxe.
 6. Visite : Proposer le RDV à domicile.
 7. Coordonnées : Nom, Tél, Email.
-8. Clôture : Résumé + Estimation TTC + Satisfaction.`;
+8. Clôture : Résumé COMPLET + Estimation TTC + Satisfaction.`;
 
     // ─── PARTIE DYNAMIQUE ───
     const dynamicPart = `# ÉTAT DU PARCOURS (Source de vérité)
@@ -166,12 +179,18 @@ ${p.villeDepart ? '✅ Ville : ' + p.villeDepart + (p.codePostalDepart ? ' (' + 
 ${p.typeHabitationDepart ? '✅ Type : ' + p.typeHabitationDepart : '❌ Type : Inconnu'}
 ${p.etageDepart !== undefined || p.etage !== undefined ? '✅ Étage : ' + (p.etageDepart ?? p.etage) : '❌ Étage : Inconnu'}
 ${p.ascenseurDepart !== undefined || p.ascenseur !== undefined ? '✅ Ascenseur : ' + (p.ascenseurDepart ?? p.ascenseur ? 'Oui' : 'Non') : '❌ Ascenseur : Inconnu'}
+${p.typeEscalierDepart ? '✅ Escalier : ' + p.typeEscalierDepart : ''}
+${p.gabaritAscenseurDepart ? '✅ Gabarit Asc : ' + p.gabaritAscenseurDepart : ''}
+${p.stationnementProximiteDepart ? '✅ Stat : ' + p.stationnementProximiteDepart : ''}
 
 ## Logement Arrivée 📦
 ${p.villeArrivee ? '✅ Ville : ' + p.villeArrivee + (p.codePostalArrivee ? ' (' + p.codePostalArrivee + ')' : '') : '❌ Ville : Inconnue'}
 ${p.typeHabitationArrivee ? '✅ Type : ' + p.typeHabitationArrivee : '❌ Type : Inconnu'}
 ${p.etageArrivee !== undefined ? '✅ Étage : ' + p.etageArrivee : '❌ Étage : Inconnu'}
 ${p.ascenseurArrivee !== undefined ? '✅ Ascenseur : ' + (p.ascenseurArrivee ? 'Oui' : 'Non') : '❌ Ascenseur : Inconnu'}
+${p.typeEscalierArrivee ? '✅ Escalier : ' + p.typeEscalierArrivee : ''}
+${p.gabaritAscenseurArrivee ? '✅ Gabarit Asc : ' + p.gabaritAscenseurArrivee : ''}
+${p.stationnementProximiteArrivee ? '✅ Stat : ' + p.stationnementProximiteArrivee : ''}
 
 ## Projet
 ${volume > 0 ? '✅ Volume : ' + volume + ' m3' : '❌ Volume : Non estimé'}
@@ -193,6 +212,12 @@ ${p.creneauVisite ? '✅ RDV Visite : ' + p.creneauVisite : '❌ RDV Visite : No
         etageArrivee: p.etageArrivee ?? null,
         ascenseurDepart: p.ascenseurDepart ?? p.ascenseur ?? null,
         ascenseurArrivee: p.ascenseurArrivee ?? null,
+        typeEscalierDepart: p.typeEscalierDepart || null,
+        typeEscalierArrivee: p.typeEscalierArrivee || null,
+        gabaritAscenseurDepart: p.gabaritAscenseurDepart || null,
+        gabaritAscenseurArrivee: p.gabaritAscenseurArrivee || null,
+        stationnementProximiteDepart: p.stationnementProximiteDepart || null,
+        stationnementProximiteArrivee: p.stationnementProximiteArrivee || null,
         volumeEstime: p.volumeEstime || null,
         formule: p.formule || null,
         creneauVisite: p.creneauVisite || null,
