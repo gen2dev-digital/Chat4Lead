@@ -83,13 +83,11 @@ export class MessageHandler {
                 }
             );
 
-            // ── 5.  Préparer les messages ────────────
-            // ── 5.  Préparer les messages (Contexte étendu !!) ────────────
-            const recentMessages = context.messages.slice(-24);
-            const llmMessages = [
-                ...recentMessages,
-                { role: 'user' as const, content: message },
-            ];
+            // ── 5.  Préparer les messages (Contexte étendu) ────────────
+            // On utilise les messages déjà sauvegardés incluant le dernier message user
+            // (saveMessage a déjà persisté le message user en étape 1)
+            const recentMessages = context.messages.slice(-30);
+            const llmMessages = [...recentMessages];
 
             // ── 6.  Appeler le LLM ───────────────────────────────
             let llmContent = '';
@@ -232,11 +230,9 @@ export class MessageHandler {
             );
 
             // ── 5. Messages ──
-            const recentMessages = context.messages.slice(-24);
-            const llmMessages = [
-                ...recentMessages,
-                { role: 'user' as const, content: message },
-            ];
+            // Le message user est déjà dans context.messages (sauvegardé à l'étape 1)
+            const recentMessages = context.messages.slice(-30);
+            const llmMessages = [...recentMessages];
 
             // ── 6. LLM streaming ──
             let llmContent = '';
@@ -1237,129 +1233,97 @@ export class MessageHandler {
     }
 
     /**
-     * Supprime les demandes répétées de téléphone/email si déjà collectés (anti-répétition).
+     * Filtre générique anti-répétition pour les coordonnées de contact.
+     * Si téléphone ET email sont connus → supprime toute phrase qui demande l'un ou l'autre.
+     * Si seulement un est manquant → ne filtre que celui qui est déjà collecté.
      */
     private filterRepeatedContactQuestion(text: string, lead: any): string {
-        if (!lead?.telephone || !lead?.email) return text;
-        const patterns = [
-            /Pardon,?\s*j'ai besoin de votre numéro de téléphone[^.\n]*\.?/gi,
-            /[Jj]'ai (?:d'abord\s+)?besoin de votre (?:numéro de )?téléphone[^.\n]*\.?/gi,
-            /[Pp]ouvez-vous (?:me )?donner (?:votre )?(?:numéro |téléphone )[^.\n]*\.?/gi,
-            /[Ee]t votre (?:numéro de )?téléphone\s*\?[^.\n]*\.?/gi,
-            /[Ee]t votre adresse email\s*\?[^.\n]*\.?/gi,
-            /[Ii]l me manque juste votre numéro de téléphone et votre adresse email[^.\n]*\.?/gi,
-            /[Jj]e n'ai pas ces informations dans notre conversation actuelle[^.\n]*\.?/gi,
-            /[Vv]os coordonnées sont importantes[^.\n]*\.?/gi,
-        ];
         let cleaned = text;
-        for (const p of patterns) {
-            cleaned = cleaned.replace(p, '').trim();
+        if (lead?.telephone) {
+            // Supprime toute phrase contenant une demande de téléphone
+            cleaned = cleaned.replace(/[^.!?\n]*(?:téléphone|numéro|portable|mobile|tél)[^.!?\n]*\?[^.!?\n]*/gi, '');
         }
-        return cleaned.replace(/\n{2,}/g, '\n').trim();
+        if (lead?.email) {
+            // Supprime toute phrase contenant une demande d'email
+            cleaned = cleaned.replace(/[^.!?\n]*(?:email|e-mail|adresse mail|courriel)[^.!?\n]*\?[^.!?\n]*/gi, '');
+        }
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**
-     * Supprime les questions d'identité (prénom/nom) si déjà collectées.
+     * Filtre générique anti-répétition pour l'identité.
+     * Si prénom ET nom sont connus → supprime toute phrase qui demande le nom.
      */
     private filterRepeatedIdentityQuestion(text: string, lead: any): string {
-        if (!lead?.prenom || !lead?.nom) return text;
-        const patterns = [
-            /Quel est votre prénom et votre nom\s*\?[^.\n]*\.?/gi,
-            /[Pp]ré[nn]om et nom\s*[^?]*\?[^.\n]*\.?/gi,
-            /[Qq]uel est votre nom complet\s*\?[^.\n]*\.?/gi,
-        ];
+        if (!lead?.prenom && !lead?.nom) return text;
         let cleaned = text;
-        for (const p of patterns) {
-            cleaned = cleaned.replace(p, '').trim();
+        if (lead?.prenom && lead?.nom) {
+            // Les deux sont connus, on supprime toute demande de nom/prénom
+            cleaned = cleaned.replace(/[^.!?\n]*(?:prénom|nom complet|vous appel)[^.!?\n]*\?[^.!?\n]*/gi, '');
+        } else if (lead?.prenom) {
+            // Seul le prénom est connu, supprimer uniquement les redemandes de prénom seul
+            cleaned = cleaned.replace(/[^.!?\n]*(?:quel est votre prénom)[^.!?\n]*\?[^.!?\n]*/gi, '');
         }
-        return cleaned.replace(/\n{2,}/g, '\n').trim();
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**
-     * Supprime les questions répétées "Maison ou appartement ?" si déjà connu pour l'adresse concernée.
+     * Filtre générique anti-répétition pour le type de logement.
      */
     private filterRepeatedLogementQuestion(text: string, lead: any): string {
         const p = lead?.projetData || {};
-        const hasDepart = !!p.typeHabitationDepart;
-        const hasArrivee = !!p.typeHabitationArrivee;
-        if (!hasDepart && !hasArrivee) return text;
-        const patterns: RegExp[] = [];
-        if (hasDepart) {
-            patterns.push(/[Ee]st-ce (?:un|une)\s+(?:maison|appartement)[^?]*à\s+[^?]*départ[^?]*\?[^.\n]*\.?/gi);
-            patterns.push(/[Mm]aison ou appartement[^?]*départ[^?]*\?[^.\n]*\.?/gi);
-        }
-        if (hasArrivee) {
-            patterns.push(/[Ee]st-ce (?:un|une)\s+(?:maison|appartement)[^?]*à\s+[^?]*arriv[ée]e?[^?]*\?[^.\n]*\.?/gi);
-            patterns.push(/[Mm]aison ou appartement[^?]*arriv[ée]e?[^?]*\?[^.\n]*\.?/gi);
-        }
         let cleaned = text;
-        for (const ptn of patterns) {
-            cleaned = cleaned.replace(ptn, '').trim();
+        if (p.typeHabitationDepart) {
+            // Supprime toute demande de type de logement au départ
+            cleaned = cleaned.replace(/[^.!?\n]*(?:maison ou appartement)[^.!?\n]*départ[^.!?\n]*\?[^.!?\n]*/gi, '');
+            cleaned = cleaned.replace(/[^.!?\n]*départ[^.!?\n]*(?:maison ou appartement)[^.!?\n]*\?[^.!?\n]*/gi, '');
         }
-        return cleaned.replace(/\n{2,}/g, '\n').trim();
+        if (p.typeHabitationArrivee) {
+            // Supprime toute demande de type de logement à l'arrivée
+            cleaned = cleaned.replace(/[^.!?\n]*(?:maison ou appartement)[^.!?\n]*arrivée?[^.!?\n]*\?[^.!?\n]*/gi, '');
+            cleaned = cleaned.replace(/[^.!?\n]*arrivée?[^.!?\n]*(?:maison ou appartement)[^.!?\n]*\?[^.!?\n]*/gi, '');
+        }
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**
-     * Supprime la question "Quel créneau vous arrange pour être recontacté ?" si déjà collecté (anti-répétition).
+     * Filtre générique : supprime demande de créneau rappel si déjà collecté.
      */
     private filterRepeatedCreneauQuestion(text: string, lead: any): string {
         if (!lead?.creneauRappel) return text;
-        const patterns = [
-            /Quel créneau vous arrange pour être recontacté\s*\?[^.\n]*(?:Matin|Après-midi|Soir|Indifférent)?[^.\n]*\.?/gi,
-            /Quel créneau vous arrange pour être recontacté\s*\?/gi,
-        ];
-        let cleaned = text;
-        for (const p of patterns) {
-            cleaned = cleaned.replace(p, '').trim();
-        }
-        return cleaned.replace(/\n{2,}/g, '\n').trim();
+        const cleaned = text.replace(/[^.!?\n]*(?:créneau|rappel|recontact)[^.!?\n]*\?[^.!?\n]*/gi, '');
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**
-     * Supprime les questions répétées sur le jour/créneau de visite si creneauVisite déjà complet (anti-répétition).
+     * Filtre générique : supprime demande de créneau visite si déjà complet.
      */
     private filterRepeatedVisitQuestion(text: string, lead: any): string {
         const creneauVisite = lead?.projetData?.creneauVisite as string | undefined;
-        if (!creneauVisite || !lead?.projetData?.rdvConseiller) return text;
-        const hasJour = /^(Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi|Dimanche|Demain)/i.test(creneauVisite);
-        const hasHoraire = /(Matin|Après-midi|Soir|Midi)\s*\([^)]+\)/i.test(creneauVisite);
+        if (!creneauVisite) return text;
+        // Créneau complet = contient un jour ET un horaire
+        const hasJour = /lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|demain/i.test(creneauVisite);
+        const hasHoraire = /matin|après-midi|soir|midi/i.test(creneauVisite);
         if (!hasJour || !hasHoraire) return text;
-        const patterns = [
-            /Quel jour vous conviendrait pour cette visite\s*\?[^.\n]*\.?/gi,
-            /Quel créneau vous arrange pour la visite\s*\?[^.\n]*\.?/gi,
-            /Quel jour précisément[^.\n]*\?[^.\n]*\.?/gi,
-            /Quel jour de la semaine vous arrange\s*\?[^.\n]*\.?/gi,
-        ];
-        let cleaned = text;
-        for (const p of patterns) {
-            cleaned = cleaned.replace(p, '').trim();
-        }
-        return cleaned.replace(/\n{2,}/g, '\n').trim();
+        const cleaned = text.replace(/[^.!?\n]*(?:quel jour|quel créneau)[^.!?\n]*visite[^.!?\n]*\?[^.!?\n]*/gi, '');
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**
-     * Supprime les questions répétées sur le stationnement si déjà collecté (anti-répétition).
+     * Filtre générique : supprime demande de stationnement si déjà collecté.
      */
     private filterRepeatedStationnementQuestion(text: string, lead: any): string {
         const p = lead?.projetData || {};
-        const dep = p.stationnementDepart;
-        const arr = p.stationnementArrivee;
-        if (!dep && !arr) return text;
-        const patterns: RegExp[] = [];
-        if (dep) {
-            patterns.push(/Y a-t-il un stationnement facile (?:pour le camion )?côté départ[^?]*\?[^.\n]*\.?/gi);
-            patterns.push(/[Pp]our le stationnement[^?]*départ[^?]*\?[^.\n]*\.?/gi);
-            patterns.push(/[Ll]e stationnement[^?]*départ[^?]*\?[^.\n]*\.?/gi);
-        }
-        if (arr) {
-            patterns.push(/[Ee]t pour l'arrivée[^?]*stationnement[^?]*\?[^.\n]*\.?/gi);
-            patterns.push(/[Pp]our l'arrivée[^?]*stationnement[^?]*\?[^.\n]*\.?/gi);
-        }
         let cleaned = text;
-        for (const pat of patterns) {
-            cleaned = cleaned.replace(pat, '').trim();
+        if (p.stationnementDepart) {
+            cleaned = cleaned.replace(/[^.!?\n]*stationnement[^.!?\n]*départ[^.!?\n]*\?[^.!?\n]*/gi, '');
+            cleaned = cleaned.replace(/[^.!?\n]*départ[^.!?\n]*stationnement[^.!?\n]*\?[^.!?\n]*/gi, '');
         }
-        return cleaned.replace(/\n{2,}/g, '\n').trim();
+        if (p.stationnementArrivee) {
+            cleaned = cleaned.replace(/[^.!?\n]*stationnement[^.!?\n]*arrivée?[^.!?\n]*\?[^.!?\n]*/gi, '');
+            cleaned = cleaned.replace(/[^.!?\n]*arrivée?[^.!?\n]*stationnement[^.!?\n]*\?[^.!?\n]*/gi, '');
+        }
+        return cleaned.replace(/\n{3,}/g, '\n\n').trim();
     }
 
     /**

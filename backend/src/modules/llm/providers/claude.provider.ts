@@ -4,7 +4,7 @@ import { logger } from '../../../utils/logger';
 import { LLMMessage, LLMProvider, LLMResponse, StreamChunkCallback } from '../types';
 import { PROMPT_CACHE_SEPARATOR } from '../../prompt/templates/demenagement';
 
-const MAX_TOKENS = 900;
+const MAX_TOKENS = 1800;
 
 type SystemBlock = { type: 'text'; text: string; cache_control?: { type: 'ephemeral' } };
 
