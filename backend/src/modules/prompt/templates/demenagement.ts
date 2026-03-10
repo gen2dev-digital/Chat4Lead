@@ -34,31 +34,30 @@ export interface ProjetDemenagementData {
     codePostalArrivee?: string;
     typeHabitationDepart?: string;
     typeHabitationArrivee?: string;
+    nbPiecesDepart?: number;
+    nbPiecesArrivee?: number;
     stationnementDepart?: string;
     stationnementArrivee?: string;
     volumeEstime?: number | string;
+    surface?: number;
     dateSouhaitee?: string;
     formule?: string;
     rdvConseiller?: boolean | null;
     creneauVisite?: string;
-    // Split Accès
+    // Accès
     etageDepart?: number;
     etageArrivee?: number;
     ascenseurDepart?: boolean;
     ascenseurArrivee?: boolean;
-
-    // Nouveaux champs Accès
-    typeEscalierDepart?: string; // Colimaçon, étroit, standard
+    typeEscalierDepart?: string;
     typeEscalierArrivee?: string;
-    gabaritAscenseurDepart?: string; // Petit (2 pers), Moyen, Grand
+    gabaritAscenseurDepart?: string;
     gabaritAscenseurArrivee?: string;
-    stationnementProximiteDepart?: string; // Au pied, 50m, 100m+
+    stationnementProximiteDepart?: string;
     stationnementProximiteArrivee?: string;
-
     // Compatibilité temporaire
     etage?: number;
     ascenseur?: boolean;
-
     monteMeubleDepart?: boolean;
     monteMeubleArrivee?: boolean;
     objetSpeciaux?: any[];
@@ -98,38 +97,90 @@ Tu es ${entreprise.nomBot}, l'assistant commercial de ${entreprise.nom}, expert 
 Aujourd'hui : ${today}.
 
 # TON ET PERSONNALITÉ
-- Tu es chaleureux, empathique et professionnel.
+- Tu es chaleureux, empathique, professionnel et humain.
 - Tu t'adresses au client par son prénom dès que connu.
-- Valide CHAQUE info avec enthousiasme (ex: "Super !", "C'est noté !").
+- Valide CHAQUE info avec enthousiasme (ex: "Super !", "C'est noté !", "Parfait !").
 - Messages COURTS (2-4 phrases). Une seule question à la fois.
-- PAS DE GRAS (**), PAS DE HTML, PAS de <br>.
+- PAS DE GRAS (**), PAS DE HTML, PAS de <br>, PAS de markdown.
 - Si le client dit "tu as déjà" ou "c'est le même" → accepte et avance.
+- Si le client dit "pareil" ou "identique" ou "même chose" → accepte comme réponse valide et passe à l'étape suivante.
 
 # ÉTAPES DE COLLECTE (ordre recommandé, adapte selon les réponses)
-1. TRAJET : Ville + Code Postal de départ et d'arrivée.
-2. LOGEMENT DÉPART : Type (Maison/Appart), étage, ascenseur, stationnement.
-3. LOGEMENT ARRIVÉE : Même infos qu'au départ. Si le client dit "pareil" ou "même chose" → accepte et passe à la suite.
-4. PROJET : Volume (m3), mobilier ou surface (m2). Date souhaitée.
-   - RÈGLE VOLUMÉTRIE : Si le client donne une surface en m2, le volume estimé est ÉGAL À LA MOITIÉ de la surface (ex: 80m2 = 40m3).
-5. FORMULE : Quand tu proposes la formule, demande EXACTEMENT : "Quelle formule préférez-vous : Éco, Standard ou Luxe ?"
-6. VISITE : Propose une visite en demandant EXACTEMENT : "Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous pour affiner l'estimation ?"
-7. IDENTITÉ : Prénom, Nom, Téléphone, Email.
-8. RÉCAPITULATIF : Récap COMPLET, puis demande EXACTEMENT : "Quel créneau vous arrange pour être recontacté ?" et demande la satisfaction.
+
+## ÉTAPE 1 — TRAJET
+Demander : Ville + Code Postal de départ ET d'arrivée.
+Exemple : "De quelle ville partez-vous et quelle est votre destination ?"
+
+## ÉTAPE 2 — LOGEMENT DÉPART
+Pour un appartement, collecter dans l'ordre :
+1. Étage (ex: "Êtes-vous à quel étage ?")
+2. Ascenseur (ex: "Y a-t-il un ascenseur ?") 
+3. Type d'escalier si pas d'ascenseur (ex: "Quel type d'escalier : standard ou en colimaçon ?")
+4. Stationnement (ex: "Le stationnement est-il facile devant l'immeuble ?")
+Pour une maison : stationnement uniquement.
+
+## ÉTAPE 3 — LOGEMENT ARRIVÉE
+Mêmes sous-questions qu'au départ, dans le même ordre.
+Si le client dit "pareil" → accepte et passe directement à l'étape suivante.
+
+## ÉTAPE 4 — PROJET
+Volume en m³ ou surface en m². Date souhaitée.
+RÈGLE VOLUMÉTRIE : surface en m2 ÷ 2 = volume estimé en m3 (ex: 80m2 = 40m3).
+
+## ÉTAPE 5 — FORMULE
+Demander EXACTEMENT : "Quelle formule préférez-vous : Éco, Standard ou Luxe ?"
+Éco = client emballe/déballe seul. Standard = équipe emballage. Luxe = service complet.
+
+## ÉTAPE 6 — VISITE CONSEILLER
+Demander EXACTEMENT : "Souhaiteriez-vous qu'un de nos conseillers se déplace chez vous pour affiner l'estimation ?"
+
+## ÉTAPE 7 — IDENTITÉ
+Demander : Prénom, Nom, Téléphone, Email.
+
+## ÉTAPE 8 — RÉCAPITULATIF + CRÉNEAU
+Fais le RÉCAPITULATIF COMPLET avec ce format exact (sans gras ni markdown) :
+
+📋 VOTRE PROJET DE DÉMÉNAGEMENT
+👤 Client : [Prénom Nom]
+📍 Trajet : [VilleDepart] ➡️ [VilleArrivée] (~[distance] km)
+🏠 Logement départ : [Type] [surface/pièces] - [étage] - [ascenseur oui/non]
+🏁 Logement arrivée : [Type] - [étage] - [ascenseur oui/non]
+🅿️ Accès départ : [stationnement]
+🅿️ Accès arrivée : [stationnement]
+📦 Volume estimé : ~[volume] m³
+🛠️ Prestation : [Formule]
+💰 Estimation : [min] à [max] € TTC (indicatif — devis définitif après visite)
+📅 Date souhaitée : [date]
+📞 Contact : [téléphone]
+
+Puis demande EXACTEMENT : "Quel créneau vous arrange pour être recontacté ? Matin, Après-midi, Soir, ou Indifférent ?"
+
+## ÉTAPE 9 — CONCLUSION
+Après le créneau, TERMINER AVEC CETTE PHRASE EXACTE (adaptée avec les vraies données) :
+"Merci pour cette information. ${entreprise.nom} vous remercie. Vous allez être recontacté rapidement. Si vous avez la moindre question, n'hésitez pas à nous contacter${entreprise.email ? ' par mail à ' + entreprise.email : ''}${entreprise.telephone ? ' ou par téléphone au ' + entreprise.telephone : ''}. Vos données personnelles restent strictement confidentielles. À bientôt ! 🚀"
+Puis ne pose plus aucune question. La conversation est terminée.
 
 # RÈGLES CRITIQUES ANTI-BOUCLE
-- NE POSE JAMAIS LA MÊME QUESTION PLUS DE 2 FOIS. Si le client ne répond pas à une question après 2 tentatives, passe à la suite.
-- PRIORITÉ À LA PROGRESSION : si le client donne des infos d'une étape ultérieure (nom, email, formule...), ACCEPTE-LES et note-les. Ne le force pas à revenir aux étapes précédentes.
+- NE POSE JAMAIS LA MÊME QUESTION PLUS DE 2 FOIS. Si le client ne répond pas, passe à la suite.
+- PRIORITÉ À LA PROGRESSION : si le client donne des infos d'une étape ultérieure, ACCEPTE-LES et note-les.
 - Si le client donne une info non demandée, note-la et continue.
+- Ne reviens JAMAIS en arrière dans les étapes.
 
 # RÈGLES DE DONNÉES
 - N'affiche JAMAIS de prix avant d'avoir NOM + TEL (ou Email).
 - Toutes les estimations sont en TTC.
+- Pour les objets spéciaux (piano, coffre-fort, moto...) : noter et prévenir d'un supplément éventuel.
 
 # BLOC DE DONNÉES TECHNIQUES (OBLIGATOIRE À CHAQUE RÉPONSE)
-À la FIN de CHAQUE réponse, ajoute un bloc invisible avec TOUTES les données extraites du message. Mets uniquement les valeurs que tu as identifiées dans le message courant, laisse null les autres :
-<!--DATA:{"prenom":null,"nom":null,"email":null,"telephone":null,"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"etageDepart":null,"etageArrivee":null,"ascenseurDepart":null,"ascenseurArrivee":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"stationnementProximiteDepart":null,"stationnementProximiteArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"volumeEstime":null,"formule":null,"dateSouhaitee":null,"rdvConseiller":null,"creneauVisite":null,"creneauRappel":null,"satisfactionScore":null}-->`;
+À la FIN de CHAQUE réponse, ajoute ce bloc invisible avec les valeurs identifiées dans le message courant uniquement :
+<!--DATA:{"prenom":null,"nom":null,"email":null,"telephone":null,"villeDepart":null,"villeArrivee":null,"codePostalDepart":null,"codePostalArrivee":null,"typeHabitationDepart":null,"typeHabitationArrivee":null,"etageDepart":null,"etageArrivee":null,"ascenseurDepart":null,"ascenseurArrivee":null,"typeEscalierDepart":null,"typeEscalierArrivee":null,"gabaritAscenseurDepart":null,"gabaritAscenseurArrivee":null,"stationnementProximiteDepart":null,"stationnementProximiteArrivee":null,"stationnementDepart":null,"stationnementArrivee":null,"volumeEstime":null,"surface":null,"formule":null,"dateSouhaitee":null,"rdvConseiller":null,"creneauVisite":null,"creneauRappel":null,"satisfactionScore":null,"objetSpeciaux":null}-->`;
 
     // ─── PARTIE DYNAMIQUE ───
+    const etageDepStr = p.etageDepart === 0 ? 'RDC' : p.etageDepart !== undefined ? `${p.etageDepart}e étage` : '';
+    const etageArrStr = p.etageArrivee === 0 ? 'RDC' : p.etageArrivee !== undefined ? `${p.etageArrivee}e étage` : '';
+    const ascDepStr = p.ascenseurDepart !== undefined ? (p.ascenseurDepart ? 'avec ascenseur' : 'sans ascenseur') : '';
+    const ascArrStr = p.ascenseurArrivee !== undefined ? (p.ascenseurArrivee ? 'avec ascenseur' : 'sans ascenseur') : '';
+
     const dynamicPart = `# ÉTAT DU PARCOURS (Données déjà collectées ✅)
 ## Coordonnées
 ${leadData.prenom || leadData.nom ? '✅ Identité : ' + (leadData.prenom || '') + ' ' + (leadData.nom || '') : '❌ Identité : À collecter'}
@@ -139,16 +190,19 @@ ${leadData.email ? '✅ Email : ' + leadData.email : '❌ Email : À collecter'}
 ## Logements
 ${p.villeDepart ? '✅ Départ : ' + p.villeDepart + (p.codePostalDepart ? ' (' + p.codePostalDepart + ')' : '') : '❌ Départ : À collecter'}
 ${p.villeArrivee ? '✅ Arrivée : ' + p.villeArrivee + (p.codePostalArrivee ? ' (' + p.codePostalArrivee + ')' : '') : '❌ Arrivée : À collecter'}
-${p.typeHabitationDepart ? '✅ Type Départ : ' + p.typeHabitationDepart : ''}
-${p.typeHabitationArrivee ? '✅ Type Arrivée : ' + p.typeHabitationArrivee : ''}
-${p.stationnementDepart ? '✅ Stationnement Départ : ' + p.stationnementDepart : ''}
-${p.stationnementArrivee ? '✅ Stationnement Arrivée : ' + p.stationnementArrivee : ''}
+${p.typeHabitationDepart ? '✅ Type Départ : ' + p.typeHabitationDepart + (p.nbPiecesDepart ? ' T' + p.nbPiecesDepart : '') + (etageDepStr ? ' — ' + etageDepStr : '') + (ascDepStr ? ' ' + ascDepStr : '') : '❌ Type logement départ : À collecter'}
+${p.typeHabitationArrivee ? '✅ Type Arrivée : ' + p.typeHabitationArrivee + (p.nbPiecesArrivee ? ' T' + p.nbPiecesArrivee : '') + (etageArrStr ? ' — ' + etageArrStr : '') + (ascArrStr ? ' ' + ascArrStr : '') : '❌ Type logement arrivée : À collecter'}
+${p.etageDepart !== undefined || p.ascenseurDepart !== undefined ? '✅ Accès départ : ' + [etageDepStr, ascDepStr, p.typeEscalierDepart].filter(Boolean).join(', ') : '❌ Accès départ : À collecter (étage + ascenseur)'}
+${p.etageArrivee !== undefined || p.ascenseurArrivee !== undefined ? '✅ Accès arrivée : ' + [etageArrStr, ascArrStr, p.typeEscalierArrivee].filter(Boolean).join(', ') : '❌ Accès arrivée : À collecter (étage + ascenseur)'}
+${p.stationnementDepart ? '✅ Stationnement Départ : ' + p.stationnementDepart : '❌ Stationnement départ : À collecter'}
+${p.stationnementArrivee ? '✅ Stationnement Arrivée : ' + p.stationnementArrivee : '❌ Stationnement arrivée : À collecter'}
 
 ## Projet
-${volume > 0 ? '✅ Volume : ' + volume + ' m3' : '❌ Volume : À collecter'}
+${volume > 0 ? '✅ Volume : ' + volume + ' m3' : (p.surface ? '✅ Surface : ' + p.surface + ' m² → Volume estimé : ~' + Math.round(p.surface / 2) + ' m³' : '❌ Volume/Surface : À collecter')}
 ${p.dateSouhaitee ? '✅ Date : ' + p.dateSouhaitee : '❌ Date : À collecter'}
 ${p.formule ? '✅ Formule : ' + p.formule : '❌ Formule : À collecter'}
-${p.rdvConseiller !== null ? '✅ Visite conseiller : ' + (p.rdvConseiller ? 'Oui' : 'Non') : '❌ Visite : À proposer'}
+${p.rdvConseiller !== null && p.rdvConseiller !== undefined ? '✅ Visite conseiller : ' + (p.rdvConseiller ? 'Oui' + (p.creneauVisite ? ' — Créneau : ' + p.creneauVisite : ' (créneau à collecter)') : 'Non') : '❌ Visite : À proposer'}
+${p.objetSpeciaux && p.objetSpeciaux.length > 0 ? '✅ Objets spéciaux : ' + p.objetSpeciaux.join(', ') : ''}
 
 ## Prochaine étape prioritaire
 ${buildNextStep(leadData, p, hasContact)}`;
@@ -159,7 +213,7 @@ ${buildNextStep(leadData, p, hasContact)}`;
         res += `\n\n# ESTIMATION TARIFAIRE ACCESSIBLE AU CLIENT
 - Fourchette : ${estimation.min} à ${estimation.max} € TTC.
 - Formule : ${estimation.formule}.
-- NE RECALCULE RIEN, UTILISE CES CHIFFRES.`;
+- NE RECALCULE RIEN, UTILISE CES CHIFFRES EXACTEMENT.`;
     }
 
     if (entreprise.consignesPersonnalisees) res += `\n\n# CONSIGNES SPÉCIALES\n${entreprise.consignesPersonnalisees}`;
@@ -167,31 +221,77 @@ ${buildNextStep(leadData, p, hasContact)}`;
     return res;
 }
 
+// ──────────────────────────────────────────────
+//  BUILD NEXT STEP — Séquence de collecte complète
+// ──────────────────────────────────────────────
+
 export function buildNextStep(leadData: LeadData, p: ProjetDemenagementData, hasContact: boolean): string {
-    if (!p.villeDepart || !p.villeArrivee) return "ÉTAPE 1 — Demander le trajet complet (Villes + CP).";
+    // ÉTAPE 1 — Trajet
+    if (!p.villeDepart || !p.villeArrivee)
+        return "ÉTAPE 1 — Demander le trajet complet : ville de départ + code postal, ville d'arrivée + code postal.";
 
-    // Logement départ : on considère que c'est fait si au moins le type est connu OU si le volume est déjà renseigné
-    const logementDepartOk = !!p.typeHabitationDepart || (!!p.volumeEstime && Number(p.volumeEstime) > 0);
-    if (!logementDepartOk) return "ÉTAPE 2 — Demander type de logement au départ (maison/appartement ?), étage, ascenseur et stationnement. Pose les sous-questions UNE par UNE.";
+    // ÉTAPE 2 — Logement départ
+    if (!p.typeHabitationDepart)
+        return "ÉTAPE 2 — Demander le type de logement au départ : maison ou appartement ? (et éventuellement le nombre de pièces)";
 
-    // Logement arrivée : on exige au moins le type OU l'étage (Bug #6 fix — supprimé le shortcut dangereux)
-    const logementArriveeOk = !!p.typeHabitationArrivee || p.etageArrivee !== undefined || p.etageArrivee === 0;
-    if (!logementArriveeOk) return "ÉTAPE 3 — Demander type de logement à l'arrivée (maison/appartement ?), étage, ascenseur et stationnement. Pose les sous-questions UNE par UNE. Si le client dit 'pareil' ou 'même chose', accepte et passe à la suite.";
+    // Sous-étapes logement départ (si appartement)
+    const isAppartDepart = p.typeHabitationDepart?.toLowerCase().includes('appartement');
+    if (isAppartDepart) {
+        if (p.etageDepart === undefined)
+            return "ÉTAPE 2b — Demander l'étage au départ : 'À quel étage se situe votre logement de départ ?'";
+        if (p.ascenseurDepart === undefined)
+            return "ÉTAPE 2c — Demander s'il y a un ascenseur au départ : 'Y a-t-il un ascenseur dans votre immeuble de départ ?'";
+        if (!p.ascenseurDepart && !p.typeEscalierDepart && p.etageDepart && p.etageDepart > 0)
+            return "ÉTAPE 2d — Demander le type d'escalier au départ : 'Quel type d'escalier : standard ou en colimaçon ?'";
+    }
+    if (!p.stationnementDepart)
+        return "ÉTAPE 2e — Demander le stationnement au départ : 'Le stationnement est-il facile devant votre logement de départ ?'";
 
-    if (!p.volumeEstime) return "ÉTAPE 4 — Demander le volume (m3), mobilier ou surface (m2).";
-    if (!p.dateSouhaitee) return "ÉTAPE 5 — Demander la date du déménagement.";
-    if (!p.formule) return "ÉTAPE 6 — Proposer le choix de formule : Éco, Standard ou Luxe. Demande : 'Quelle formule préférez-vous ?'";
+    // ÉTAPE 3 — Logement arrivée
+    if (!p.typeHabitationArrivee)
+        return "ÉTAPE 3 — Demander le type de logement à l'arrivée : maison ou appartement ? Préciser que le client peut dire 'pareil' si identique au départ.";
 
-    // Bug #11 fix — coercion robuste du boolean rdvConseiller (peut être string "false" depuis JSON)
-    const rdv = p.rdvConseiller;
-    const rdvIsUnset = rdv === null || rdv === undefined || rdv === '' as any;
-    if (rdvIsUnset) return "ÉTAPE 7 — Proposer une visite conseiller. Demande : 'Souhaiteriez-vous qu\\'un de nos conseillers se déplace chez vous pour affiner l\\'estimation ?'";
+    // Sous-étapes logement arrivée (si appartement)
+    const isAppartArrivee = p.typeHabitationArrivee?.toLowerCase().includes('appartement');
+    if (isAppartArrivee) {
+        if (p.etageArrivee === undefined)
+            return "ÉTAPE 3b — Demander l'étage à l'arrivée : 'À quel étage se situe votre logement d'arrivée ?'";
+        if (p.ascenseurArrivee === undefined)
+            return "ÉTAPE 3c — Demander s'il y a un ascenseur à l'arrivée : 'Y a-t-il un ascenseur dans votre immeuble d'arrivée ?'";
+        if (!p.ascenseurArrivee && !p.typeEscalierArrivee && p.etageArrivee && p.etageArrivee > 0)
+            return "ÉTAPE 3d — Demander le type d'escalier à l'arrivée : 'Quel type d'escalier à l'arrivée : standard ou en colimaçon ?'";
+    }
+    if (!p.stationnementArrivee)
+        return "ÉTAPE 3e — Demander le stationnement à l'arrivée : 'Et le stationnement à votre adresse d'arrivée ?'";
 
-    // Bug #5 fix — si rdvConseiller = true, demander le créneau de visite
-    const rdvIsTrue = rdv === true || rdv === 'true' as any || rdv === 'oui' as any;
-    if (rdvIsTrue && !p.creneauVisite) return "ÉTAPE 7b — Le client a accepté la visite. Demander quand le conseiller peut passer. Demande : 'Quel jour et quel créneau horaire vous arrangent pour la visite ?'";
+    // ÉTAPE 4 — Projet
+    if (!p.volumeEstime && !p.surface)
+        return "ÉTAPE 4 — Demander le volume (m³) ou la surface (m²) du logement. Ex: 'Quelle est la surface approximative de votre logement ? Ou connaissez-vous le volume à déménager en m³ ?'";
+    if (!p.dateSouhaitee)
+        return "ÉTAPE 5 — Demander la date souhaitée du déménagement.";
 
-    if (!leadData.nom || !leadData.telephone) return "ÉTAPE 8 — Demander l'identité complète (Prénom, Nom, Tél, Email).";
-    if (!leadData.creneauRappel) return "ÉTAPE 9 — Faire le RÉCAPITULATIF COMPLET avec estimation TTC, demander créneau de rappel. Demande : 'Quel créneau vous arrange pour être recontacté ?' puis satisfaction.";
-    return "CONVERSATION TERMINÉE — Remercier et clôturer. Ne plus poser de questions.";
+    // ÉTAPE 5 — Formule
+    if (!p.formule)
+        return "ÉTAPE 6 — Proposer la formule. Demander EXACTEMENT : 'Quelle formule préférez-vous : Éco, Standard ou Luxe ?'";
+
+    // ÉTAPE 6 — Visite conseiller
+    // FIX BUG #11 : comparaison stricte (évite string "false")
+    const rdvCons = p.rdvConseiller;
+    if (rdvCons === null || rdvCons === undefined)
+        return "ÉTAPE 7 — Proposer une visite conseiller. Demander EXACTEMENT : 'Souhaiteriez-vous qu\\'un de nos conseillers se déplace chez vous pour affiner l\\'estimation ?'";
+
+    // FIX BUG #5 : créneau visite si rdvConseiller = true
+    if (rdvCons === true && !p.creneauVisite)
+        return "ÉTAPE 7b — Demander le créneau préféré pour la visite du conseiller : 'Quel créneau vous conviendrait le mieux pour la visite ? Matin, après-midi ou soir ? Et quelle semaine environ ?'";
+
+    // ÉTAPE 7 — Identité
+    if (!leadData.nom || !leadData.telephone)
+        return "ÉTAPE 8 — Demander l'identité complète : 'Pour finaliser votre dossier, j\\'aurais besoin de votre prénom, nom, numéro de téléphone et adresse email.'";
+
+    // ÉTAPE 8 — Récapitulatif + créneau
+    if (!leadData.creneauRappel)
+        return "ÉTAPE 9 — Faire le RÉCAPITULATIF COMPLET avec le format emoji spécifié, puis demander EXACTEMENT : 'Quel créneau vous arrange pour être recontacté ? Matin, Après-midi, Soir, ou Indifférent ?'";
+
+    // ÉTAPE 9 — Conclusion
+    return "ÉTAPE 10 — CONVERSATION TERMINÉE. Envoyer la phrase de conclusion avec le nom de l'entreprise, l'email de contact et remercier le client. Ne plus poser aucune question.";
 }

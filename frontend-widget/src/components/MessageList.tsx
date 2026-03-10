@@ -16,63 +16,83 @@ interface MessageListProps {
     leadData: LeadData;
 }
 
-/* ── Phrases déclenchant le modal de visite conseiller ── */
+// ──────────────────────────────────────────────
+//  TRIGGERS TEXTUELS — Détection des modaux
+//  Ces phrases sont produites par le prompt.
+// ──────────────────────────────────────────────
+
+/** Phrases déclenchant le modal de visite conseiller */
 const VISITE_TRIGGERS = [
     "souhaiteriez-vous qu'un de nos conseillers se déplace",
     "se déplace chez vous pour affiner l'estimation",
+    "souhaiteriez-vous qu'un conseiller",
     "visite à domicile",
+    "un de nos conseillers se déplace",
     "conseiller se déplace",
     "un conseiller peut se déplacer",
     "voulez-vous qu'un conseiller vienne",
     "visite conseiller",
     "conseiller vienne chez vous",
-    "visite gratuite",
     "un expert se déplace",
-    "rdv conseiller",
     "rdv à domicile",
-    "proposer une visite",
 ];
 
-/* ── Phrases déclenchant le choix de formule ── */
+/** Phrases déclenchant le choix de formule */
 const FORMULE_TRIGGERS = [
     "quelle formule préférez-vous",
-    "choisir une formule",
     "quelle formule souhaitez-vous",
     "formule éco, standard ou luxe",
-    "trois formules",
-    "nos formules",
-    "choisir votre formule",
-    "choisir entre",
     "éco, standard ou luxe",
     "eco, standard ou luxe",
+    "choisir une formule",
+    "nos formules",
+    "choisir votre formule",
     "formule vous convient",
     "quel type de prestation",
     "quelle prestation",
+    "quelle formule",
 ];
 
-/* ── Phrases déclenchant le choix de créneau ── */
+/** Phrases déclenchant le choix de créneau de rappel */
 const CRENEAU_TRIGGERS = [
-    "quel créneau vous arrange",
+    "quel créneau vous arrange pour être recontacté",
     "à quel moment préférez-vous être recontacté",
     "quand souhaitez-vous être recontacté",
     "quel moment vous convient",
-    "créneau de rappel",
-    "être recontacté",
-    "préférence horaire",
-    "matin, l'après-midi ou le soir",
+    "matin, après-midi, soir, ou indifférent",
     "matin, après-midi ou soir",
-    "recontacté par notre équipe",
+    "matin, l'après-midi ou le soir",
+    "créneau de rappel",
     "pour être rappelé",
+    "recontacté par notre équipe",
 ];
 
-function matchesTrigger(content: string, triggers: string[]): boolean {
+/** Phrases déclenchant la note de satisfaction */
+const RATING_TRIGGERS = [
+    "comment avez-vous trouvé cette conversation",
+    "notez cette conversation",
+    "votre avis sur",
+    "votre satisfaction",
+    "évaluez notre",
+];
+
+// ──────────────────────────────────────────────
+//  HELPERS
+// ──────────────────────────────────────────────
+
+function matchesTrigger(content: string | undefined, triggers: string[]): boolean {
+    if (!content) return false;
     const lower = content.toLowerCase();
-    return triggers.some(t => lower.includes(t));
+    return triggers.some(t => lower.includes(t.toLowerCase()));
 }
 
-function isVisiteQuestion(content: string): boolean {
+function isVisiteQuestion(content: string | undefined): boolean {
     return matchesTrigger(content, VISITE_TRIGGERS);
 }
+
+// ──────────────────────────────────────────────
+//  COMPOSANT PRINCIPAL
+// ──────────────────────────────────────────────
 
 export const MessageList: React.FC<MessageListProps> = ({
     messages,
@@ -82,8 +102,12 @@ export const MessageList: React.FC<MessageListProps> = ({
     leadData
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    // Track quels messages ont déclenché le modal (par index) — Set pour gérer plusieurs modals (Bug #13)
-    const [answeredVisiteIdxs, setAnsweredVisiteIdxs] = useState<Set<number>>(new Set());
+
+    /**
+     * FIX BUG #13 : Set d'index au lieu d'un seul entier
+     * Permet de masquer plusieurs modaux visite dans la même conversation
+     */
+    const [answeredVisiteIdxSet, setAnsweredVisiteIdxSet] = useState<Set<number>>(new Set());
     const [showSummaryModal, setShowSummaryModal] = useState(false);
 
     useEffect(() => {
@@ -94,9 +118,21 @@ export const MessageList: React.FC<MessageListProps> = ({
         if (onOptionSelect) onOptionSelect(text);
     };
 
+    /**
+     * Récupère les actions du dernier message bot.
+     * Les actions sont stockées dans msg.actions (ajouté au type Message).
+     * FIX BUG #4 : on lit les actions WebSocket en plus du texte.
+     */
+    const getLastBotActions = (): string[] => {
+        const lastBot = [...messages].reverse().find(m => m.role === 'assistant');
+        return (lastBot as any)?.actions || [];
+    };
+
+    const lastBotActions = getLastBotActions();
+
     return (
         <div className="w-full flex-1 flex flex-col">
-            {/* Quick Actions — Professional Style */}
+            {/* Quick Actions — affichées uniquement quand la conversation est vide */}
             {messages.length === 0 && (
                 <div className="w-full flex flex-col items-center gap-3.5 px-4 mb-8 animate-fade-in">
                     <QuickAction
@@ -106,7 +142,6 @@ export const MessageList: React.FC<MessageListProps> = ({
                         onClick={() => handleOptionClick('Je souhaite obtenir une estimation tarifaire pour mon déménagement.')}
                         gradient="linear-gradient(135deg, #6366f1, #818cf8)"
                     />
-
                     <QuickAction
                         icon={<Package size={18} />}
                         title="Calcul du volume"
@@ -114,7 +149,6 @@ export const MessageList: React.FC<MessageListProps> = ({
                         onClick={() => handleOptionClick('Je voudrais calculer le volume de mon déménagement.')}
                         gradient="linear-gradient(135deg, #8b5cf6, #a78bfa)"
                     />
-
                     <QuickAction
                         icon={<Truck size={18} />}
                         title="Informations complémentaires"
@@ -125,7 +159,7 @@ export const MessageList: React.FC<MessageListProps> = ({
                 </div>
             )}
 
-            {/* Messages + widgets inline */}
+            {/* ── Messages + widgets visite inline ── */}
             <div className="space-y-4 w-full">
                 {messages.map((msg, index) => (
                     <React.Fragment key={msg.id || index}>
@@ -135,20 +169,25 @@ export const MessageList: React.FC<MessageListProps> = ({
                             logoUrl={logoUrl}
                         />
 
-                        {/* ── Visite Modal inline juste après le message de proposition ── */}
-                        {/* Bug #14 fix — guard msg.content */}
+                        {/*
+                         * ── Visite Modal — inline juste après le message de proposition ──
+                         * FIX BUG #14 : guard sur msg.content
+                         * FIX BUG #13 : Set au lieu d'un seul index
+                         */}
                         {msg.role === 'assistant'
                             && msg.content
-                            && (isVisiteQuestion(msg.content) || (msg.actions && msg.actions.includes('suggest_visit_picker')))
-                            && !answeredVisiteIdxs.has(index) && (
+                            && isVisiteQuestion(msg.content)
+                            && !answeredVisiteIdxSet.has(index)
+                            && leadData.projetData?.rdvConseiller === undefined
+                            && (
                                 <div className="px-1 animate-fade-in">
                                     <VisiteModal
                                         onConfirm={(message) => {
-                                            setAnsweredVisiteIdxs(prev => new Set(prev).add(index));
+                                            setAnsweredVisiteIdxSet(prev => new Set([...prev, index]));
                                             handleOptionClick(message);
                                         }}
                                         onDismiss={(message) => {
-                                            setAnsweredVisiteIdxs(prev => new Set(prev).add(index));
+                                            setAnsweredVisiteIdxSet(prev => new Set([...prev, index]));
                                             handleOptionClick(message);
                                         }}
                                     />
@@ -162,15 +201,17 @@ export const MessageList: React.FC<MessageListProps> = ({
             {(() => {
                 const lastMsg = messages[messages.length - 1];
                 if (!lastMsg || lastMsg.role !== 'assistant' || !lastMsg.content) return null;
-                const lastActions = lastMsg.actions || [];
 
                 // Ne pas afficher si c'est une question de visite (géré inline ci-dessus)
-                if (isVisiteQuestion(lastMsg.content) || lastActions.includes('suggest_visit_picker')) return null;
+                if (isVisiteQuestion(lastMsg.content)) return null;
 
-                // Formula Picker — texte OU action backend (Bug #4 fix)
-                const showFormula = (matchesTrigger(lastMsg.content, FORMULE_TRIGGERS)
-                    || lastActions.includes('show_formula_picker'))
-                    && !leadData.projetData?.formule;
+                // ── Formula Picker ──
+                // Déclenché par texte OU par action WebSocket "show_formula_picker"
+                const showFormula = (
+                    matchesTrigger(lastMsg.content, FORMULE_TRIGGERS)
+                    || lastBotActions.includes('show_formula_picker')
+                ) && !leadData.projetData?.formule;
+
                 if (showFormula) {
                     return (
                         <div className="px-4 pb-2">
@@ -182,10 +223,12 @@ export const MessageList: React.FC<MessageListProps> = ({
                     );
                 }
 
-                // Summary trigger
-                const isSummary = lastMsg.content.toLowerCase().includes("récapitulatif de votre")
-                    || lastMsg.content.toLowerCase().includes("voici le récapitulatif")
-                    || lastMsg.content.toLowerCase().includes("récapitulatif complet");
+                // ── Récapitulatif complet ──
+                const isSummary = lastMsg.content.toLowerCase().includes('récapitulatif')
+                    && (lastMsg.content.toLowerCase().includes('votre projet')
+                        || lastMsg.content.toLowerCase().includes('trajet')
+                        || lastMsg.content.toLowerCase().includes('estimation'));
+
                 if (isSummary) {
                     return (
                         <div className="px-4 pb-4">
@@ -204,10 +247,12 @@ export const MessageList: React.FC<MessageListProps> = ({
                     );
                 }
 
-                // Time Slot Picker (créneau de recontact) — texte OU action backend
-                const showTimeSlotPicker = (matchesTrigger(lastMsg.content, CRENEAU_TRIGGERS)
-                    || lastActions.includes('appointment_module_triggered'))
-                    && !leadData.creneauRappel;
+                // ── Time Slot Picker (créneau de recontact) ──
+                // Déclenché par texte OU par action WebSocket "show_timeslot_picker"
+                const showTimeSlotPicker = (
+                    matchesTrigger(lastMsg.content, CRENEAU_TRIGGERS)
+                    || lastBotActions.includes('show_timeslot_picker')
+                ) && !leadData.creneauRappel;
 
                 if (showTimeSlotPicker) {
                     return (
@@ -217,21 +262,16 @@ export const MessageList: React.FC<MessageListProps> = ({
                     );
                 }
 
-                // Star Rating
-                const ratingTriggers = [
-                    "comment avez-vous trouvé cette conversation",
-                    "notez cette conversation",
-                    "votre avis",
-                    "satisfaction",
-                    "évaluez",
-                ];
-                if (matchesTrigger(lastMsg.content, ratingTriggers)) {
+                // ── Star Rating (satisfaction) ──
+                if (matchesTrigger(lastMsg.content, RATING_TRIGGERS)) {
                     return (
                         <div className="px-4 pb-2">
                             <StarRatingWidget
                                 onSubmit={(rating, comment) => {
-                                    const text = `[NOTE: ${rating}/5] ${comment}`.trim();
-                                    handleOptionClick(text);
+                                    const text = comment
+                                        ? `[NOTE: ${rating}/5] ${comment}`
+                                        : `[NOTE: ${rating}/5]`;
+                                    handleOptionClick(text.trim());
                                 }}
                             />
                         </div>
@@ -246,7 +286,17 @@ export const MessageList: React.FC<MessageListProps> = ({
     );
 };
 
-const QuickAction = ({ icon, title, desc, onClick, gradient }: any) => (
+// ──────────────────────────────────────────────
+//  QUICK ACTION BUTTON
+// ──────────────────────────────────────────────
+
+const QuickAction = ({ icon, title, desc, onClick, gradient }: {
+    icon: React.ReactNode;
+    title: string;
+    desc: string;
+    onClick: () => void;
+    gradient: string;
+}) => (
     <button
         onClick={onClick}
         className="c4l-quick-action w-full flex items-center gap-3.5 px-4 py-3.5 rounded-2xl transition-all group text-left active:scale-[0.98]"
