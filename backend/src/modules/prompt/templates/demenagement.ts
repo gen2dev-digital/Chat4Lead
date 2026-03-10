@@ -104,6 +104,10 @@ Aujourd'hui : ${today}.
 - PAS DE GRAS (**), PAS DE HTML, PAS de <br>, PAS de markdown.
 - Si le client dit "tu as déjà" ou "c'est le même" → accepte et avance.
 - Si le client dit "pareil" ou "identique" ou "même chose" → accepte comme réponse valide et passe à l'étape suivante.
+- JAMAIS de question sur l'ascenseur si le client est au RDC ou en rez-de-chaussée. Au RDC = pas besoin d'ascenseur, passe directement à la suite.
+- N'INVENTE JAMAIS de prix. Utilise UNIQUEMENT les chiffres fournis dans la section ESTIMATION TARIFAIRE. Si aucune estimation n'est disponible, dis que le projet doit être complété d'abord.
+- Ne répète JAMAIS une question sur le stationnement si la réponse a déjà été donnée (ex: si le client a dit "facile" au départ, ne redemande plus).
+- N'AFFICHE JAMAIS de texte technique du type "ÉTAPE X", "Actions Déclenchées", ou des noms de variables internes (ex: show_formula_picker). Tu parles à un humain.
 
 # ÉTAPES DE COLLECTE (ordre recommandé, adapte selon les réponses)
 
@@ -143,8 +147,8 @@ Fais le RÉCAPITULATIF COMPLET avec ce format exact (sans gras ni markdown) :
 📋 VOTRE PROJET DE DÉMÉNAGEMENT
 👤 Client : [Prénom Nom]
 📍 Trajet : [VilleDepart] ➡️ [VilleArrivée] (~[distance] km)
-🏠 Logement départ : [Type] [surface/pièces] - [étage] - [ascenseur oui/non]
-🏁 Logement arrivée : [Type] - [étage] - [ascenseur oui/non]
+🏠 Logement départ : [Type] [surface/pièces] - Étage: [étage] - [ascenseur oui/non]
+🏁 Logement arrivée : [Type] - Étage: [étage] - [ascenseur oui/non]
 🅿️ Accès départ : [stationnement]
 🅿️ Accès arrivée : [stationnement]
 📦 Volume estimé : ~[volume] m³
@@ -239,7 +243,8 @@ export function buildNextStep(leadData: LeadData, p: ProjetDemenagementData, has
     if (isAppartDepart) {
         if (p.etageDepart === undefined)
             return "ÉTAPE 2b — Demander l'étage au départ : 'À quel étage se situe votre logement de départ ?'";
-        if (p.ascenseurDepart === undefined)
+        // FIX : Ne PAS demander l'ascenseur si RDC (étage 0)
+        if (p.ascenseurDepart === undefined && p.etageDepart !== undefined && p.etageDepart > 0)
             return "ÉTAPE 2c — Demander s'il y a un ascenseur au départ : 'Y a-t-il un ascenseur dans votre immeuble de départ ?'";
         if (!p.ascenseurDepart && !p.typeEscalierDepart && p.etageDepart && p.etageDepart > 0)
             return "ÉTAPE 2d — Demander le type d'escalier au départ : 'Quel type d'escalier : standard ou en colimaçon ?'";
@@ -256,7 +261,8 @@ export function buildNextStep(leadData: LeadData, p: ProjetDemenagementData, has
     if (isAppartArrivee) {
         if (p.etageArrivee === undefined)
             return "ÉTAPE 3b — Demander l'étage à l'arrivée : 'À quel étage se situe votre logement d'arrivée ?'";
-        if (p.ascenseurArrivee === undefined)
+        // FIX : Ne PAS demander l'ascenseur si RDC (étage 0)
+        if (p.ascenseurArrivee === undefined && p.etageArrivee !== undefined && p.etageArrivee > 0)
             return "ÉTAPE 3c — Demander s'il y a un ascenseur à l'arrivée : 'Y a-t-il un ascenseur dans votre immeuble d'arrivée ?'";
         if (!p.ascenseurArrivee && !p.typeEscalierArrivee && p.etageArrivee && p.etageArrivee > 0)
             return "ÉTAPE 3d — Demander le type d'escalier à l'arrivée : 'Quel type d'escalier à l'arrivée : standard ou en colimaçon ?'";

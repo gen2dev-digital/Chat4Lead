@@ -56,8 +56,20 @@ export class MessageHandler {
             // ── 2. Récupérer le contexte ──
             const context = await this.getFullContext(conversationId, entrepriseId);
 
-            // ── 3. Construire le prompt ──
+            // ── 3. Construire le prompt avec pré-extraction (Bug #Incohérence Prix) ──
             const currentLead = context.lead;
+            const lastBotMsgPre = [...context.messages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
+            const preExtracted = await this.extractEntities(message, '', currentLead, lastBotMsgPre);
+
+            const promptLeadData = {
+                prenom: preExtracted.prenom || currentLead?.prenom,
+                nom: preExtracted.nom || currentLead?.nom,
+                email: preExtracted.email || currentLead?.email,
+                telephone: preExtracted.telephone || currentLead?.telephone,
+                creneauRappel: preExtracted.creneauRappel || currentLead?.creneauRappel,
+                projetData: { ...(currentLead?.projetData as any || {}), ...preExtracted },
+            } as any;
+
             const systemPrompt = await buildPromptDemenagement(
                 {
                     nom: context.entreprise.nom,
@@ -70,16 +82,7 @@ export class MessageHandler {
                     documentsCalcul: (context.config.documentsCalcul as string[]) || [],
                     consignesPersonnalisees: context.config.consignesPersonnalisees || '',
                 },
-                {
-                    prenom: currentLead?.prenom || undefined,
-                    nom: currentLead?.nom || undefined,
-                    email: currentLead?.email || undefined,
-                    telephone: currentLead?.telephone || undefined,
-                    creneauRappel: currentLead?.creneauRappel || undefined,
-                    satisfaction: currentLead?.satisfaction || undefined,
-                    satisfactionScore: currentLead?.satisfactionScore || undefined,
-                    projetData: (currentLead?.projetData || {}) as any,
-                }
+                promptLeadData
             );
 
             // ── 4. Préparer les messages (contexte étendu) ──
@@ -136,7 +139,17 @@ export class MessageHandler {
             // ── 10. Extraction regex + merge avec LLM ──
             const lastBotMsg = [...recentMessages].reverse().find((m: any) => m.role === 'assistant' || m.role === 'bot')?.content || '';
             const regexEntities = await this.extractEntities(message, llmContent, currentLead, lastBotMsg);
-            const finalEntities = this.mergeEntities(llmEntities, regexEntities);
+            const finalEntities = { ...preExtracted, ...llmEntities, ...regexEntities };
+
+            // ── 10b. Extraction du créneau de rappel (matin/après-midi/soir/indifférent) ──
+            if (!currentLead?.creneauRappel) {
+                const creneauMatch = /\b(matin|apr[eè]s[- ]?midi|soir|indiff[eé]rent)\b/i.exec(message.toLowerCase());
+                // Vérifier que le bot vient de demander le créneau
+                const botAskedCreneau = /cr[eé]neau|recontact[eé]|rappel[eé]|matin.*soir/i.test(lastBotMsg);
+                if (creneauMatch && botAskedCreneau) {
+                    finalEntities.creneauRappel = creneauMatch[1].charAt(0).toUpperCase() + creneauMatch[1].slice(1);
+                }
+            }
 
             // ── 11. Mise à jour lead + score ──
             const newScore = this.calculateScore({ ...currentLead, projetData: { ...(currentLead?.projetData as any), ...finalEntities } });
@@ -151,6 +164,33 @@ export class MessageHandler {
                 });
             }
 
+            // ── 11b. Re-check fallback APRES extraction (le lead est maintenant à jour) ──
+            const fallbackPatterns = [
+                "C'est bien noté ! Pour continuer",
+                "pouvez-vous me préciser la suite",
+                "n'hésitez pas à me donner plus de détails",
+                "je reste à votre écoute"
+            ];
+            const isTooGeneric = fallbackPatterns.some(p => llmContent.includes(p)) || llmContent.trim().length < 5;
+
+            if (isTooGeneric) {
+                const updatedProjet = (updatedLead?.projetData as any) || {};
+                const nextStepAfterUpdate = buildNextStep(
+                    { ...(updatedLead || {}), projetData: updatedProjet } as any,
+                    updatedProjet,
+                    !!(updatedLead?.nom && (updatedLead?.telephone || updatedLead?.email))
+                );
+
+                if (nextStepAfterUpdate.includes('CONVERSATION TERMINÉE')) {
+                    const entrepriseNom = context.entreprise.nom;
+                    const entrepriseEmail = context.entreprise.email || '';
+                    const entrepriseTel = context.entreprise.telephone || '';
+                    llmContent = `Merci pour cette information. ${entrepriseNom} vous remercie. Vous allez être recontacté rapidement.${entrepriseEmail ? ' Si vous avez la moindre question, n\'hésitez pas à nous contacter par mail à ' + entrepriseEmail : ''}${entrepriseTel ? ' ou par téléphone au ' + entrepriseTel : ''}. Vos données personnelles restent strictement confidentielles. À bientôt ! 🚀`;
+                } else if (nextStepAfterUpdate.includes('RÉCAPITULATIF')) {
+                    llmContent = "C'est parfait ! Je prépare maintenant le récapitulatif de votre dossier. Quel moment vous convient le mieux pour être recontacté par notre équipe : le matin, l'après-midi ou le soir ?";
+                }
+            }
+
             // ── 12. Sauvegarder la réponse ──
             await contextManager.saveMessage(
                 conversationId,
@@ -160,7 +200,9 @@ export class MessageHandler {
             );
 
             // ── 13. Actions et résultat ──
-            const actions = updatedLead ? await this.triggerActions(updatedLead, newScore) : [];
+            const allActions = updatedLead ? await this.triggerActions(updatedLead, newScore) : [];
+            // Séparer actions UI (pour le frontend) des actions internes (backend only)
+            const uiActions = allActions.filter(a => a.startsWith('show_') || a.startsWith('suggest_') || a.startsWith('appointment_'));
             const totalLatency = Date.now() - startTime;
 
             logger.info('✅ [MessageHandler] Processing message SUCCESS', {
@@ -173,7 +215,7 @@ export class MessageHandler {
                 reply: llmContent,
                 leadData: updatedLead,
                 score: newScore,
-                actions,
+                actions: uiActions,
                 metadata: {
                     ...llmMetadata,
                     entitiesExtracted: finalEntities,
@@ -431,13 +473,20 @@ export class MessageHandler {
             /(?:étage|etage)\s*[:\-]?\s*(\d{1,2})/i,
             /\b(\d{1,2})\s*(?:e|è|ème|eme|er)\b(?!\s*\d)/i,
             /\b(rdc|rez[- ]de[- ]chauss[ée]e|plain[- ]pied|rez de chauss[ée]e)\b/i,
+            /\br\+(\d{1,2})\b/i, // Bug Fix: R+1, R+2 pattern
         ];
 
         let etageVal: number | null = null;
         for (const pat of etagePatterns) {
             const m = pat.exec(combined);
             if (m) {
-                etageVal = /rdc|rez|plain/i.test(m[0]) ? 0 : parseInt(m[1], 10);
+                if (/rdc|rez|plain/i.test(m[0])) {
+                    etageVal = 0;
+                } else if (/r\+(\d+)/i.test(m[0])) {
+                    etageVal = parseInt(m[0].match(/r\+(\d+)/i)![1], 10);
+                } else {
+                    etageVal = parseInt(m[1], 10);
+                }
                 break;
             }
         }
@@ -447,9 +496,15 @@ export class MessageHandler {
             if (isArriveeContext) {
                 if (existingProjetData.etageArrivee === undefined && entities.etageArrivee === undefined)
                     entities.etageArrivee = etageVal;
+                // RDC → pas besoin d'ascenseur
+                if (etageVal === 0 && existingProjetData.ascenseurArrivee === undefined)
+                    entities.ascenseurArrivee = false;
             } else {
                 if (existingProjetData.etageDepart === undefined && entities.etageDepart === undefined)
                     entities.etageDepart = etageVal;
+                // RDC → pas besoin d'ascenseur
+                if (etageVal === 0 && existingProjetData.ascenseurDepart === undefined)
+                    entities.ascenseurDepart = false;
             }
         }
 
@@ -458,8 +513,13 @@ export class MessageHandler {
             const simpleEtage = /^\s*(\d{1,2})\s*(?:e|è|ème|eme|er)?\s*$/i.exec(lowerMsg.trim());
             if (simpleEtage) {
                 const val = parseInt(simpleEtage[1], 10);
-                if (isArriveeContext && existingProjetData.etageArrivee === undefined) entities.etageArrivee = val;
-                else if (!isArriveeContext && existingProjetData.etageDepart === undefined) entities.etageDepart = val;
+                if (isArriveeContext && existingProjetData.etageArrivee === undefined) {
+                    entities.etageArrivee = val;
+                    if (val === 0) entities.ascenseurArrivee = false;
+                } else if (!isArriveeContext && existingProjetData.etageDepart === undefined) {
+                    entities.etageDepart = val;
+                    if (val === 0) entities.ascenseurDepart = false;
+                }
             }
         }
 
@@ -776,6 +836,9 @@ export class MessageHandler {
             .replace(/<br\s*\/?>/gi, '\n')
             .replace(/^(Bot|Assistant|🤖|AI|System):\s*/i, '')
             .replace(/\n{3,}/g, '\n\n')
+            // Supprimer les lignes techniques qui fuient parfois
+            .replace(/\n?\*?\*?Actions? Déclenchées?\*?\*?.*$/gim, '')
+            .replace(/\b(show_formula_picker|show_timeslot_picker|suggest_visit_picker|appointment_module_triggered|email_notification_queued|crm_push_queued)\b/gi, '')
             .trim();
     }
 
@@ -825,9 +888,9 @@ export class MessageHandler {
         const p = lead?.projetData || {};
         let cleaned = text;
         if (p.stationnementDepart)
-            cleaned = cleaned.replace(/[^.!?\n]*stationnement[^.!?\n]*(?:départ|partez)[^.!?\n]*\?/gi, '').trim();
+            cleaned = cleaned.replace(/[^.!?\n]*stationnement[^.!?\n]*(?:départ|partez|initial|devant l'immeuble)[^.!?\n]*\?/gi, '').trim();
         if (p.stationnementArrivee)
-            cleaned = cleaned.replace(/[^.!?\n]*stationnement[^.!?\n]*(?:arrivée?|allez)[^.!?\n]*\?/gi, '').trim();
+            cleaned = cleaned.replace(/[^.!?\n]*stationnement[^.!?\n]*(?:arrivée?|allez|destination|maison|nouvelle|toulon)[^.!?\n]*\?/gi, '').trim();
         return cleaned;
     }
 
