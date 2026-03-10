@@ -11,6 +11,7 @@ interface SocketCallbacks {
         reply: string;
         leadData?: LeadData;
         score?: number;
+        actions?: string[];
         timestamp: string;
     }) => void;
     onBotError: (data: { error: string }) => void;

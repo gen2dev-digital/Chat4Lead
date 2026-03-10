@@ -78,6 +78,7 @@ export const useChat = () => {
                             role: 'assistant',
                             content: data.reply,
                             timestamp: new Date(data.timestamp),
+                            actions: data.actions || [],
                         };
 
                         addMessage(message);

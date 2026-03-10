@@ -116,7 +116,7 @@ export class MessageHandler {
             // ── 6d. Fallback si la réponse est vide (le LLM n'a produit que le bloc DATA) ──
             if (!llmContent || llmContent.trim().length < 2) {
                 logger.warn('⚠️ [MessageHandler] LLM reply was empty after sanitization, generating fallback', { conversationId });
-                const nextStep = buildNextStep(currentLead || {}, (currentLead?.projetData || {}) as any, !!(currentLead?.nom && (currentLead?.telephone || currentLead?.email)));
+                const nextStep = buildNextStep((currentLead || {}) as any, (currentLead?.projetData || {}) as any, !!(currentLead?.nom && (currentLead?.telephone || currentLead?.email)));
                 if (nextStep.includes('RÉCAPITULATIF')) {
                     llmContent = "C'est parfait ! Je prépare maintenant le récapitulatif de votre dossier. Quel moment vous convient le mieux pour être recontacté par notre équipe : le matin, l'après-midi ou le soir ?";
                 } else if (nextStep.includes('CONVERSATION TERMINÉE')) {
@@ -319,6 +319,8 @@ export class MessageHandler {
         const entities: any = {};
         const existingProjetData = (currentLead?.projetData as any) || {};
         const combined = (message + ' ' + (llmContent || '')).replace(/\((\d{5})\)/g, ' $1 ');
+        const lowerCombined = combined.toLowerCase();
+        const lowerMsg = message.toLowerCase().trim();
 
         // Email
         const emails = combined.match(/[a-zA-Z0-9._%+\-àâäéèêëîïôùûüç]+@[a-zA-Z0-9.\-àâäéèêëîïôùûüç]+\.[a-zA-Z]{2,}/gi);
@@ -334,7 +336,7 @@ export class MessageHandler {
         }
 
         // Surface / Volume deduction
-        const surfaceMatch = /(\d+)\s*(?:m²|m2|mètres?\s*carrés?)/gi.exec(combined);
+        const surfaceMatch = /(\d+)\s*(?:m²|m2|mètres?\s*carrés?|m\s*carré)/gi.exec(combined);
         if (surfaceMatch) {
             const surface = parseInt(surfaceMatch[1], 10);
             entities.surface = surface;
@@ -346,9 +348,90 @@ export class MessageHandler {
         const volumeMatch = /(\d+(?:[.,]\d+)?)\s*(?:m³|m3|mètres?\s*cubes?)/gi.exec(combined);
         if (volumeMatch) entities.volumeEstime = parseFloat(volumeMatch[1].replace(',', '.'));
 
-        // Étage / Ascenceur / Escalier
+        // ── Type d'habitation (CRITIQUE — manquait totalement) ──
         const lowerBot = ((lastBotMessage || '') + ' ' + (llmContent || '')).toLowerCase();
-        const isArrivee = lowerBot.includes('arrivée') || lowerBot.includes('arrivee') || lowerBot.includes('nouveau') || lowerBot.includes('à massy');
+        const isArriveeContext = lowerBot.includes('arrivée') || lowerBot.includes('arrivee')
+            || lowerBot.includes('nouveau') || lowerBot.includes('nouvelle')
+            || lowerBot.includes('destination') || lowerBot.includes('à massy');
+
+        const habitationPatterns = [
+            { pattern: /\b(appartement|appart|appt|f[1-9]|t[1-9]|studio)\b/i, val: 'Appartement' },
+            { pattern: /\b(maison|pavillon|villa|mas)\b/i, val: 'Maison' },
+        ];
+        for (const ptn of habitationPatterns) {
+            if (ptn.pattern.test(lowerMsg) || ptn.pattern.test(lowerCombined)) {
+                if (isArriveeContext && !existingProjetData.typeHabitationArrivee) {
+                    entities.typeHabitationArrivee = ptn.val;
+                } else if (!existingProjetData.typeHabitationDepart) {
+                    entities.typeHabitationDepart = ptn.val;
+                }
+                break;
+            }
+        }
+
+        // ── "Pareil" / "même chose" → copier départ → arrivée (Bug #7) ──
+        const isPareillArrivee = /\b(pareil|même chose|identique|idem|la même|c'est pareil|le même)\b/i.test(lowerMsg);
+        if (isPareillArrivee && isArriveeContext) {
+            if (!existingProjetData.typeHabitationArrivee && existingProjetData.typeHabitationDepart) {
+                entities.typeHabitationArrivee = existingProjetData.typeHabitationDepart;
+            }
+            if (existingProjetData.etageArrivee === undefined && existingProjetData.etageDepart !== undefined) {
+                entities.etageArrivee = existingProjetData.etageDepart;
+            }
+            if (existingProjetData.ascenseurArrivee === undefined && existingProjetData.ascenseurDepart !== undefined) {
+                entities.ascenseurArrivee = existingProjetData.ascenseurDepart;
+            }
+            if (!existingProjetData.stationnementArrivee && existingProjetData.stationnementDepart) {
+                entities.stationnementArrivee = existingProjetData.stationnementDepart;
+            }
+            if (!existingProjetData.typeEscalierArrivee && existingProjetData.typeEscalierDepart) {
+                entities.typeEscalierArrivee = existingProjetData.typeEscalierDepart;
+            }
+        }
+
+        // ── Étage (Bug #3 fix — assigne même si contexte arrivée et départ inconnu) ──
+        const etageMatch = /(?:(?:au?|le|du)\s+)?(\d{1,2})(?:e|è|ème|eme|er)?\s*(?:étage|etage)/i.exec(combined)
+            || /(?:étage|etage)\s*(\d{1,2})/i.exec(combined)
+            || /(?:au?|le)\s+(\d{1,2})(?:e|è|ème|eme|er)(?!\s*\d)/i.exec(lowerMsg)
+            || /\b(rdc|rez[- ]de[- ]chauss[ée]e)\b/i.exec(combined);
+        if (etageMatch) {
+            const etageVal = etageMatch[0].match(/rdc|rez/i) ? 0 : parseInt(etageMatch[1], 10);
+            if (isArriveeContext) {
+                // En contexte arrivée → assigner arrivée si pas encore fait
+                if (existingProjetData.etageArrivee === undefined && existingProjetData.etageArrivee !== 0) {
+                    entities.etageArrivee = etageVal;
+                }
+            } else {
+                // Sinon → départ
+                if (existingProjetData.etageDepart === undefined && existingProjetData.etageDepart !== 0) {
+                    entities.etageDepart = etageVal;
+                }
+            }
+        }
+
+        // ── Ascenseur (Bug #2 fix — détection contextuelle oui/non) ──
+        const hasAscenseur = /\b(avec\s+ascenseur|ascenseur\s*(?:oui|ok|disponible)?|il y a un ascenseur)\b/i.test(lowerMsg);
+        const noAscenseur = /\b(sans\s+ascenseur|pas\s+d[''e]\s*ascenseur|pas\s+ascenseur|aucun\s+ascenseur)\b/i.test(lowerMsg);
+
+        // Détection contextuelle : si le bot vient de demander "ascenseur ?" et l'user dit juste "oui" / "non"
+        const botAskedAscenseur = /ascenseur/i.test(lastBotMessage || '');
+        let ascenseurDetected = false;
+        let ascenseurVal = false;
+        if (hasAscenseur) { ascenseurDetected = true; ascenseurVal = true; }
+        else if (noAscenseur) { ascenseurDetected = true; ascenseurVal = false; }
+        else if (botAskedAscenseur) {
+            const simpleOui = /^\s*(oui|yes|ouais|bien sûr|évidemment|si|ok|yep|affirmatif)\s*[.!]?\s*$/i.test(lowerMsg);
+            const simpleNon = /^\s*(non|no|nope|pas|aucun|nan|négatif)\s*[.!]?\s*$/i.test(lowerMsg);
+            if (simpleOui) { ascenseurDetected = true; ascenseurVal = true; }
+            else if (simpleNon) { ascenseurDetected = true; ascenseurVal = false; }
+        }
+        if (ascenseurDetected) {
+            if (isArriveeContext) {
+                if (existingProjetData.ascenseurArrivee === undefined) entities.ascenseurArrivee = ascenseurVal;
+            } else {
+                if (existingProjetData.ascenseurDepart === undefined) entities.ascenseurDepart = ascenseurVal;
+            }
+        }
 
         // Escalier logic
         const escalierPatterns = [
@@ -356,27 +439,55 @@ export class MessageHandler {
             { pattern: /\b([ée]troit|serr[ée]|difficile|petit)\s+escalier\b/i, val: 'Étroit' },
             { pattern: /\b(large|spacieux|standard|normal)\s+escalier\b/i, val: 'Standard' },
             { pattern: /\bescalier\s+(large|spacieux|standard|normal)\b/i, val: 'Standard' },
+            { pattern: /\bescalier\b/i, val: 'Standard' },
         ];
         for (const ptn of escalierPatterns) {
             if (ptn.pattern.test(combined)) {
-                if (isArrivee) entities.typeEscalierArrivee = ptn.val;
+                if (isArriveeContext) entities.typeEscalierArrivee = ptn.val;
                 else entities.typeEscalierDepart = ptn.val;
                 break;
             }
         }
 
+        // ── Formule (CRITIQUE — manquait) ──
+        if (!existingProjetData.formule) {
+            const formuleMatch = /\b(eco|éco|économique|standard|luxe|premium|clef en main|cl[ée] en main)\b/i.exec(lowerMsg);
+            if (formuleMatch) {
+                const raw = formuleMatch[1].toLowerCase();
+                if (raw.includes('eco') || raw.includes('éco') || raw.includes('économ')) entities.formule = 'eco';
+                else if (raw.includes('luxe') || raw.includes('premium') || raw.includes('clef') || raw.includes('clé')) entities.formule = 'luxe';
+                else if (raw.includes('standard')) entities.formule = 'standard';
+            }
+        }
+
         // Stationnement
-        const lowerMsg = message.toLowerCase().trim();
         const isOuiFacile = /\b(oui|ouais|yes|facile|pas de souci|c'est bon|ok|normal)\b/i.test(lowerMsg) && !/\b(non|difficile|compliqué)\b/i.test(lowerMsg);
         const isNonDifficile = /\b(non|difficile|compliqué|pas facile)\b/i.test(lowerMsg);
         if (isOuiFacile || isNonDifficile) {
             const val = isOuiFacile ? 'Facile' : 'Difficile';
-            if (lowerBot.includes('stationnement') || lowerBot.includes('accès') || lowerBot.includes('camion')) {
+            if (lowerBot.includes('stationnement') || lowerBot.includes('accès') || lowerBot.includes('camion') || lowerBot.includes('parking')) {
                 if (lowerBot.includes('départ') || lowerBot.includes('depart')) {
                     if (!existingProjetData.stationnementDepart) entities.stationnementDepart = val;
                 } else {
                     if (!existingProjetData.stationnementArrivee) entities.stationnementArrivee = val;
                 }
+            }
+        }
+
+        // ── Code Postal ──
+        const cpMatch = /\b(\d{5})\b/g;
+        const cpAll = [...combined.matchAll(cpMatch)].map(m => m[1]).filter(cp => {
+            const n = parseInt(cp, 10);
+            return n >= 1000 && n <= 98999; // Valid FR postal codes
+        });
+        if (cpAll.length > 0) {
+            if (!existingProjetData.codePostalDepart) {
+                entities.codePostalDepart = cpAll[0];
+                if (cpAll.length > 1 && !existingProjetData.codePostalArrivee) {
+                    entities.codePostalArrivee = cpAll[1];
+                }
+            } else if (!existingProjetData.codePostalArrivee) {
+                entities.codePostalArrivee = cpAll[0];
             }
         }
 
@@ -388,31 +499,91 @@ export class MessageHandler {
             const textMatch = textDateRegex.exec(combined);
             if (textMatch) {
                 let d = textMatch[1] || textMatch[4];
-                let mStr = (textMatch[2] || textMatch[3]).toLowerCase().substring(0, 3);
-                const months: any = { 'jan': '01', 'fév': '02', 'mar': '03', 'avr': '04', 'mai': '05', 'jui': '06', 'jui': '07', 'aoû': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'déc': '12' };
-                entities.dateSouhaitee = `${d.padStart(2, '0')}/${months[mStr] || '01'}/${new Date().getFullYear()}`;
+                let mStr = (textMatch[2] || textMatch[3]).toLowerCase();
+                // FIX: use longer prefix for disambiguation juin/juillet
+                const months: Record<string, string> = {
+                    'jan': '01', 'fév': '02', 'feb': '02', 'mar': '03', 'avr': '04', 'apr': '04',
+                    'mai': '05', 'may': '05', 'juin': '06', 'jun': '06',
+                    'juil': '07', 'jul': '07', 'août': '08', 'aoû': '08', 'aug': '08',
+                    'sep': '09', 'oct': '10', 'nov': '11', 'déc': '12', 'dec': '12'
+                };
+                // Try full match, then 4 chars, then 3 chars
+                const monthKey = months[mStr] || months[mStr.substring(0, 4)] || months[mStr.substring(0, 3)] || '01';
+                entities.dateSouhaitee = `${d.padStart(2, '0')}/${monthKey}/${new Date().getFullYear()}`;
             }
         }
 
-        // Name
-        const { prenom, nom } = this.extractName(message);
+        // Name (Bug #1 fix — passage du lastBotMessage pour guard contextuel)
+        const { prenom, nom } = this.extractName(message, lastBotMessage);
         if (prenom && !currentLead.prenom) entities.prenom = prenom;
         if (nom && !currentLead.nom) entities.nom = nom;
 
         return entities;
     }
 
-    private extractName(userMessage: string): { prenom: string | null; nom: string | null } {
+    private extractName(userMessage: string, lastBotMessage?: string): { prenom: string | null; nom: string | null } {
         const clean = userMessage.trim();
+
+        // Mots courants qui ne sont PAS des noms — anti faux-positifs (Bug #1)
+        const NOT_NAMES = new Set([
+            'oui', 'non', 'pas', 'cher', 'merci', 'bonjour', 'salut', 'bonsoir',
+            'maison', 'appartement', 'appart', 'studio', 'villa', 'pavillon',
+            'paris', 'lyon', 'marseille', 'nice', 'massy', 'lille', 'bordeaux',
+            'nantes', 'toulouse', 'rennes', 'strasbourg', 'montpellier',
+            'standard', 'luxe', 'eco', 'formule', 'parking', 'escalier',
+            'étage', 'etage', 'ascenseur', 'sans', 'avec', 'rez',
+            'pareil', 'même', 'chose', 'idem', 'identique',
+            'difficile', 'facile', 'normal', 'grand', 'petit',
+            'urgent', 'vite', 'rapide', 'bien', 'très',
+        ]);
+
+        // Pattern "je m'appelle X Y" → toujours fiable
         const p1 = clean.match(/je m['']appelle\s+([A-ZÀ-Ÿa-zà-ÿ]+(?:\s+[A-ZÀ-Ÿa-zà-ÿ]+)?)/i);
         if (p1) {
             const parts = p1[1].trim().split(/\s+/);
             return { prenom: this.capitalizeFirst(parts[0]), nom: parts.length > 1 ? this.capitalizeFirst(parts.slice(1).join(' ')) : null };
         }
+
+        // Pattern "c'est X" / "moi c'est X" → fiable aussi
+        const p2 = clean.match(/(?:c'est|moi c'est|mon nom est|mon prénom est)\s+([A-ZÀ-Ÿa-zà-ÿ]+(?:\s+[A-ZÀ-Ÿa-zà-ÿ]+)?)/i);
+        if (p2) {
+            const parts = p2[1].trim().split(/\s+/);
+            return { prenom: this.capitalizeFirst(parts[0]), nom: parts.length > 1 ? this.capitalizeFirst(parts.slice(1).join(' ')) : null };
+        }
+
+        // Pattern 2 mots bruts "Sophie Martin" → UNIQUEMENT si le bot venait de demander l'identité (Bug #1)
+        const botAskedName = lastBotMessage && (
+            /prénom|nom complet|comment vous appelez|nom de famille|votre nom|identité/i.test(lastBotMessage)
+        );
+
         const p6 = clean.match(/^([A-ZÀ-Üa-zà-ü]{2,20})\s+([A-ZÀ-Üa-zà-ü]{2,20})$/i);
-        if (p6) return { prenom: this.capitalizeFirst(p6[1]), nom: this.capitalizeFirst(p6[2]) };
+        if (p6 && botAskedName) {
+            const w1 = p6[1].toLowerCase();
+            const w2 = p6[2].toLowerCase();
+            // Vérifier que ni l'un ni l'autre n'est un mot courant
+            if (!NOT_NAMES.has(w1) && !NOT_NAMES.has(w2)) {
+                return { prenom: this.capitalizeFirst(p6[1]), nom: this.capitalizeFirst(p6[2]) };
+            }
+        }
+
+        // Pattern 1 mot brut "Sophie" → seulement si contexte approprié
         const p7 = clean.match(/^([A-ZÀ-Üa-zà-ü]{2,20})$/i);
-        if (p7) return { prenom: this.capitalizeFirst(p7[1]), nom: null };
+        if (p7 && botAskedName) {
+            const w = p7[1].toLowerCase();
+            if (!NOT_NAMES.has(w)) {
+                return { prenom: this.capitalizeFirst(p7[1]), nom: null };
+            }
+        }
+
+        // Pattern "je suis X" — partiellement fiable
+        const p3 = clean.match(/je suis\s+([A-ZÀ-Ÿa-zà-ÿ]{2,20})(?:\s+([A-ZÀ-Ÿa-zà-ÿ]{2,20}))?/i);
+        if (p3) {
+            const w1 = p3[1].toLowerCase();
+            if (!NOT_NAMES.has(w1)) {
+                return { prenom: this.capitalizeFirst(p3[1]), nom: p3[2] ? this.capitalizeFirst(p3[2]) : null };
+            }
+        }
+
         return { prenom: null, nom: null };
     }
 
@@ -444,11 +615,23 @@ export class MessageHandler {
     private calculateScore(lead: any): number {
         let score = 0;
         const p = lead.projetData || {};
-        if (lead.email) score += 10;
-        if (lead.telephone) score += 10;
+        // Identité (max 20)
         if (lead.prenom || lead.nom) score += 10;
+        if (lead.email) score += 5;
+        if (lead.telephone) score += 5;
+        // Trajet (max 10)
         if (p.villeDepart || p.villeArrivee) score += 10;
+        // Logement (max 20)
+        if (p.typeHabitationDepart) score += 5;
+        if (p.typeHabitationArrivee || p.etageArrivee !== undefined) score += 5;
         if (p.volumeEstime || p.surface) score += 10;
+        // Projet (max 20)
+        if (p.dateSouhaitee) score += 10;
+        if (p.formule) score += 10;
+        // Contact (max 20)
+        if (lead.email && lead.telephone) score += 10;
+        if (lead.creneauRappel) score += 10;
+        // Base 10 pour avoir démarré la conversation
         return Math.min(score + 10, 100);
     }
 

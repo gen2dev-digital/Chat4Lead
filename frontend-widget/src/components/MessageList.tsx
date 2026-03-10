@@ -24,11 +24,54 @@ const VISITE_TRIGGERS = [
     "conseiller se déplace",
     "un conseiller peut se déplacer",
     "voulez-vous qu'un conseiller vienne",
+    "visite conseiller",
+    "conseiller vienne chez vous",
+    "visite gratuite",
+    "un expert se déplace",
+    "rdv conseiller",
+    "rdv à domicile",
+    "proposer une visite",
 ];
 
-function isVisiteQuestion(content: string): boolean {
+/* ── Phrases déclenchant le choix de formule ── */
+const FORMULE_TRIGGERS = [
+    "quelle formule préférez-vous",
+    "choisir une formule",
+    "quelle formule souhaitez-vous",
+    "formule éco, standard ou luxe",
+    "trois formules",
+    "nos formules",
+    "choisir votre formule",
+    "choisir entre",
+    "éco, standard ou luxe",
+    "eco, standard ou luxe",
+    "formule vous convient",
+    "quel type de prestation",
+    "quelle prestation",
+];
+
+/* ── Phrases déclenchant le choix de créneau ── */
+const CRENEAU_TRIGGERS = [
+    "quel créneau vous arrange",
+    "à quel moment préférez-vous être recontacté",
+    "quand souhaitez-vous être recontacté",
+    "quel moment vous convient",
+    "créneau de rappel",
+    "être recontacté",
+    "préférence horaire",
+    "matin, l'après-midi ou le soir",
+    "matin, après-midi ou soir",
+    "recontacté par notre équipe",
+    "pour être rappelé",
+];
+
+function matchesTrigger(content: string, triggers: string[]): boolean {
     const lower = content.toLowerCase();
-    return VISITE_TRIGGERS.some(t => lower.includes(t));
+    return triggers.some(t => lower.includes(t));
+}
+
+function isVisiteQuestion(content: string): boolean {
+    return matchesTrigger(content, VISITE_TRIGGERS);
 }
 
 export const MessageList: React.FC<MessageListProps> = ({
@@ -39,8 +82,8 @@ export const MessageList: React.FC<MessageListProps> = ({
     leadData
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    // Track quel message a déclenché le modal (par index) pour le fermer après réponse
-    const [answeredVisiteIdx, setAnsweredVisiteIdx] = useState<number | null>(null);
+    // Track quels messages ont déclenché le modal (par index) — Set pour gérer plusieurs modals (Bug #13)
+    const [answeredVisiteIdxs, setAnsweredVisiteIdxs] = useState<Set<number>>(new Set());
     const [showSummaryModal, setShowSummaryModal] = useState(false);
 
     useEffect(() => {
@@ -93,17 +136,19 @@ export const MessageList: React.FC<MessageListProps> = ({
                         />
 
                         {/* ── Visite Modal inline juste après le message de proposition ── */}
+                        {/* Bug #14 fix — guard msg.content */}
                         {msg.role === 'assistant'
-                            && isVisiteQuestion(msg.content)
-                            && answeredVisiteIdx !== index && (
+                            && msg.content
+                            && (isVisiteQuestion(msg.content) || (msg.actions && msg.actions.includes('suggest_visit_picker')))
+                            && !answeredVisiteIdxs.has(index) && (
                                 <div className="px-1 animate-fade-in">
                                     <VisiteModal
                                         onConfirm={(message) => {
-                                            setAnsweredVisiteIdx(index);
+                                            setAnsweredVisiteIdxs(prev => new Set(prev).add(index));
                                             handleOptionClick(message);
                                         }}
                                         onDismiss={(message) => {
-                                            setAnsweredVisiteIdx(index);
+                                            setAnsweredVisiteIdxs(prev => new Set(prev).add(index));
                                             handleOptionClick(message);
                                         }}
                                     />
@@ -116,13 +161,17 @@ export const MessageList: React.FC<MessageListProps> = ({
             {/* ── Widgets interactifs sur le dernier message bot ── */}
             {(() => {
                 const lastMsg = messages[messages.length - 1];
-                if (!lastMsg || lastMsg.role !== 'assistant') return null;
+                if (!lastMsg || lastMsg.role !== 'assistant' || !lastMsg.content) return null;
+                const lastActions = lastMsg.actions || [];
 
                 // Ne pas afficher si c'est une question de visite (géré inline ci-dessus)
-                if (isVisiteQuestion(lastMsg.content)) return null;
+                if (isVisiteQuestion(lastMsg.content) || lastActions.includes('suggest_visit_picker')) return null;
 
-                // Formula Picker
-                if (lastMsg.content.includes("Quelle formule préférez-vous") || lastMsg.content.includes("choisir une formule")) {
+                // Formula Picker — texte OU action backend (Bug #4 fix)
+                const showFormula = (matchesTrigger(lastMsg.content, FORMULE_TRIGGERS)
+                    || lastActions.includes('show_formula_picker'))
+                    && !leadData.projetData?.formule;
+                if (showFormula) {
                     return (
                         <div className="px-4 pb-2">
                             <FormulaPicker
@@ -134,7 +183,9 @@ export const MessageList: React.FC<MessageListProps> = ({
                 }
 
                 // Summary trigger
-                const isSummary = lastMsg.content.includes("Récapitulatif de votre") || lastMsg.content.includes("récapitulatif de votre");
+                const isSummary = lastMsg.content.toLowerCase().includes("récapitulatif de votre")
+                    || lastMsg.content.toLowerCase().includes("voici le récapitulatif")
+                    || lastMsg.content.toLowerCase().includes("récapitulatif complet");
                 if (isSummary) {
                     return (
                         <div className="px-4 pb-4">
@@ -153,11 +204,10 @@ export const MessageList: React.FC<MessageListProps> = ({
                     );
                 }
 
-                // Time Slot Picker (créneau de recontact)
-                const showTimeSlotPicker =
-                    lastMsg.content.includes("Quel créneau vous arrange pour être recontacté ?")
-                    || lastMsg.content.includes("À quel moment préférez-vous être recontacté ?")
-                    || lastMsg.content.includes("À quel moment est-il le plus disponible pour être recontacté ?");
+                // Time Slot Picker (créneau de recontact) — texte OU action backend
+                const showTimeSlotPicker = (matchesTrigger(lastMsg.content, CRENEAU_TRIGGERS)
+                    || lastActions.includes('appointment_module_triggered'))
+                    && !leadData.creneauRappel;
 
                 if (showTimeSlotPicker) {
                     return (
@@ -168,7 +218,14 @@ export const MessageList: React.FC<MessageListProps> = ({
                 }
 
                 // Star Rating
-                if (lastMsg.content.includes("Comment avez-vous trouvé cette conversation ?")) {
+                const ratingTriggers = [
+                    "comment avez-vous trouvé cette conversation",
+                    "notez cette conversation",
+                    "votre avis",
+                    "satisfaction",
+                    "évaluez",
+                ];
+                if (matchesTrigger(lastMsg.content, ratingTriggers)) {
                     return (
                         <div className="px-4 pb-2">
                             <StarRatingWidget

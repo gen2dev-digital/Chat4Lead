@@ -27,6 +27,7 @@ export interface ServerToClientEvents {
         reply: string;
         leadData?: any;
         score?: number;
+        actions?: string[];
         timestamp: string;
     }) => void;
     'bot-error': (data: { error: string }) => void;
@@ -258,6 +259,7 @@ export function setupWebSocket(server: HttpServer) {
                     reply: result.reply,
                     leadData: result.leadData,
                     score: result.score,
+                    actions: result.actions || [],
                     timestamp: new Date().toISOString(),
                 });
 
